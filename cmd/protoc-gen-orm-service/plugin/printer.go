@@ -180,15 +180,17 @@ func (w *printWork) msgAddReq(r *graph.Rpc) *pbgen.Message {
 
 	body := []pbgen.MessageBody{}
 	for _, f := range r.Entity.FieldsSortByNumber() {
+		if f.IsBound() {
+			// Skip since edge field (which accessed by `f.Bound`) will be added.
+			continue
+		}
+
 		d := f.Desc
 		v := pbgen.MessageField{
 			Name:   d.Name(),
 			Number: int(d.Number()),
 		}
-		if f.IsBound() {
-			// Skip since edge field (which accessed by `f.Bound`) will be added.
-			continue
-		} else if f.Message == nil {
+		if f.Message == nil {
 			// Field is scalar.
 			// e.g. string, int32, ...
 			v.Type = pbgen.Type(d.Kind().String())
@@ -209,7 +211,7 @@ func (w *printWork) msgAddReq(r *graph.Rpc) *pbgen.Message {
 		}
 		if f.IsList() {
 			v.Label = pbgen.LabelRepeated
-		} else if !f.Required {
+		} else if !f.Required || f.HasDefault() {
 			v.Label = pbgen.LabelOptional
 		}
 

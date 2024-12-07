@@ -46,11 +46,11 @@ service MemberService {
 }
 
 message AuthorAddRequest {
-	bytes id = 1;
+	optional bytes id = 1;
 	string alias = 2;
 	string name = 3;
 	repeated BookGetRequest books = 4;
-	google.protobuf.Timestamp date_created = 15;
+	optional google.protobuf.Timestamp date_created = 15;
 }
 
 message AuthorGetRequest {
@@ -68,10 +68,10 @@ message AuthorPatchRequest {
 }
 
 message BookAddRequest {
-	bytes id = 1;
+	optional bytes id = 1;
 	string title = 3;
 	repeated AuthorGetRequest authors = 4;
-	google.protobuf.Timestamp date_created = 15;
+	optional google.protobuf.Timestamp date_created = 15;
 }
 
 message BookGetRequest {
@@ -87,10 +87,10 @@ message BookPatchRequest {
 }
 
 message LikeAddRequest {
-	bytes id = 1;
+	optional bytes id = 1;
 	BookGetRequest book = 3;
 	MemberGetRequest member = 5;
-	google.protobuf.Timestamp date_created = 15;
+	optional google.protobuf.Timestamp date_created = 15;
 }
 
 message LikeGetRequest {
@@ -112,12 +112,12 @@ message LikePatchRequest {
 }
 
 message LoanAddRequest {
-	bytes id = 1;
+	optional bytes id = 1;
 	BookGetRequest book = 3;
 	MemberGetRequest member = 5;
 	google.protobuf.Timestamp date_due = 13;
 	optional google.protobuf.Timestamp date_return = 14;
-	google.protobuf.Timestamp date_created = 15;
+	optional google.protobuf.Timestamp date_created = 15;
 }
 
 message LoanGetRequest {
@@ -134,9 +134,9 @@ message LoanPatchRequest {
 }
 
 message MemberAddRequest {
-	bytes id = 1;
+	optional bytes id = 1;
 	string name = 3;
-	google.protobuf.Timestamp date_created = 15;
+	optional google.protobuf.Timestamp date_created = 15;
 }
 
 message MemberGetRequest {
