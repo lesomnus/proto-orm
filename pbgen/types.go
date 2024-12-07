@@ -118,8 +118,8 @@ func (EnumField) TemplateName() string {
 }
 
 type Message struct {
-	Name protoreflect.Name
-	Body []MessageBody
+	FullName protoreflect.FullName
+	Body     []MessageBody
 
 	topLevelDef_
 	messageBody_

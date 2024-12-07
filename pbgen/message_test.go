@@ -9,17 +9,19 @@ import (
 )
 
 func TestMessage(t *testing.T) {
+	p := pbgen.NewPrinter("")
+
 	t.Run("single field", func(t *testing.T) {
 		require := require.New(t)
 
 		d := pbgen.Message{
-			Name: "User",
+			FullName: "User",
 			Body: []pbgen.MessageBody{
 				pbgen.MessageField{Type: pbgen.TypeBytes, Name: "id", Number: 1},
 			},
 		}
 		o := bytes.Buffer{}
-		err := pbgen.Execute(&o, &d)
+		err := p.Print(&o, &d)
 		require.NoError(err)
 
 		v := o.String()
@@ -32,14 +34,14 @@ func TestMessage(t *testing.T) {
 		require := require.New(t)
 
 		d := pbgen.Message{
-			Name: "User",
+			FullName: "User",
 			Body: []pbgen.MessageBody{
 				pbgen.MessageField{Type: pbgen.TypeBytes, Name: "id", Number: 1},
 				pbgen.MessageField{Type: pbgen.TypeString, Name: "name", Number: 2},
 			},
 		}
 		o := bytes.Buffer{}
-		err := pbgen.Execute(&o, &d)
+		err := p.Print(&o, &d)
 		require.NoError(err)
 
 		v := o.String()
@@ -53,7 +55,7 @@ func TestMessage(t *testing.T) {
 		require := require.New(t)
 
 		d := pbgen.Message{
-			Name: "User",
+			FullName: "User",
 			Body: []pbgen.MessageBody{
 				pbgen.Comment{Value: "foo\nbar\nbaz"},
 				pbgen.Comment{Value: "Royale"},
@@ -64,7 +66,7 @@ func TestMessage(t *testing.T) {
 			},
 		}
 		o := bytes.Buffer{}
-		err := pbgen.Execute(&o, &d)
+		err := p.Print(&o, &d)
 		require.NoError(err)
 
 		v := o.String()
@@ -84,7 +86,7 @@ func TestMessage(t *testing.T) {
 		require := require.New(t)
 
 		d := pbgen.Message{
-			Name: "User",
+			FullName: "User",
 			Body: []pbgen.MessageBody{
 				pbgen.MessageField{Type: pbgen.TypeBytes, Name: "id", Number: 1},
 				pbgen.MessageField{Type: pbgen.TypeString, Name: "name", Number: 2},
@@ -98,7 +100,7 @@ func TestMessage(t *testing.T) {
 			},
 		}
 		o := bytes.Buffer{}
-		err := pbgen.Execute(&o, &d)
+		err := p.Print(&o, &d)
 		require.NoError(err)
 
 		v := o.String()

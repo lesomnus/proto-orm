@@ -9,6 +9,8 @@ import (
 )
 
 func TestMessageField(t *testing.T) {
+	p := pbgen.NewPrinter("")
+
 	t.Run("normal field", func(t *testing.T) {
 		require := require.New(t)
 
@@ -18,7 +20,7 @@ func TestMessageField(t *testing.T) {
 			Number: 1,
 		}
 		o := bytes.Buffer{}
-		err := pbgen.Execute(&o, &d)
+		err := p.Print(&o, &d)
 		require.NoError(err)
 
 		v := o.String()
@@ -35,7 +37,7 @@ func TestMessageField(t *testing.T) {
 			Number: 1,
 		}
 		o := bytes.Buffer{}
-		err := pbgen.Execute(&o, &d)
+		err := p.Print(&o, &d)
 		require.NoError(err)
 
 		v := o.String()
@@ -51,7 +53,7 @@ func TestMessageField(t *testing.T) {
 			Number: 1,
 		}
 		o := bytes.Buffer{}
-		err := pbgen.Execute(&o, &d)
+		err := p.Print(&o, &d)
 		require.NoError(err)
 
 		v := o.String()
@@ -68,7 +70,7 @@ func TestMessageField(t *testing.T) {
 			Options: []pbgen.Option{pbgen.FeatureFieldPresenceExplicit},
 		}
 		o := bytes.Buffer{}
-		err := pbgen.Execute(&o, &d)
+		err := p.Print(&o, &d)
 		require.NoError(err)
 
 		v := o.String()
@@ -89,7 +91,7 @@ func TestMessageField(t *testing.T) {
 			},
 		}
 		o := bytes.Buffer{}
-		err := pbgen.Execute(&o, &d)
+		err := p.Print(&o, &d)
 		require.NoError(err)
 
 		v := o.String()
@@ -115,7 +117,7 @@ func TestMessageField(t *testing.T) {
 			},
 		}
 		o := bytes.Buffer{}
-		err := pbgen.Execute(&o, &d)
+		err := p.Print(&o, &d)
 		require.NoError(err)
 
 		v := o.String()

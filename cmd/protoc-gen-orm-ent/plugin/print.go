@@ -33,6 +33,8 @@ func (p *Plugin) Print(e *graph.Entity, f *protogen.GeneratedFile) error {
 	}
 	if err := p.NewTemplate(e, p.EntConvertFile).ExecuteTemplate(p.EntConvertFile, "convert.go.tpl", e); err != nil {
 		return err
+	} else {
+		p.EntConvertFile.P("")
 	}
 
 	return nil

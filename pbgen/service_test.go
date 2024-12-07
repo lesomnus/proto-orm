@@ -9,6 +9,8 @@ import (
 )
 
 func TestService(t *testing.T) {
+	p := pbgen.NewPrinter("")
+
 	t.Run("single rpc", func(t *testing.T) {
 		require := require.New(t)
 
@@ -23,7 +25,7 @@ func TestService(t *testing.T) {
 			},
 		}
 		o := bytes.Buffer{}
-		err := pbgen.Execute(&o, &d)
+		err := p.Print(&o, &d)
 		require.NoError(err)
 
 		v := o.String()
@@ -51,7 +53,7 @@ func TestService(t *testing.T) {
 			},
 		}
 		o := bytes.Buffer{}
-		err := pbgen.Execute(&o, &d)
+		err := p.Print(&o, &d)
 		require.NoError(err)
 
 		v := o.String()
@@ -84,7 +86,7 @@ func TestService(t *testing.T) {
 			},
 		}
 		o := bytes.Buffer{}
-		err := pbgen.Execute(&o, &d)
+		err := p.Print(&o, &d)
 		require.NoError(err)
 
 		v := o.String()

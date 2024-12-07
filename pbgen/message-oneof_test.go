@@ -9,6 +9,8 @@ import (
 )
 
 func TestMessageOneof(t *testing.T) {
+	p := pbgen.NewPrinter("")
+
 	t.Run("single field", func(t *testing.T) {
 		require := require.New(t)
 
@@ -23,7 +25,7 @@ func TestMessageOneof(t *testing.T) {
 			},
 		}
 		o := bytes.Buffer{}
-		err := pbgen.Execute(&o, &d)
+		err := p.Print(&o, &d)
 		require.NoError(err)
 
 		v := o.String()
@@ -52,7 +54,7 @@ func TestMessageOneof(t *testing.T) {
 			},
 		}
 		o := bytes.Buffer{}
-		err := pbgen.Execute(&o, &d)
+		err := p.Print(&o, &d)
 		require.NoError(err)
 
 		v := o.String()

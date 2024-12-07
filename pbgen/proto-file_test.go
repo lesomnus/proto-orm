@@ -9,6 +9,8 @@ import (
 )
 
 func TestProtoFile(t *testing.T) {
+	p := pbgen.NewPrinter("")
+
 	t.Run("extension only", func(t *testing.T) {
 		require := require.New(t)
 
@@ -16,7 +18,7 @@ func TestProtoFile(t *testing.T) {
 			Edition: pbgen.Edition2023,
 		}
 		o := bytes.Buffer{}
-		err := pbgen.Execute(&o, &d)
+		err := p.Print(&o, &d)
 		require.NoError(err)
 
 		v := o.String()
@@ -32,7 +34,7 @@ func TestProtoFile(t *testing.T) {
 			Package: "foo.bar.baz",
 		}
 		o := bytes.Buffer{}
-		err := pbgen.Execute(&o, &d)
+		err := p.Print(&o, &d)
 		require.NoError(err)
 
 		v := o.String()
@@ -54,7 +56,7 @@ package foo.bar.baz;
 			},
 		}
 		o := bytes.Buffer{}
-		err := pbgen.Execute(&o, &d)
+		err := p.Print(&o, &d)
 		require.NoError(err)
 
 		v := o.String()
@@ -74,7 +76,7 @@ import public "/foo/c.proto";
 			Options: []pbgen.Option{pbgen.OptionGoPackage("foo.bar.baz")},
 		}
 		o := bytes.Buffer{}
-		err := pbgen.Execute(&o, &d)
+		err := p.Print(&o, &d)
 		require.NoError(err)
 
 		v := o.String()
@@ -91,13 +93,13 @@ option go_package = "foo.bar.baz";
 			Edition: pbgen.Edition2023,
 			TopLevelDefinitions: []pbgen.TopLevelDef{
 				pbgen.Message{
-					Name: "User",
+					FullName: "User",
 					Body: []pbgen.MessageBody{
 						pbgen.MessageField{Type: pbgen.TypeBytes, Name: "id", Number: 1},
 					},
 				},
 				pbgen.Message{
-					Name: "Account",
+					FullName: "Account",
 					Body: []pbgen.MessageBody{
 						pbgen.MessageField{Type: pbgen.TypeBytes, Name: "id", Number: 1},
 					},
@@ -105,7 +107,7 @@ option go_package = "foo.bar.baz";
 			},
 		}
 		o := bytes.Buffer{}
-		err := pbgen.Execute(&o, &d)
+		err := p.Print(&o, &d)
 		require.NoError(err)
 
 		v := o.String()
@@ -129,14 +131,14 @@ message Account {
 			TopLevelDefinitions: []pbgen.TopLevelDef{
 				pbgen.Comment{Value: "foo"},
 				pbgen.Message{
-					Name: "User",
+					FullName: "User",
 					Body: []pbgen.MessageBody{
 						pbgen.MessageField{Type: pbgen.TypeBytes, Name: "id", Number: 1},
 					},
 				},
 				pbgen.Comment{Value: "bar"},
 				pbgen.Message{
-					Name: "Account",
+					FullName: "Account",
 					Body: []pbgen.MessageBody{
 						pbgen.MessageField{Type: pbgen.TypeBytes, Name: "id", Number: 1},
 					},
@@ -144,7 +146,7 @@ message Account {
 			},
 		}
 		o := bytes.Buffer{}
-		err := pbgen.Execute(&o, &d)
+		err := p.Print(&o, &d)
 		require.NoError(err)
 
 		v := o.String()

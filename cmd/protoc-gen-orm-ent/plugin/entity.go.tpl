@@ -31,7 +31,7 @@ func ({{ $.Name }}) Fields() []{{ ent "Field" }} {
 		{{ end }}
 	}
 }
-{{ end -}}
+{{ end }}
 
 {{ if .HasEdges -}}
 func ({{ $.Name }}) Edges() []{{ ent "Edge" }} {
@@ -59,7 +59,7 @@ func ({{ $.Name }}) Edges() []{{ ent "Edge" }} {
 		{{ end }}
 	}
 }
-{{ end -}}
+{{ end }}
 
 {{ if .HasIndexes -}}
 func ({{ $.Name }}) Indexes() []{{ ent "Index" }} {
@@ -72,4 +72,4 @@ func ({{ $.Name }}) Indexes() []{{ ent "Index" }} {
 		{{ end }}
 	}
 }
-{{ end -}}
+{{ end }}

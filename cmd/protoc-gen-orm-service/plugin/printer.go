@@ -66,13 +66,14 @@ func (*Printer) Print(f *File) error {
 	slices.SortFunc(ss, func(a *pbgen.Service, b *pbgen.Service) int {
 		return strings.Compare(string(a.Name), string(b.Name))
 	})
-
-	for _, v := range w.services {
+	for _, v := range ss {
 		pf.TopLevelDefinitions = append(pf.TopLevelDefinitions, v)
 	}
 
-	// Processed message.
+	// Processed messages.
 	ms := map[pbgen.Type]bool{}
+
+	// Print RPC messages for each services.
 	for _, s := range ss {
 		for _, e := range s.Body {
 			r, ok := e.(pbgen.Rpc)
@@ -88,15 +89,40 @@ func (*Printer) Print(f *File) error {
 			m, ok := w.messages[protoreflect.FullName(r.Request.Type)]
 			if !ok {
 				panic(fmt.Sprintf("message must be exist: %s", r.Request.Type))
+			} else {
+				pf.TopLevelDefinitions = append(pf.TopLevelDefinitions, m)
 			}
 
-			pf.TopLevelDefinitions = append(pf.TopLevelDefinitions, m)
+			// XXXGetRequest may contains XXXGetByXXX.
+			if strings.HasSuffix(string(m.FullName), "GetRequest") {
+				o := m.Body[0].(pbgen.MessageOneof)
+				for _, e := range o.Body {
+					f, ok := e.(pbgen.MessageOneofField)
+					if !ok {
+						continue
+					}
+					if _, ok := ms[f.Type]; ok {
+						continue
+					} else {
+						ms[f.Type] = true
+					}
+
+					m, ok := w.messages[protoreflect.FullName(f.Type)]
+					if !ok {
+						// `f.Type` maybe a primitive types: int or string.
+						continue
+					} else {
+						pf.TopLevelDefinitions = append(pf.TopLevelDefinitions, m)
+					}
+				}
+			}
 
 			// Note that messages for response are defined in the another files:
 			// e.g. entity messages, well known messages.
 		}
 	}
-	return pbgen.Execute(f, pf)
+
+	return pbgen.PrintFile(f, pf)
 }
 
 type printWork struct {
@@ -149,7 +175,7 @@ func (w *printWork) msgAddReq(r *graph.Rpc) *pbgen.Message {
 		return m
 	}
 
-	m := &pbgen.Message{Name: full.Name()}
+	m := &pbgen.Message{FullName: full}
 	w.messages[full] = m
 
 	body := []pbgen.MessageBody{}
@@ -179,8 +205,7 @@ func (w *printWork) msgAddReq(r *graph.Rpc) *pbgen.Message {
 				// or make one lazily.
 			}
 			m := w.msgGetReq(r)
-			n := target.FullName().Parent().Append(m.Name)
-			v.Type = pbgen.Type(n)
+			v.Type = pbgen.Type(m.FullName)
 		}
 		if f.IsList() {
 			v.Label = pbgen.LabelRepeated
@@ -201,7 +226,7 @@ func (w *printWork) rpcAdd(r *graph.Rpc) pbgen.Rpc {
 }
 
 func (w *printWork) nameIndexGet(e *graph.Entity, i *graph.Index) protoreflect.FullName {
-	n := fmt.Sprintf("%sGetRequestBy%s", inflect.Camelize(e.Name()), inflect.Camelize(i.Name()))
+	n := fmt.Sprintf("%sGetBy%s", inflect.Camelize(e.Name()), inflect.Camelize(i.Name()))
 	return e.FullName().Parent().Append(protoreflect.Name(n))
 }
 
@@ -211,7 +236,7 @@ func (w *printWork) indexGet(e *graph.Entity, i *graph.Index) *pbgen.Message {
 		return m
 	}
 
-	m := &pbgen.Message{Name: full.Name()}
+	m := &pbgen.Message{FullName: full}
 	w.messages[full] = m
 
 	body := []pbgen.MessageBody{}
@@ -220,9 +245,8 @@ func (w *printWork) indexGet(e *graph.Entity, i *graph.Index) *pbgen.Message {
 		if r.IsEdge() {
 			target := r.Edge.Target
 			m := w.msgGetReq(target.Rpcs[graph.RpcOpGet])
-			n := target.FullName().Parent().Append(m.Name)
 			v := pbgen.MessageField{
-				Type:   pbgen.Type(n),
+				Type:   pbgen.Type(m.FullName),
 				Name:   protoreflect.Name(d.Name()),
 				Number: int(d.Number()),
 			}
@@ -246,7 +270,7 @@ func (w *printWork) msgGetReq(r *graph.Rpc) *pbgen.Message {
 		return m
 	}
 
-	m := &pbgen.Message{Name: full.Name()}
+	m := &pbgen.Message{FullName: full}
 	w.messages[full] = m
 
 	oneof := pbgen.MessageOneof{Name: "key"}
@@ -272,7 +296,7 @@ func (w *printWork) msgGetReq(r *graph.Rpc) *pbgen.Message {
 
 		m := w.indexGet(r.Entity, i)
 		oneof.Body = append(oneof.Body, pbgen.MessageOneofField{
-			Type:   pbgen.Type(m.Name),
+			Type:   pbgen.Type(m.FullName),
 			Name:   protoreflect.Name(i.Name()),
 			Number: int(i.Refs[0].Desc.Number()),
 		})
@@ -293,13 +317,13 @@ func (w *printWork) msgPatchReq(r *graph.Rpc) *pbgen.Message {
 		return m
 	}
 
-	m := &pbgen.Message{Name: full.Name()}
+	m := &pbgen.Message{FullName: full}
 	w.messages[full] = m
 
 	k := w.msgGetReq(r.Entity.Rpcs[graph.RpcOpGet])
 	k_f := k.Body[0].(pbgen.MessageOneof).Body[0].(pbgen.MessageOneofField)
 	body := []pbgen.MessageBody{pbgen.MessageField{
-		Type:   pbgen.Type(k.Name),
+		Type:   pbgen.Type(k.FullName),
 		Name:   "key",
 		Number: k_f.Number*2 - 1,
 	}}

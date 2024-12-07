@@ -9,6 +9,8 @@ import (
 )
 
 func TestRpc(t *testing.T) {
+	p := pbgen.NewPrinter("")
+
 	t.Run("unary", func(t *testing.T) {
 		require := require.New(t)
 
@@ -18,7 +20,7 @@ func TestRpc(t *testing.T) {
 			Response: pbgen.RpcType{Type: "User"},
 		}
 		o := bytes.Buffer{}
-		err := pbgen.Execute(&o, &d)
+		err := p.Print(&o, &d)
 		require.NoError(err)
 
 		v := o.String()
@@ -34,7 +36,7 @@ func TestRpc(t *testing.T) {
 			Response: pbgen.RpcType{Type: "User"},
 		}
 		o := bytes.Buffer{}
-		err := pbgen.Execute(&o, &d)
+		err := p.Print(&o, &d)
 		require.NoError(err)
 
 		v := o.String()
@@ -50,7 +52,7 @@ func TestRpc(t *testing.T) {
 			Response: pbgen.RpcType{Type: "User", Stream: true},
 		}
 		o := bytes.Buffer{}
-		err := pbgen.Execute(&o, &d)
+		err := p.Print(&o, &d)
 		require.NoError(err)
 
 		v := o.String()
@@ -83,7 +85,7 @@ func TestRpc(t *testing.T) {
 			},
 		}
 		o := bytes.Buffer{}
-		err := pbgen.Execute(&o, &d)
+		err := p.Print(&o, &d)
 		require.NoError(err)
 
 		v := o.String()
@@ -136,7 +138,7 @@ func TestRpc(t *testing.T) {
 			},
 		}
 		o := bytes.Buffer{}
-		err := pbgen.Execute(&o, &d)
+		err := p.Print(&o, &d)
 		require.NoError(err)
 
 		v := o.String()
@@ -209,7 +211,7 @@ func TestRpc(t *testing.T) {
 			},
 		}
 		o := bytes.Buffer{}
-		err := pbgen.Execute(&o, &d)
+		err := p.Print(&o, &d)
 		require.NoError(err)
 
 		v := o.String()

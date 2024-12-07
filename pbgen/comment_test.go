@@ -9,12 +9,14 @@ import (
 )
 
 func TestComment(t *testing.T) {
+	p := pbgen.NewPrinter("")
+
 	t.Run("single line", func(t *testing.T) {
 		require := require.New(t)
 
 		d := pbgen.Comment{Value: "foo"}
 		o := bytes.Buffer{}
-		err := pbgen.Execute(&o, &d)
+		err := p.Print(&o, &d)
 		require.NoError(err)
 
 		v := o.String()
@@ -26,7 +28,7 @@ func TestComment(t *testing.T) {
 
 		d := pbgen.Comment{Value: "foo\nbar"}
 		o := bytes.Buffer{}
-		err := pbgen.Execute(&o, &d)
+		err := p.Print(&o, &d)
 		require.NoError(err)
 
 		v := o.String()

@@ -1,8 +1,16 @@
 FROM ghcr.io/lesomnus/dev-golang:1.23
 
-RUN TEMP=$(mktemp -d) \
-	&& cd "${TEMP}" \
-	&& curl -o ./protoc.zip -fsSL "https://github.com/protocolbuffers/protobuf/releases/download/v29.0/protoc-29.0-linux-$(uname -m).zip" \
+RUN TEMP=$(mktemp -d); \
+	ARCH=$(uname -m); \
+	case "$ARCH" in \
+		'x86_86') ;; \
+		'aarch64') \
+			ARCH='aarch_64'; \
+			;; \
+		*) exit 1 ;; \
+	esac; \
+	cd "${TEMP}" \
+	&& curl -o ./protoc.zip -fsSL "https://github.com/protocolbuffers/protobuf/releases/download/v29.0/protoc-29.0-linux-$ARCH.zip" \
 	&& unzip ./protoc.zip -d /usr/local \
 	&& chmod 755 /usr/local/bin/protoc \
 	&& rm -rf "${TEMP}"

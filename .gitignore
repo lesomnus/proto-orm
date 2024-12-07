@@ -1,0 +1,4 @@
+/internal/example/library/*
+!/internal/example/library/bare
+!/internal/example/library/schema
+!/internal/example/library/generate.go

@@ -9,6 +9,8 @@ import (
 )
 
 func TestEnumField(t *testing.T) {
+	p := pbgen.NewPrinter("")
+
 	t.Run("normal field", func(t *testing.T) {
 		require := require.New(t)
 
@@ -17,7 +19,7 @@ func TestEnumField(t *testing.T) {
 			Number: 0,
 		}
 		o := bytes.Buffer{}
-		err := pbgen.Execute(&o, &d)
+		err := p.Print(&o, &d)
 		require.NoError(err)
 
 		v := o.String()
