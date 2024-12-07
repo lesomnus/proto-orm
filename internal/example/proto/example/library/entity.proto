@@ -1,0 +1,151 @@
+syntax = "proto3";
+
+package example.library;
+
+import "orm.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/lesomnus/proto-orm/internal/example/library";
+option (orm.all) = {
+	messages: {}
+	rpcs: {
+		add: {}
+		get: {}
+		list: {}
+		patch: {}
+		erase: {}
+	}
+};
+
+message Author {
+	bytes id = 1 [
+		(orm.field) = {
+			type: TYPE_UUID
+			key: true
+			default: ""
+		}
+	];
+	string alias = 2 [
+		(orm.field) = {
+			unique: true
+		}
+	];
+	string name = 3;
+
+	repeated Book books = 4;
+
+	google.protobuf.Timestamp date_created = 15 [
+		(orm.field) = {
+			immutable: true
+			default: ""
+		}
+	];
+}
+
+message Book {
+	bytes id = 1 [
+		(orm.field) = {
+			type: TYPE_UUID
+			key: true
+			default: ""
+		}
+	];
+	string title = 3;
+	repeated Author authors = 4 [
+		(orm.field) = {
+			from: 4 //books
+		}
+	];
+
+	google.protobuf.Timestamp date_created = 15 [
+		(orm.field) = {
+			immutable: true
+			default: ""
+		}
+	];
+}
+
+message Member {
+	bytes id = 1 [
+		(orm.field) = {
+			type: TYPE_UUID
+			key: true
+			default: ""
+		}
+	];
+	string name = 3;
+
+	google.protobuf.Timestamp date_created = 15 [
+		(orm.field) = {
+			immutable: true
+			default: ""
+		}
+	];
+}
+
+message Loan {
+	bytes id = 1 [
+		(orm.field) = {
+			type: TYPE_UUID
+			key: true
+			default: ""
+		}
+	];
+	bytes book_id = 2;
+	Book book = 3 [
+		(orm.field) = {
+			bind: 2
+			immutable: true
+		}
+	];
+	bytes member_id = 4;
+	Member member = 5 [
+		(orm.field) = {
+			bind: 4
+			immutable: true
+		}
+	];
+
+	google.protobuf.Timestamp date_due = 13;
+	optional google.protobuf.Timestamp date_return = 14 [
+		(orm.field) = {
+			nullable: true
+		}
+	];
+	google.protobuf.Timestamp date_created = 15 [
+		(orm.field) = {
+			immutable: true
+			default: ""
+		}
+	];
+}
+
+message Like {
+	bytes id = 1 [
+		(orm.field) = {
+			type: TYPE_UUID
+			key: true
+			default: ""
+		}
+	];
+	Book book = 3;
+	Member member = 5;
+	
+	google.protobuf.Timestamp date_created = 15 [
+		(orm.field) = {
+			immutable: true
+			default: ""
+		}
+	];
+	
+	option (orm.message) = {
+		indexes: [
+			{ 
+				name: "holders"
+				refs: [3, 5]
+				unique: true
+				immutable: true
+			}
+		]
+	};
+}
