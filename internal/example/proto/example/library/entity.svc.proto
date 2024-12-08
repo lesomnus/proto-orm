@@ -49,7 +49,6 @@ message AuthorAddRequest {
 	optional bytes id = 1;
 	string alias = 2;
 	string name = 3;
-	repeated BookGetRequest books = 4;
 	optional google.protobuf.Timestamp date_created = 15;
 }
 
@@ -64,13 +63,11 @@ message AuthorPatchRequest {
 	AuthorGetRequest key = 1;
 	optional string alias = 3;
 	optional string name = 5;
-	repeated Book books = 7;
 }
 
 message BookAddRequest {
 	optional bytes id = 1;
 	string title = 3;
-	repeated AuthorGetRequest authors = 4;
 	optional google.protobuf.Timestamp date_created = 15;
 }
 
@@ -83,7 +80,6 @@ message BookGetRequest {
 message BookPatchRequest {
 	BookGetRequest key = 1;
 	optional string title = 5;
-	repeated Author authors = 7;
 }
 
 message LikeAddRequest {
@@ -107,8 +103,6 @@ message LikeGetByHolders {
 
 message LikePatchRequest {
 	LikeGetRequest key = 1;
-	optional Book book = 5;
-	optional Member member = 9;
 }
 
 message LoanAddRequest {

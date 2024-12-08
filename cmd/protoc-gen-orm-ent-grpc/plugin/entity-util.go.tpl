@@ -4,59 +4,75 @@ func {{ $.Name }}Pick(req *{{ $req_name }}) ({{ $pred_ent }}, error) {
 	switch k := req.GetKey().(type) {
 	{{ range .KeyLikes -}}
 	case *{{ pb (print $.Name "GetRequest_" (pascal .Name)) }}:
-		{{ if key_is_field . -}}
-		{{/* key is field */ -}}
-		{{ $v := key_as_field . -}}
-		{{ $n := pascal $v.Name -}}
-		{{ $t := $v.Type -}}
-		{{ $p := entity $ | ident (print (ent_pascal $v.Name) "EQ") -}}
+		{{/* printing field key */ -}}
+
+		{{ if key_is_field . }}{{ with key_as_field . -}}
+		{{ if is_edge . -}}
+		{{/* TODO: edge key */ -}}
+		{{ continue -}}
+		{{ end -}}{{/* printing edge is done */ -}}
+
+		{{ with as_scalar . -}}
+		{{ $t := .Type -}}
+		{{ $n := pascal .Name -}}
+		{{ $p := entity $ | ident (print (ent_pascal .Name) "EQ") -}}
+
 		{{ if is_symmetric $t -}}
 		{{/*   key is symmetric field */ -}}
 		return {{ $p }}(k.{{ $n }}), nil
 		{{ else -}}
 		{{/*   key is asymmetric field */ -}}
 		if v, err := {{ convert_to_ent_field (print "k." $n) $t }}; err != nil {
-			return nil, {{ grpc_errf "InvalidArgument" (print $v.Name ": %s" | quote) "\"err\"" }}
+			return nil, {{ grpc_errf "InvalidArgument" (print .Name ": %s" | quote) "\"err\"" }}
 		} else {
 			return {{ $p }}(v), nil
 		}
 		{{ end -}}
-		{{ else -}}
-		{{/*   key is index */ -}}
+
+		{{ continue -}}
+		{{ end }}{{/* scalar is printed */ -}}
+		{{ end }}{{ end }}{{/* field is printed */ -}}
+
+
+
+		{{/* printing index key */ -}}
+
 		{{ $v := key_as_index . -}}
 		{{ $n := pascal $v.Name -}}
 		ps := make([]{{ $pred_ent }}, 0, {{ len $v.Refs }})
-		{{ range $v.Refs }}{{/* for each refs in index */ -}}
-		
+		{{ range $v.Refs }}{{/* for each refs in the index */ -}}
 		{{ $ref_name := pascal .Name -}}
-		{{ if .IsEdge -}}
-		{{/*       ref is edge */ -}}
-		if p, err := {{ $ref_name }}Pick(k.{{ $n }}.Get{{ $ref_name }}()); err != nil {
-			s, _ := {{ grpc_status "FromError" }}(err)
-			return nil, {{ grpc_errf "InvalidArgument" (print $v.Name ".%s" | quote) "s.Message()" }}
-		} else {
-			ps = append(ps, {{ entity $ | ident (print "Has" (ent_pascal .Name) "With") }}(p))
-		}
-		{{ else -}}
-		{{/*       ref is field */ -}}
+
+		{{ if is_scalar . }}{{ with as_scalar . -}}
+		{{/* ref is scalar */ -}}
 		{{ $t := .Type -}}
-		{{ $p := entity $ | ident (print (ent_pascal $v.Name) "EQ") -}}
+		{{ $p := entity $ | ident (print (ent_pascal .Name) "EQ") -}}
 		{{ if is_symmetric $t -}}
-		{{/*         ref field is symmetric */ -}}
+		{{/*   ref scalar is symmetric */ -}}
 		ps = append(ps, {{ $p }}(k.{{ $ref_name }}))
 		{{ else -}}
-		{{/*         ref field is asymmetric */ -}}
+		{{/*   ref scalar is asymmetric */ -}}
 		if v, err := {{ convert_to_ent_field (print "k." $ref_name) $t }}; err != nil {
-			return nil, {{ grpc_errf "InvalidArgument" (print $v.Name "." $ref_name ": %s" | quote) "\"err\"" }}
+			return nil, {{ grpc_errf "InvalidArgument" (print .Name "." $ref_name ": %s" | quote) "\"err\"" }}
 		} else {
 			ps = append(ps, {{ $p }}(v))
 		}
 		{{ end -}}
-		{{ end -}}
+		{{ continue -}}
+		{{ end }}{{ end }}{{/* scalar ref is printed */ -}}
 
-		{{ end }}{{/* end of range */ -}}
+		{{ with as_edge . -}}
+		{{/* ref is edge */ -}}
+		if p, err := {{ $ref_name }}Pick(k.{{ $n }}.Get{{ $ref_name }}()); err != nil {
+			s, _ := {{ grpc_status "FromError" }}(err)
+			return nil, {{ grpc_errf "InvalidArgument" (print .Name ".%s" | quote) "s.Message()" }}
+		} else {
+			ps = append(ps, {{ entity $ | ident (print "Has" (ent_pascal .Name) "With") }}(p))
+		}
+		{{ continue -}}
+		{{ end -}}{{/* edge ref is printed */ -}}
+		{{ end }}{{/* end of ref range */ -}}
 		return {{ entity $ | ident "And" }}(ps...), nil
-		{{ end -}}
 	{{ end -}}
 	case nil:
 		return nil, {{ grpc_errf "InvalidArgument" "\"key not provided\"" }}

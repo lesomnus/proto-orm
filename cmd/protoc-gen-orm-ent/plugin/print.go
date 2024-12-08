@@ -47,17 +47,41 @@ func (p *Plugin) NewTemplate(e *graph.Entity, f *protogen.GeneratedFile) *templa
 			fmt.Fprintln(os.Stderr, v)
 			return ""
 		},
+		"ent_pascal": func(v string) string {
+			return rules.EntPascal(v)
+		},
+
 		"ent": func(name string) string {
 			return f.QualifiedGoIdent(import_ent.Ident(name))
 		},
 		"pb": func(name string) string {
 			return f.QualifiedGoIdent(e.File.GoImportPath.Ident(name))
 		},
-		"def_field": func(field *graph.Field) string {
-			if field.IsEdge() {
-				panic("it must be a scalar field")
-			}
 
+		"is_scalar": func(f graph.Field) bool {
+			_, ok := f.(*graph.ScalarField)
+			return ok
+		},
+		"as_scalar": func(f graph.Field) *graph.ScalarField {
+			v, ok := f.(*graph.ScalarField)
+			if !ok {
+				panic("field must be a scalar")
+			}
+			return v
+		},
+		"is_edge": func(f graph.Field) bool {
+			_, ok := f.(*graph.Edge)
+			return ok
+		},
+		"as_edge": func(f graph.Field) *graph.Edge {
+			v, ok := f.(*graph.Edge)
+			if !ok {
+				panic("field must be an edge")
+			}
+			return v
+		},
+
+		"def_field": func(field *graph.ScalarField) string {
 			t := field.Type()
 			ident := f.QualifiedGoIdent(import_ent_field.Ident(toEntIdent(t)))
 			name := field.Name()
@@ -68,12 +92,13 @@ func (p *Plugin) NewTemplate(e *graph.Entity, f *protogen.GeneratedFile) *templa
 				return fmt.Sprintf(`%s(%q, %s())`, ident, name, v)
 			}
 		},
-		"def_field_default": func(field *graph.Field) string {
+		"def_field_default": func(field *graph.ScalarField) string {
 			if !field.HasDefault() {
 				panic("it must have a default")
 			}
 
-			switch field.Type() {
+			t := field.Type()
+			switch t {
 			case orm.Type_TYPE_UUID:
 				return f.QualifiedGoIdent(import_uuid.Ident("New"))
 			case orm.Type_TYPE_TIME:
@@ -83,12 +108,12 @@ func (p *Plugin) NewTemplate(e *graph.Entity, f *protogen.GeneratedFile) *templa
 			}
 		},
 		"def_edge": func(edge *graph.Edge) string {
-			source_name := edge.Source.Name()
+			name := edge.Name()
 			if edge.From != nil {
 				return fmt.Sprintf(
 					"%s(%q, %s.Type).Ref(%q)",
 					f.QualifiedGoIdent(import_ent_edge.Ident("From")),
-					source_name,
+					name,
 					edge.Target.Source.GoIdent.GoName,
 					edge.From.Name(),
 				)
@@ -97,7 +122,7 @@ func (p *Plugin) NewTemplate(e *graph.Entity, f *protogen.GeneratedFile) *templa
 			v := fmt.Sprintf(
 				`%s(%q, %s.Type)`,
 				f.QualifiedGoIdent(import_ent_edge.Ident("To")),
-				source_name,
+				name,
 				edge.Target.Source.GoIdent.GoName,
 			)
 			if edge.IsSelfLoop() {
@@ -136,16 +161,9 @@ func (p *Plugin) NewTemplate(e *graph.Entity, f *protogen.GeneratedFile) *templa
 
 			return v
 		},
-		"ent_name": func(field *graph.Field) string {
-			return rules.EntPascal(field.Name())
-		},
-		"ent_value_to_proto": func(ident string, field *graph.Field) string {
+		"ent_value_to_proto": func(ident string, field *graph.ScalarField) string {
 			t := field.Type()
-			n := rules.EntPascal(field.Name())
-			if field.IsEdge() {
-				panic("is it needed? or handled in template?")
-				return fmt.Sprintf("%s.Proto()", ident)
-			}
+			n := rules.EntPascal(string(field.Name()))
 			switch t {
 			case orm.Type_TYPE_UUID:
 				return fmt.Sprintf("%s.%s[:]", ident, n)

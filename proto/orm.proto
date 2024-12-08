@@ -17,6 +17,7 @@ extend google.protobuf.MessageOptions {
 
 extend google.protobuf.FieldOptions {
 	FieldOptions field = 45003;
+	EdgeOptions edge = 45004;
 }
 
 message FileOptions {
@@ -37,15 +38,29 @@ message FieldOptions {
 	bool ignored = 1;
 	Type type = 2;
 
-	uint32 from = 3;
-	uint32 bind = 4;
-
 	bool key = 5;
 	bool unique = 6;
 	bool nullable = 7;
 	bool immutable = 8;
 
 	optional string default = 9;
+}
+
+message EdgeOptions {
+	bool ignored = 1;
+
+	int32 from = 2;
+	int32 bind = 3;
+
+	SelectOptions select = 4;
+
+	bool nullable = 7;
+	bool immutable = 8;
+}
+
+message SelectOptions {
+	// Select all fields if empty.
+	repeated int32 refs = 2;
 }
 
 enum Type {

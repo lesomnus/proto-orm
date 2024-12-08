@@ -13,15 +13,6 @@ import (
 	status "google.golang.org/grpc/status"
 )
 
-type LikeServiceServer struct {
-	db *ent.Client
-	library.UnimplementedLikeServiceServer
-}
-
-func NewLikeServiceServer(db *ent.Client) *LikeServiceServer {
-	return &LikeServiceServer{db: db}
-}
-
 func (s *LikeServiceServer) Add(ctx context.Context, req *library.LikeAddRequest) (*library.Like, error) {
 	q := s.db.Like.Create()
 	if v, err := uuid.FromBytes(req.Id); err != nil {
@@ -49,50 +40,6 @@ func (s *LikeServiceServer) Add(ctx context.Context, req *library.LikeAddRequest
 	return v.Proto(), nil
 }
 
-func (s *LikeServiceServer) Get(ctx context.Context, req *library.LikeGetRequest) (*library.Like, error) {
-	q := s.db.Like.Query()
-	if p, err := LikePick(req); err != nil {
-		return nil, err
-	} else {
-		q.Where(p)
-	}
-
-	v, err := q.Only(ctx)
-	if err != nil {
-		return nil, StatusFromEntError(err)
-	}
-
-	return v.Proto(), nil
-}
-
-func (s *LikeServiceServer) Patch(ctx context.Context, req *library.LikePatchRequest) (*library.Like, error) {
-	id, err := LikeGetId(ctx, s.db, req.GetKey())
-	if err != nil {
-		return nil, err
-	}
-
-	q := s.db.Like.UpdateOneID(id)
-
-	v, err := q.Save(ctx)
-	if err != nil {
-		return nil, StatusFromEntError(err)
-	}
-
-	return v.Proto(), nil
-}
-
-func (s *LikeServiceServer) Erase(ctx context.Context, req *library.LikeGetRequest) (*library.Like, error) {
-	p, err := LikePick(req)
-	if err != nil {
-		return nil, err
-	}
-	if _, err := s.db.Like.Delete().Where(p).Exec(ctx); err != nil {
-		return nil, StatusFromEntError(err)
-	}
-
-	return nil, nil
-}
-
 func LikePick(req *library.LikeGetRequest) (predicate.Like, error) {
 	switch k := req.GetKey().(type) {
 	case *library.LikeGetRequest_Id:
@@ -105,13 +52,13 @@ func LikePick(req *library.LikeGetRequest) (predicate.Like, error) {
 		ps := make([]predicate.Like, 0, 2)
 		if p, err := BookPick(k.Holders.GetBook()); err != nil {
 			s, _ := status.FromError(err)
-			return nil, status.Errorf(codes.InvalidArgument, "holders.%s", s.Message())
+			return nil, status.Errorf(codes.InvalidArgument, "book.%s", s.Message())
 		} else {
 			ps = append(ps, like.HasBookWith(p))
 		}
 		if p, err := MemberPick(k.Holders.GetMember()); err != nil {
 			s, _ := status.FromError(err)
-			return nil, status.Errorf(codes.InvalidArgument, "holders.%s", s.Message())
+			return nil, status.Errorf(codes.InvalidArgument, "member.%s", s.Message())
 		} else {
 			ps = append(ps, like.HasMemberWith(p))
 		}

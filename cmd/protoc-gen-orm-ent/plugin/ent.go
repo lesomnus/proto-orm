@@ -1,6 +1,10 @@
 package plugin
 
-import orm "github.com/lesomnus/proto-orm"
+import (
+	"fmt"
+
+	orm "github.com/lesomnus/proto-orm"
+)
 
 func toEntIdent(t orm.Type) string {
 	v := ""
@@ -45,7 +49,7 @@ func toEntIdent(t orm.Type) string {
 		v = "Time"
 
 	default:
-		panic("unknown type or type not supported")
+		panic(fmt.Sprintf("unknown type or type not supported: %s", t.String()))
 	}
 
 	return v

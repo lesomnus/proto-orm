@@ -32,7 +32,11 @@ message Author {
 	];
 	string name = 3;
 
-	repeated Book books = 4;
+	repeated Book books = 4 [
+		(orm.edge) = {
+			select: {}
+		}
+	];
 
 	google.protobuf.Timestamp date_created = 15 [
 		(orm.field) = {
@@ -52,8 +56,9 @@ message Book {
 	];
 	string title = 3;
 	repeated Author authors = 4 [
-		(orm.field) = {
+		(orm.edge) = {
 			from: 4 //books
+			select: {}
 		}
 	];
 
@@ -93,14 +98,14 @@ message Loan {
 	];
 	bytes book_id = 2;
 	Book book = 3 [
-		(orm.field) = {
+		(orm.edge) = {
 			bind: 2
 			immutable: true
 		}
 	];
 	bytes member_id = 4;
 	Member member = 5 [
-		(orm.field) = {
+		(orm.edge) = {
 			bind: 4
 			immutable: true
 		}

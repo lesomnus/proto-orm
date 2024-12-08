@@ -13,15 +13,6 @@ import (
 	status "google.golang.org/grpc/status"
 )
 
-type LoanServiceServer struct {
-	db *ent.Client
-	library.UnimplementedLoanServiceServer
-}
-
-func NewLoanServiceServer(db *ent.Client) *LoanServiceServer {
-	return &LoanServiceServer{db: db}
-}
-
 func (s *LoanServiceServer) Add(ctx context.Context, req *library.LoanAddRequest) (*library.Loan, error) {
 	q := s.db.Loan.Create()
 	if v, err := uuid.FromBytes(req.Id); err != nil {
@@ -49,58 +40,6 @@ func (s *LoanServiceServer) Add(ctx context.Context, req *library.LoanAddRequest
 	}
 
 	return v.Proto(), nil
-}
-
-func (s *LoanServiceServer) Get(ctx context.Context, req *library.LoanGetRequest) (*library.Loan, error) {
-	q := s.db.Loan.Query()
-	if p, err := LoanPick(req); err != nil {
-		return nil, err
-	} else {
-		q.Where(p)
-	}
-
-	v, err := q.Only(ctx)
-	if err != nil {
-		return nil, StatusFromEntError(err)
-	}
-
-	return v.Proto(), nil
-}
-
-func (s *LoanServiceServer) Patch(ctx context.Context, req *library.LoanPatchRequest) (*library.Loan, error) {
-	id, err := LoanGetId(ctx, s.db, req.GetKey())
-	if err != nil {
-		return nil, err
-	}
-
-	q := s.db.Loan.UpdateOneID(id)
-	if req.DateDue != nil {
-		q.SetDateDue(req.DateDue.AsTime())
-	}
-	if req.DateReturnNull {
-		q.ClearDateReturn()
-	} else if req.DateReturn != nil {
-		q.SetDateReturn(req.DateReturn.AsTime())
-	}
-
-	v, err := q.Save(ctx)
-	if err != nil {
-		return nil, StatusFromEntError(err)
-	}
-
-	return v.Proto(), nil
-}
-
-func (s *LoanServiceServer) Erase(ctx context.Context, req *library.LoanGetRequest) (*library.Loan, error) {
-	p, err := LoanPick(req)
-	if err != nil {
-		return nil, err
-	}
-	if _, err := s.db.Loan.Delete().Where(p).Exec(ctx); err != nil {
-		return nil, StatusFromEntError(err)
-	}
-
-	return nil, nil
 }
 
 func LoanPick(req *library.LoanGetRequest) (predicate.Loan, error) {

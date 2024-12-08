@@ -73,22 +73,22 @@ func (p *Plugin) Run(plugin *protogen.Plugin) error {
 		}
 	}
 	// Generate common codes for entity package.
-	for _, pkg := range pkgs {
-		pf := filepath.Join(pkg.d, "misc.go")
-		f := plugin.NewGeneratedFile(pf, pkg.i)
-		p.printPrelude(f)
+	// for _, pkg := range pkgs {
+	// 	pf := filepath.Join(pkg.d, "misc.go")
+	// 	f := plugin.NewGeneratedFile(pf, pkg.i)
+	// 	p.printPrelude(f)
 
-		printer := Printer{
-			EntPkg: p.EntPkg,
-			PbPkg:  pkg.pb,
-		}
-		t := printer.newTemplate(f)
-		if err := t.ExecuteTemplate(f, "misc.go.tpl", nil); err != nil {
-			err = fmt.Errorf(`print "misc.go": %w`, err)
-			errs = append(errs, err)
-			continue
-		}
-	}
+	// 	printer := Printer{
+	// 		EntPkg: p.EntPkg,
+	// 		PbPkg:  pkg.pb,
+	// 	}
+	// 	t := printer.newTemplate(f)
+	// 	if err := t.ExecuteTemplate(f, "misc.go.tpl", nil); err != nil {
+	// 		err = fmt.Errorf(`print "misc.go": %w`, err)
+	// 		errs = append(errs, err)
+	// 		continue
+	// 	}
+	// }
 
 	if len(errs) > 0 {
 		return errors.Join(errs...)
