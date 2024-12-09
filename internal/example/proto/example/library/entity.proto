@@ -57,7 +57,7 @@ message Book {
 	string title = 3;
 	repeated Author authors = 4 [
 		(orm.edge) = {
-			from: 4 //books
+			from: 4 // books
 			select: {}
 		}
 	];
@@ -77,6 +77,7 @@ message Book {
 			type: TYPE_JSON
 		}
 	];
+	repeated string genres = 6;
 
 	google.protobuf.Timestamp date_created = 15 [
 		(orm.field) = {

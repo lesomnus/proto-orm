@@ -15,7 +15,7 @@ type Member struct {
 
 func (Member) Fields() []ent.Field {
 	return []ent.Field{
-		field.UUID("id", uuid.New()).
+		field.UUID("id", uuid.UUID{}).
 			Default(uuid.New).
 			Unique().
 			Immutable(),

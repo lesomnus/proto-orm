@@ -16,13 +16,13 @@ type Loan struct {
 
 func (Loan) Fields() []ent.Field {
 	return []ent.Field{
-		field.UUID("id", uuid.New()).
+		field.UUID("id", uuid.UUID{}).
 			Default(uuid.New).
 			Unique().
 			Immutable(),
-		field.UUID("book_id", uuid.New()).
+		field.UUID("book_id", uuid.UUID{}).
 			Immutable(),
-		field.UUID("member_id", uuid.New()).
+		field.UUID("member_id", uuid.UUID{}).
 			Immutable(),
 		field.Time("date_due"),
 		field.Time("date_return").

@@ -14,6 +14,6 @@ cd "$__root"
 ./scripts/example-clean.sh
 ./scripts/example-gen-service.sh
 ./scripts/example-gen-ent.sh
+./scripts/example-gen-ent-grpc.sh
 
 go generate ./internal/example/library
-./scripts/example-gen-ent-grpc.sh

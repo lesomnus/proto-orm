@@ -7,6 +7,7 @@ import (
 	edge "entgo.io/ent/schema/edge"
 	field "entgo.io/ent/schema/field"
 	uuid "github.com/google/uuid"
+	library "github.com/lesomnus/proto-orm/internal/example/library"
 	time "time"
 )
 
@@ -16,11 +17,15 @@ type Book struct {
 
 func (Book) Fields() []ent.Field {
 	return []ent.Field{
-		field.UUID("id", uuid.New()).
+		field.UUID("id", uuid.UUID{}).
 			Default(uuid.New).
 			Unique().
 			Immutable(),
 		field.String("title"),
+		field.JSON("index", []*library.Book_Index{}).
+			Optional(),
+		field.Strings("genres").
+			Optional(),
 		field.Time("date_created").
 			Default(time.Now).
 			Immutable(),

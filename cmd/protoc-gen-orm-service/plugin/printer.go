@@ -195,7 +195,9 @@ func (w *printWork) msgAddReq(r *graph.Rpc) *pbgen.Message {
 			v.Type = pbgen.Type(u.ProtoType())
 
 			d := u.Source().Desc
-			if d.HasOptionalKeyword() || u.HasDefault() {
+			if d.IsList() {
+				v.Label = pbgen.LabelRepeated
+			} else if d.HasOptionalKeyword() || u.HasDefault() {
 				v.Label = pbgen.LabelOptional
 			}
 
@@ -342,9 +344,6 @@ func (w *printWork) msgPatchReq(r *graph.Rpc) *pbgen.Message {
 			// Key must be immutable
 			continue
 		}
-		if f.IsList() {
-			continue
-		}
 
 		n := int(f.Number())*2 - 1
 		if n == body[0].(pbgen.MessageField).Number {
@@ -357,13 +356,16 @@ func (w *printWork) msgPatchReq(r *graph.Rpc) *pbgen.Message {
 			Name:   protoreflect.Name(f.Name()),
 			Number: n,
 		}
+		if f.IsList() {
+			v.Label = pbgen.LabelRepeated
+		}
 
 		body = append(body, v)
 		if f.IsNullable() {
 			body = append(body, pbgen.MessageField{
 				Type:   pbgen.TypeBool,
 				Name:   protoreflect.Name(fmt.Sprintf("%s_null", f.Name())),
-				Number: int(f.Number()) * 2,
+				Number: n + 1,
 			})
 		}
 	}

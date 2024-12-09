@@ -30,7 +30,9 @@ func (s *{{ $.Name }}ServiceServer) Patch(ctx {{ pkg "context" | ident "Context"
 	} else {{ end -}}
 
 	if {{ $v }} != nil {
-		{{ if $t.IsPrimitive -}}
+		{{ if .IsList -}}
+		q.Set{{ $n }}({{ $v }})
+		{{ else if $t.IsPrimitive -}}
 		q.Set{{ $n }}(*{{ $v }})
 		{{ else if is_symmetric $t -}}
 		q.Set{{ $n }}({{ to_symmetric_ent $v $t }})

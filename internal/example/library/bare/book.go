@@ -41,6 +41,8 @@ func (s *BookServiceServer) Add(ctx context.Context, req *library.BookAddRequest
 		}
 		q.AddAuthorIDs(ids...)
 	}
+	q.SetIndex(req.Index)
+	q.SetGenres(req.Genres)
 	q.SetDateCreated(req.DateCreated.AsTime())
 
 	v, err := q.Save(ctx)
@@ -76,6 +78,12 @@ func (s *BookServiceServer) Patch(ctx context.Context, req *library.BookPatchReq
 	q := s.db.Book.UpdateOneID(id)
 	if req.Title != nil {
 		q.SetTitle(*req.Title)
+	}
+	if req.Index != nil {
+		q.SetIndex(req.Index)
+	}
+	if req.Genres != nil {
+		q.SetGenres(req.Genres)
 	}
 
 	v, err := q.Save(ctx)

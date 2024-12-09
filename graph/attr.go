@@ -53,7 +53,11 @@ func (e *Entity) parseAttr(f *protogen.Field, o *orm.FieldOptions) (*Attr, error
 		errs = append(errs, err)
 	}
 	if o.Key {
-		if e.Key != nil {
+		d := f.Desc
+		if d.IsList() || d.HasOptionalKeyword() {
+			err := fmt.Errorf("key cannot have either repeated or optional cardinality")
+			errs = append(errs, err)
+		} else if e.Key != nil {
 			err := fmt.Errorf("key already exist at %s", e.Key.Name())
 			errs = append(errs, err)
 		} else {
@@ -71,82 +75,87 @@ func (e *Entity) parseAttr(f *protogen.Field, o *orm.FieldOptions) (*Attr, error
 	return v, nil
 }
 
-func (f *Attr) FullName() protoreflect.FullName {
-	return f.source.Desc.FullName()
+func (a *Attr) FullName() protoreflect.FullName {
+	return a.source.Desc.FullName()
 }
 
-func (f *Attr) Name() string {
-	return string(f.source.Desc.Name())
+func (a *Attr) Name() string {
+	return string(a.source.Desc.Name())
 }
 
-func (f *Attr) Number() protowire.Number {
-	return f.source.Desc.Number()
+func (a *Attr) Number() protowire.Number {
+	return a.source.Desc.Number()
 }
 
-func (f *Attr) Type() orm.Type {
-	return f.typ
+func (a *Attr) Type() orm.Type {
+	return a.typ
 }
 
-func (f *Attr) ProtoType() string {
-	if f.source.Message == nil {
+func (a *Attr) ProtoType() string {
+	if a.source.Message == nil {
 		// Field type is proto scalar.
 		// e.g. string, int32, ...
-		return f.source.Desc.Kind().String()
+		return a.source.Desc.Kind().String()
 	} else {
 		// Field type is well known type that can be mapped to scalar.
 		// e.g. google.protobuf.Timestamp -> time.Time
-		return string(f.source.Message.Desc.FullName())
+		return string(a.source.Message.Desc.FullName())
 	}
 }
 
-func (f *Attr) GoName() string {
-	return f.source.GoName
+func (a *Attr) GoName() string {
+	return a.source.GoName
 }
 
-func (f *Attr) Source() *protogen.Field {
-	return f.source
+func (a *Attr) Source() *protogen.Field {
+	return a.source
 }
 
-func (f *Attr) Entity() *Entity {
-	return f.entity
+func (a *Attr) Entity() *Entity {
+	return a.entity
 }
 
-func (f *Attr) IsBound() bool {
-	return f.Bound != nil
+func (a *Attr) IsBound() bool {
+	return a.Bound != nil
 }
 
-func (f *Attr) HasDefault() bool {
-	return f.Default != nil
+func (a *Attr) HasDefault() bool {
+	return a.Default != nil
 }
 
-func (f *Attr) IsIgnored() bool {
-	return f.Ignored
+func (a *Attr) IsJson() bool {
+	return a.typ == orm.Type_TYPE_JSON
 }
 
-func (f *Attr) IsOptional() bool {
-	return f.source.Desc.HasOptionalKeyword()
+func (a *Attr) IsIgnored() bool {
+	return a.Ignored
 }
 
-func (f *Attr) IsList() bool {
-	return f.source.Desc.IsList()
+func (a *Attr) IsOptional() bool {
+	d := a.source.Desc
+	return d.HasOptionalKeyword() || d.IsList()
 }
 
-func (f *Attr) IsUnique() bool {
-	return f.Unique
+func (a *Attr) IsList() bool {
+	return a.source.Desc.IsList()
 }
 
-func (f *Attr) IsNullable() bool {
-	return f.Nullable
+func (a *Attr) IsUnique() bool {
+	return a.Unique
 }
 
-func (f *Attr) IsImmutable() bool {
-	return f.Immutable
+func (a *Attr) IsNullable() bool {
+	return a.Nullable
 }
 
-func (f *Attr) setNullable() {
-	f.Nullable = true
+func (a *Attr) IsImmutable() bool {
+	return a.Immutable
 }
 
-func (f *Attr) setImmutable() {
-	f.Immutable = true
+func (a *Attr) setNullable() {
+	a.Nullable = true
+}
+
+func (a *Attr) setImmutable() {
+	a.Immutable = true
 }

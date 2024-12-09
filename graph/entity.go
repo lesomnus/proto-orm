@@ -78,10 +78,6 @@ func (e *Entity) prase(g Graph, o *orm.MessageOptions) error {
 
 		t := resolveType(f, of)
 		if t != orm.Type_TYPE_MESSAGE {
-			if f.Desc.IsList() {
-				// TODO: warns list field is not supported.
-				continue
-			}
 			if oe != nil {
 				// TODO: warns field is not an edge
 			}

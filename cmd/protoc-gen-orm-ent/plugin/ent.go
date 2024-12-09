@@ -47,6 +47,8 @@ func toEntIdent(t orm.Type) string {
 		v = "UUID"
 	case orm.Type_TYPE_TIME:
 		v = "Time"
+	case orm.Type_TYPE_JSON:
+		v = "JSON"
 
 	default:
 		panic(fmt.Sprintf("unknown type or type not supported: %s", t.String()))

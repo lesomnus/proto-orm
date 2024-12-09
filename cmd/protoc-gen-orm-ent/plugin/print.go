@@ -83,13 +83,42 @@ func (p *Plugin) NewTemplate(e *graph.Entity, f *protogen.GeneratedFile) *templa
 
 		"def_field": func(field *graph.Attr) string {
 			t := field.Type()
-			ident := f.QualifiedGoIdent(import_ent_field.Ident(toEntIdent(t)))
-			name := field.Name()
-			if t != orm.Type_TYPE_UUID {
-				return fmt.Sprintf(`%s(%q)`, ident, name)
+			n := field.Name()
+			v := ""
+
+			i := toEntIdent(t)
+			if field.IsList() {
+				t := t.Decay()
+				switch t {
+				case orm.Type_TYPE_INT:
+					fallthrough
+				case orm.Type_TYPE_UINT:
+					i = "Ints"
+				case orm.Type_TYPE_FLOAT:
+					i = "Floats"
+				case orm.Type_TYPE_STRING:
+					i = "Strings"
+				case orm.Type_TYPE_BOOL:
+					i = "JSON"
+				case orm.Type_TYPE_JSON:
+					v = "[]*" + f.QualifiedGoIdent(field.Source().GoIdent) + "{}"
+				default:
+					panic(fmt.Sprintf("list of %s not supported", t.String()))
+				}
 			} else {
-				v := f.QualifiedGoIdent(import_uuid.Ident("New"))
-				return fmt.Sprintf(`%s(%q, %s())`, ident, name, v)
+				switch t {
+				case orm.Type_TYPE_UUID:
+					v = f.QualifiedGoIdent(import_uuid.Ident("UUID")) + "{}"
+				case orm.Type_TYPE_JSON:
+					v = "*" + f.QualifiedGoIdent(field.Source().GoIdent) + "{}"
+				}
+			}
+
+			ident := f.QualifiedGoIdent(import_ent_field.Ident(i))
+			if len(v) > 0 {
+				return fmt.Sprintf(`%s(%q, %s)`, ident, n, v)
+			} else {
+				return fmt.Sprintf(`%s(%q)`, ident, n)
 			}
 		},
 		"def_field_default": func(field *graph.Attr) string {

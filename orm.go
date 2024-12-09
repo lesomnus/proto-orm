@@ -56,11 +56,48 @@ func (t Type) IsPrimitive() bool {
 	case Type_TYPE_DOUBLE:
 	case Type_TYPE_STRING:
 	case Type_TYPE_BYTES:
-	case Type_TYPE_MESSAGE:
 
 	default:
 		return false
 	}
 
 	return true
+}
+
+// Decay convert the type into less specific type.
+// int <- int32, int64, ...
+// uint <- uint32, uint64, ...
+// float <- float, double
+// X <- X (rest)
+func (t Type) Decay() Type {
+	switch t {
+	case Type_TYPE_INT32:
+		fallthrough
+	case Type_TYPE_INT64:
+		fallthrough
+	case Type_TYPE_SINT32:
+		fallthrough
+	case Type_TYPE_SINT64:
+		fallthrough
+	case Type_TYPE_SFIXED32:
+		fallthrough
+	case Type_TYPE_SFIXED64:
+		return Type_TYPE_INT
+
+	case Type_TYPE_UINT32:
+		fallthrough
+	case Type_TYPE_UINT64:
+		fallthrough
+	case Type_TYPE_FIXED32:
+		fallthrough
+	case Type_TYPE_FIXED64:
+		return Type_TYPE_UINT
+
+	case Type_TYPE_FLOAT:
+		fallthrough
+	case Type_TYPE_DOUBLE:
+		return Type_TYPE_FLOAT
+	}
+
+	return t
 }
