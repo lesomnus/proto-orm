@@ -2,11 +2,11 @@ func (s *{{ $.Name }}ServiceServer) Add(ctx {{ pkg "context" | ident "Context" }
 	q := s.db.{{ $.Name }}.Create()
 	{{ range .FieldsSortByNumber -}}
 
-	{{/* printing scalar field */ -}}
+	{{/* printing attributes */ -}}
 
-	{{ if is_scalar . }}{{ with as_scalar . -}}
+	{{ if is_attr . }}{{ with as_attr . -}}
 	{{ if .IsBound -}}
-		{{/* skip: field is bounded one */ -}}
+		{{/* skip: attribute is bounded one */ -}}
 		{{ continue -}}
 	{{ end -}}
 
@@ -15,10 +15,10 @@ func (s *{{ $.Name }}ServiceServer) Add(ctx {{ pkg "context" | ident "Context" }
 	{{ $v := print "req." (pascal .Name) -}}
 	
 	{{ if is_symmetric $t -}}
-	{{/*   field is symmetric */ -}}
+	{{/*   type is symmetric */ -}}
 	q.Set{{ $n }}({{ to_symmetric_ent $v $t }})
 	{{ else -}}
-	{{/*   field is asymmetric */ -}}
+	{{/*   type is asymmetric */ -}}
 	if v, err := {{ convert_to_ent_field $v $t }}; err != nil {
 		return nil, {{ grpc_errf "InvalidArgument" (print .Name ": %s" | quote) "err" }}
 	} else {
@@ -26,10 +26,10 @@ func (s *{{ $.Name }}ServiceServer) Add(ctx {{ pkg "context" | ident "Context" }
 	}
 	{{ end -}}
 	{{ continue -}}
-	{{ end }}{{ end }}{{/* scalar field is printed */ -}}
+	{{ end }}{{ end }}{{/* attribute is printed */ -}}
 
 
-	{{/* printing edge field */ -}}
+	{{/* printing edges */ -}}
 
 	{{ with as_edge . -}}
 	{{ if not .HasInverse -}}

@@ -10,7 +10,7 @@ import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 )
 
-type ScalarField struct {
+type Attr struct {
 	source *protogen.Field
 	entity *Entity // Message that defines this field.
 	typ    orm.Type
@@ -26,12 +26,12 @@ type ScalarField struct {
 	Immutable bool
 }
 
-func (e *Entity) parseScalarField(f *protogen.Field, o *orm.FieldOptions) (*ScalarField, error) {
+func (e *Entity) parseAttr(f *protogen.Field, o *orm.FieldOptions) (*Attr, error) {
 	if o == nil {
 		o = &orm.FieldOptions{}
 	}
 
-	v := &ScalarField{
+	v := &Attr{
 		source: f,
 		entity: e,
 		typ:    resolveType(f, o),
@@ -45,7 +45,7 @@ func (e *Entity) parseScalarField(f *protogen.Field, o *orm.FieldOptions) (*Scal
 
 	n := v.Name()
 	e.Fields[n] = v
-	e.Scalars[n] = v
+	e.Attrs[n] = v
 
 	errs := []error{}
 	if o.Nullable && !f.Desc.HasOptionalKeyword() {
@@ -71,23 +71,23 @@ func (e *Entity) parseScalarField(f *protogen.Field, o *orm.FieldOptions) (*Scal
 	return v, nil
 }
 
-func (f *ScalarField) FullName() protoreflect.FullName {
+func (f *Attr) FullName() protoreflect.FullName {
 	return f.source.Desc.FullName()
 }
 
-func (f *ScalarField) Name() string {
+func (f *Attr) Name() string {
 	return string(f.source.Desc.Name())
 }
 
-func (f *ScalarField) Number() protowire.Number {
+func (f *Attr) Number() protowire.Number {
 	return f.source.Desc.Number()
 }
 
-func (f *ScalarField) Type() orm.Type {
+func (f *Attr) Type() orm.Type {
 	return f.typ
 }
 
-func (f *ScalarField) ProtoType() string {
+func (f *Attr) ProtoType() string {
 	if f.source.Message == nil {
 		// Field type is proto scalar.
 		// e.g. string, int32, ...
@@ -99,54 +99,54 @@ func (f *ScalarField) ProtoType() string {
 	}
 }
 
-func (f *ScalarField) GoName() string {
+func (f *Attr) GoName() string {
 	return f.source.GoName
 }
 
-func (f *ScalarField) Source() *protogen.Field {
+func (f *Attr) Source() *protogen.Field {
 	return f.source
 }
 
-func (f *ScalarField) Entity() *Entity {
+func (f *Attr) Entity() *Entity {
 	return f.entity
 }
 
-func (f *ScalarField) IsBound() bool {
+func (f *Attr) IsBound() bool {
 	return f.Bound != nil
 }
 
-func (f *ScalarField) HasDefault() bool {
+func (f *Attr) HasDefault() bool {
 	return f.Default != nil
 }
 
-func (f *ScalarField) IsIgnored() bool {
+func (f *Attr) IsIgnored() bool {
 	return f.Ignored
 }
 
-func (f *ScalarField) IsOptional() bool {
+func (f *Attr) IsOptional() bool {
 	return f.source.Desc.HasOptionalKeyword()
 }
 
-func (f *ScalarField) IsList() bool {
+func (f *Attr) IsList() bool {
 	return f.source.Desc.IsList()
 }
 
-func (f *ScalarField) IsUnique() bool {
+func (f *Attr) IsUnique() bool {
 	return f.Unique
 }
 
-func (f *ScalarField) IsNullable() bool {
+func (f *Attr) IsNullable() bool {
 	return f.Nullable
 }
 
-func (f *ScalarField) IsImmutable() bool {
+func (f *Attr) IsImmutable() bool {
 	return f.Immutable
 }
 
-func (f *ScalarField) setNullable() {
+func (f *Attr) setNullable() {
 	f.Nullable = true
 }
 
-func (f *ScalarField) setImmutable() {
+func (f *Attr) setImmutable() {
 	f.Immutable = true
 }

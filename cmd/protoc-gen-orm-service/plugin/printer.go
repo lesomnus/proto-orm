@@ -186,7 +186,7 @@ func (w *printWork) msgAddReq(r *graph.Rpc) *pbgen.Message {
 		}
 
 		switch u := f.(type) {
-		case (*graph.ScalarField):
+		case (*graph.Attr):
 			if u.IsBound() {
 				// Skip since edge (which is accessed by `f.Bound`) will be added.
 				continue
@@ -251,7 +251,7 @@ func (w *printWork) indexGet(e *graph.Entity, i *graph.Index) *pbgen.Message {
 	for _, r := range i.Refs {
 		d := r.Source().Desc
 		switch u := r.(type) {
-		case (*graph.ScalarField):
+		case (*graph.Attr):
 			v := pbgen.MessageField{
 				Name:   d.Name(),
 				Type:   pbgen.Type(d.Kind().String()),
@@ -286,7 +286,7 @@ func (w *printWork) msgGetReq(r *graph.Rpc) *pbgen.Message {
 	oneof := pbgen.MessageOneof{Name: "key"}
 	for _, k := range r.Entity.KeyLikes() {
 		switch v := k.(type) {
-		case *graph.ScalarField:
+		case *graph.Attr:
 			oneof.Body = append(oneof.Body, pbgen.MessageOneofField{
 				Type:   pbgen.Type(v.ProtoType()),
 				Name:   protoreflect.Name(v.Name()),

@@ -12,7 +12,7 @@ func {{ $.Name }}Pick(req *{{ $req_name }}) ({{ $pred_ent }}, error) {
 		{{ continue -}}
 		{{ end -}}{{/* printing edge is done */ -}}
 
-		{{ with as_scalar . -}}
+		{{ with as_attr . -}}
 		{{ $t := .Type -}}
 		{{ $n := pascal .Name -}}
 		{{ $p := entity $ | ident (print (ent_pascal .Name) "EQ") -}}
@@ -30,7 +30,7 @@ func {{ $.Name }}Pick(req *{{ $req_name }}) ({{ $pred_ent }}, error) {
 		{{ end -}}
 
 		{{ continue -}}
-		{{ end }}{{/* scalar is printed */ -}}
+		{{ end }}{{/* attr is printed */ -}}
 		{{ end }}{{ end }}{{/* field is printed */ -}}
 
 
@@ -43,15 +43,15 @@ func {{ $.Name }}Pick(req *{{ $req_name }}) ({{ $pred_ent }}, error) {
 		{{ range $v.Refs }}{{/* for each refs in the index */ -}}
 		{{ $ref_name := pascal .Name -}}
 
-		{{ if is_scalar . }}{{ with as_scalar . -}}
-		{{/* ref is scalar */ -}}
+		{{ if is_attr . }}{{ with as_attr . -}}
+		{{/* ref is attribute */ -}}
 		{{ $t := .Type -}}
 		{{ $p := entity $ | ident (print (ent_pascal .Name) "EQ") -}}
 		{{ if is_symmetric $t -}}
-		{{/*   ref scalar is symmetric */ -}}
+		{{/*   ref attribute is symmetric */ -}}
 		ps = append(ps, {{ $p }}(k.{{ $ref_name }}))
 		{{ else -}}
-		{{/*   ref scalar is asymmetric */ -}}
+		{{/*   ref attribute is asymmetric */ -}}
 		if v, err := {{ convert_to_ent_field (print "k." $ref_name) $t }}; err != nil {
 			return nil, {{ grpc_errf "InvalidArgument" (print .Name "." $ref_name ": %s" | quote) "\"err\"" }}
 		} else {
@@ -59,7 +59,7 @@ func {{ $.Name }}Pick(req *{{ $req_name }}) ({{ $pred_ent }}, error) {
 		}
 		{{ end -}}
 		{{ continue -}}
-		{{ end }}{{ end }}{{/* scalar ref is printed */ -}}
+		{{ end }}{{ end }}{{/* attribute ref is printed */ -}}
 
 		{{ with as_edge . -}}
 		{{/* ref is edge */ -}}

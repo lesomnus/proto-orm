@@ -12,9 +12,9 @@ func (s *{{ $.Name }}ServiceServer) Patch(ctx {{ pkg "context" | ident "Context"
 	{{ end -}}
 
 
-	{{/* printing scalar field */ -}}
+	{{/* printing attributes */ -}}
 
-	{{ if is_scalar . }}{{ with as_scalar . -}}
+	{{ if is_attr . }}{{ with as_attr . -}}
 	{{ if .IsBound -}}
 		{{/* skip: field is bounded one */ -}}
 		{{ continue -}}
@@ -43,10 +43,10 @@ func (s *{{ $.Name }}ServiceServer) Patch(ctx {{ pkg "context" | ident "Context"
 		{{ end -}}
 	}
 	{{ continue -}}
-	{{ end }}{{ end }}{{/* scalar field is printed */ -}}
+	{{ end }}{{ end }}{{/* attribute is printed */ -}}
 
 
-	{{/* printing edge field */ -}}
+	{{/* printing edges */ -}}
 
 	{{ with as_edge . -}}
 	{{ if or .IsList .HasInverse -}}

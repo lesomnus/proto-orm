@@ -13,13 +13,13 @@ func (i *Index) Name() string {
 	return i.name
 }
 
-// Split splits references into scalar fields and edges.
-func (i *Index) Split() ([]*ScalarField, []*Edge) {
-	ss := []*ScalarField{}
+// Split splits references into attributes and edges.
+func (i *Index) Split() ([]*Attr, []*Edge) {
+	ss := []*Attr{}
 	es := []*Edge{}
 	for _, r := range i.Refs {
 		switch f := r.(type) {
-		case (*ScalarField):
+		case (*Attr):
 			ss = append(ss, f)
 		case (*Edge):
 			es = append(es, f)

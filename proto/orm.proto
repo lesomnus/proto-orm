@@ -87,6 +87,7 @@ enum Type {
 
 	TYPE_UUID = 64;
 	TYPE_TIME = 65;
+	TYPE_JSON = 66;
 }
 
 message FileRpcOptions {

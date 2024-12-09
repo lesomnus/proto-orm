@@ -26,7 +26,7 @@ type Edge struct {
 	Target  *Entity
 	Reverse *Edge // Back-reference field for this edge.
 	Inverse *Edge // Edge that references this edge.
-	Bind    *ScalarField
+	Bind    *Attr
 
 	Ignored   bool
 	Unique    bool
@@ -79,7 +79,7 @@ func (e *Entity) parseEdge(f *protogen.Field, o *orm.EdgeOptions, target *Entity
 		if f == nil {
 			err := fmt.Errorf("bound field not found")
 			errs = append(errs, err)
-		} else if t, ok := f.(*ScalarField); !ok {
+		} else if t, ok := f.(*Attr); !ok {
 			err := fmt.Errorf("bound field must be a scalar field")
 			errs = append(errs, err)
 		} else {

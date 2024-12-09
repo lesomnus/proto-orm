@@ -39,9 +39,9 @@ type Entity struct {
 	File   *protogen.File // Proto file where the message defines this entity is.
 	Source *protogen.Message
 
-	Key     *ScalarField
+	Key     *Attr
 	Fields  map[string]Field
-	Scalars map[string]*ScalarField
+	Attrs   map[string]*Attr
 	Edges   map[string]*Edge
 	Indexes []*Index
 	Rpcs    map[RpcOp]*Rpc
@@ -53,7 +53,7 @@ func newEntity(f *protogen.File, m *protogen.Message) *Entity {
 		Source: m,
 
 		Fields:  map[string]Field{},
-		Scalars: map[string]*ScalarField{},
+		Attrs:   map[string]*Attr{},
 		Edges:   map[string]*Edge{},
 		Indexes: []*Index{},
 		Rpcs:    map[RpcOp]*Rpc{},
@@ -86,7 +86,7 @@ func (e *Entity) prase(g Graph, o *orm.MessageOptions) error {
 				// TODO: warns field is not an edge
 			}
 
-			if _, err := e.parseScalarField(f, of); err != nil {
+			if _, err := e.parseAttr(f, of); err != nil {
 				err = fmt.Errorf(`add field "%s": %w`, f.Desc.Name(), err)
 				errs = append(errs, err)
 				continue
@@ -236,9 +236,9 @@ func (e *Entity) FieldsSortByNumber() []Field {
 	return fs
 }
 
-func (e *Entity) ScalarsSortByNumber() []*ScalarField {
-	fs := slices.Collect(maps.Values(e.Scalars))
-	slices.SortFunc(fs, func(a *ScalarField, b *ScalarField) int {
+func (e *Entity) AttrsSortByNumber() []*Attr {
+	fs := slices.Collect(maps.Values(e.Attrs))
+	slices.SortFunc(fs, func(a *Attr, b *Attr) int {
 		return int(a.Number()) - int(b.Number())
 	})
 

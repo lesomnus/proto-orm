@@ -62,6 +62,22 @@ message Book {
 		}
 	];
 
+	message Index {
+		int32 chapter = 1;
+		string title = 2;
+
+		message Range {
+			int32 begin = 1;
+			int32 end = 2;
+		}
+		Range range = 3;
+	}
+	repeated Index index = 5 [
+		(orm.field) = {
+			type: TYPE_JSON
+		}
+	];
+
 	google.protobuf.Timestamp date_created = 15 [
 		(orm.field) = {
 			immutable: true

@@ -2,10 +2,10 @@ type {{ $.Name }} struct {
 	{{ ent "Schema" }}
 }
 
-{{ if len $.Scalars | lt 0 -}}
+{{ if len $.Attrs | lt 0 -}}
 func ({{ $.Name }}) Fields() []{{ ent "Field" }} {
 	return []{{ ent "Field" }} {
-		{{ range $.ScalarsSortByNumber -}}
+		{{ range $.AttrsSortByNumber -}}
 		{{ if .Ignored -}}
 			{{ continue -}}
 		{{ end -}}

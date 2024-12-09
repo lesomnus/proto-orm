@@ -125,14 +125,14 @@ func (p *Printer) newTemplate(f *protogen.GeneratedFile) *template.Template {
 			return fmt.Sprintf("%s(%s, %s)", s, c, a)
 		},
 
-		"is_scalar": func(f graph.Field) bool {
-			_, ok := f.(*graph.ScalarField)
+		"is_attr": func(f graph.Field) bool {
+			_, ok := f.(*graph.Attr)
 			return ok
 		},
-		"as_scalar": func(f graph.Field) *graph.ScalarField {
-			v, ok := f.(*graph.ScalarField)
+		"as_attr": func(f graph.Field) *graph.Attr {
+			v, ok := f.(*graph.Attr)
 			if !ok {
-				panic("field must be a scalar")
+				panic("field must be an attribute")
 			}
 			return v
 		},

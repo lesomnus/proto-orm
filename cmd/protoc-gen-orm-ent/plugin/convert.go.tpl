@@ -2,7 +2,7 @@ func (e *{{ $.Name }}) Proto() *{{ pb $.Name }} {
 	m := &{{ pb $.Name }}{}
 	{{ range .FieldsSortByNumber -}}
 
-	{{ if is_scalar . }}{{ with as_scalar . -}}
+	{{ if is_attr . }}{{ with as_attr . -}}
 	{{ if .IsOptional -}}
 	if v := e.{{ ent_pascal .Name }}; v != nil {
 		m.{{ .GoName }} = {{ ent_value_to_proto "*e" . }}

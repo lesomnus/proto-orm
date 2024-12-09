@@ -58,14 +58,14 @@ func (p *Plugin) NewTemplate(e *graph.Entity, f *protogen.GeneratedFile) *templa
 			return f.QualifiedGoIdent(e.File.GoImportPath.Ident(name))
 		},
 
-		"is_scalar": func(f graph.Field) bool {
-			_, ok := f.(*graph.ScalarField)
+		"is_attr": func(f graph.Field) bool {
+			_, ok := f.(*graph.Attr)
 			return ok
 		},
-		"as_scalar": func(f graph.Field) *graph.ScalarField {
-			v, ok := f.(*graph.ScalarField)
+		"as_attr": func(f graph.Field) *graph.Attr {
+			v, ok := f.(*graph.Attr)
 			if !ok {
-				panic("field must be a scalar")
+				panic("field must be an attribute")
 			}
 			return v
 		},
@@ -81,7 +81,7 @@ func (p *Plugin) NewTemplate(e *graph.Entity, f *protogen.GeneratedFile) *templa
 			return v
 		},
 
-		"def_field": func(field *graph.ScalarField) string {
+		"def_field": func(field *graph.Attr) string {
 			t := field.Type()
 			ident := f.QualifiedGoIdent(import_ent_field.Ident(toEntIdent(t)))
 			name := field.Name()
@@ -92,7 +92,7 @@ func (p *Plugin) NewTemplate(e *graph.Entity, f *protogen.GeneratedFile) *templa
 				return fmt.Sprintf(`%s(%q, %s())`, ident, name, v)
 			}
 		},
-		"def_field_default": func(field *graph.ScalarField) string {
+		"def_field_default": func(field *graph.Attr) string {
 			if !field.HasDefault() {
 				panic("it must have a default")
 			}
@@ -161,7 +161,7 @@ func (p *Plugin) NewTemplate(e *graph.Entity, f *protogen.GeneratedFile) *templa
 
 			return v
 		},
-		"ent_value_to_proto": func(ident string, field *graph.ScalarField) string {
+		"ent_value_to_proto": func(ident string, field *graph.Attr) string {
 			t := field.Type()
 			n := rules.EntPascal(string(field.Name()))
 			switch t {
