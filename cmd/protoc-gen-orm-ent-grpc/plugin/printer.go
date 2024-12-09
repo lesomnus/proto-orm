@@ -93,6 +93,7 @@ func (p *Printer) newTemplate(f *protogen.GeneratedFile) *template.Template {
 		"plural": func(v string) string {
 			return inflect.Pluralize(v)
 		},
+
 		"pkg": func(name string) protogen.GoImportPath {
 			return protogen.GoImportPath(name)
 		},
@@ -123,12 +124,35 @@ func (p *Printer) newTemplate(f *protogen.GeneratedFile) *template.Template {
 			a := strings.Join(args, ", ")
 			return fmt.Sprintf("%s(%s, %s)", s, c, a)
 		},
-		"key_is_field": func(k graph.Key) bool {
-			_, ok := k.(*graph.Field)
+
+		"is_scalar": func(f graph.Field) bool {
+			_, ok := f.(*graph.ScalarField)
 			return ok
 		},
-		"key_as_field": func(k graph.Key) *graph.Field {
-			v, ok := k.(*graph.Field)
+		"as_scalar": func(f graph.Field) *graph.ScalarField {
+			v, ok := f.(*graph.ScalarField)
+			if !ok {
+				panic("field must be a scalar")
+			}
+			return v
+		},
+		"is_edge": func(f graph.Field) bool {
+			_, ok := f.(*graph.Edge)
+			return ok
+		},
+		"as_edge": func(f graph.Field) *graph.Edge {
+			v, ok := f.(*graph.Edge)
+			if !ok {
+				panic("field must be an edge")
+			}
+			return v
+		},
+		"key_is_field": func(k graph.Key) bool {
+			_, ok := k.(graph.Field)
+			return ok
+		},
+		"key_as_field": func(k graph.Key) graph.Field {
+			v, ok := k.(graph.Field)
 			if !ok {
 				panic("key must be field")
 			}
@@ -145,6 +169,7 @@ func (p *Printer) newTemplate(f *protogen.GeneratedFile) *template.Template {
 			}
 			return v
 		},
+
 		"convert_to_ent_field": func(ident string, t orm.Type) string {
 			switch t {
 			case orm.Type_TYPE_UUID:

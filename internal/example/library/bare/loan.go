@@ -29,16 +29,6 @@ func (s *LoanServiceServer) Add(ctx context.Context, req *library.LoanAddRequest
 	} else {
 		q.SetID(v)
 	}
-	if id, err := BookGetId(ctx, s.db, req.GetBook()); err != nil {
-		return nil, err
-	} else {
-		q.SetBookID(id)
-	}
-	if id, err := MemberGetId(ctx, s.db, req.GetMember()); err != nil {
-		return nil, err
-	} else {
-		q.SetMemberID(id)
-	}
 	q.SetDateDue(req.DateDue.AsTime())
 	q.SetDateReturn(req.DateReturn.AsTime())
 	q.SetDateCreated(req.DateCreated.AsTime())

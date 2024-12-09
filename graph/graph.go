@@ -14,7 +14,10 @@ type Graph map[protoreflect.FullName]*Entity
 
 func NewGraph(fs []*protogen.File) (Graph, error) {
 	g := Graph{}
+
+	ws := []func(){}
 	errs := []error{}
+
 	for _, f := range fs {
 		o_f := proto.GetExtension(f.Desc.Options(), orm.E_All).(*orm.FileOptions)
 		if o_f == nil {
@@ -39,61 +42,27 @@ func NewGraph(fs []*protogen.File) (Graph, error) {
 				continue
 			}
 
-			e, err := NewEntity(f, m, o_m)
-			if err != nil {
-				err := fmt.Errorf("%s: %w", m.Desc.Name(), err)
-				errs = append(errs, err)
-				continue
-			}
-
+			e := newEntity(f, m)
 			g[e.FullName()] = e
-		}
-	}
 
-	// Find source for messages of RPC.
-	rpcs := map[protoreflect.FullName]*RpcMessage{}
-	for _, e := range g {
-		for _, r := range e.Rpcs {
-			rpcs[r.Req.FullName] = r.Req
-			rpcs[r.Res.FullName] = r.Res
-		}
-	}
-	if len(rpcs) > 0 {
-		for _, f := range fs {
-			for _, s := range f.Services {
-				for _, m := range s.Methods {
-					if r, ok := rpcs[m.Input.Desc.FullName()]; ok {
-						r.Source = m.Input
-					}
-					if r, ok := rpcs[m.Output.Desc.FullName()]; ok {
-						r.Source = m.Output
-					}
+			// parse entities after declaration.
+			ws = append(ws, func() {
+				if err := e.prase(g, o_m); err != nil {
+					err = fmt.Errorf("%s: %w", e.FullName(), err)
+					errs = append(errs, err)
 				}
-			}
+			})
 		}
 	}
 
-	// Make edges.
-	for _, e := range g {
-		for _, f := range e.Fields {
-			if !f.IsEdge() {
-				continue
-			}
-
-			o := proto.GetExtension(f.Desc.Options(), orm.E_Field).(*orm.FieldOptions)
-			edge, err := g.newEdge(f, o)
-			if err != nil {
-				err := fmt.Errorf("%s: %w", f.Desc.FullName(), err)
-				errs = append(errs, err)
-				continue
-			}
-
-			f.Edge = edge
-		}
+	// Prase entities.
+	for _, w := range ws {
+		w()
 	}
 
 	if len(errs) > 0 {
 		return nil, errors.Join(errs...)
 	}
+
 	return g, nil
 }

@@ -31,17 +31,6 @@ func (s *AuthorServiceServer) Add(ctx context.Context, req *library.AuthorAddReq
 	}
 	q.SetAlias(req.Alias)
 	q.SetName(req.Name)
-	{
-		ids := []uuid.UUID{}
-		for _, r := range req.GetBooks() {
-			if id, err := BookGetId(ctx, s.db, r); err != nil {
-				return nil, err
-			} else {
-				ids = append(ids, id)
-			}
-		}
-		q.AddBookIDs(ids...)
-	}
 	q.SetDateCreated(req.DateCreated.AsTime())
 
 	v, err := q.Save(ctx)

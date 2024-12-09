@@ -180,39 +180,45 @@ func (w *printWork) msgAddReq(r *graph.Rpc) *pbgen.Message {
 
 	body := []pbgen.MessageBody{}
 	for _, f := range r.Entity.FieldsSortByNumber() {
-		if f.IsBound() {
-			// Skip since edge field (which accessed by `f.Bound`) will be added.
-			continue
+		v := pbgen.MessageField{
+			Name:   protoreflect.Name(f.Name()),
+			Number: int(f.Number()),
 		}
 
-		d := f.Desc
-		v := pbgen.MessageField{
-			Name:   d.Name(),
-			Number: int(d.Number()),
-		}
-		if f.Message == nil {
-			// Field is scalar.
-			// e.g. string, int32, ...
-			v.Type = pbgen.Type(d.Kind().String())
-		} else if !f.IsEdge() {
-			// Field is not scalar but is well known type that can be mapped to scalar.
-			// e.g. google.protobuf.Timestamp -> time.Time
-			v.Type = pbgen.Type(f.Message.Desc.FullName())
-		} else {
-			target := f.Edge.Target
+		switch u := f.(type) {
+		case (*graph.ScalarField):
+			if u.IsBound() {
+				// Skip since edge (which is accessed by `f.Bound`) will be added.
+				continue
+			}
+
+			v.Type = pbgen.Type(u.ProtoType())
+
+			d := u.Source().Desc
+			if d.HasOptionalKeyword() || u.HasDefault() {
+				v.Label = pbgen.LabelOptional
+			}
+
+		case (*graph.Edge):
+			if !u.HasInverse() {
+				// TODO: Should the set of User[pet] be supported at the time of User creation?
+				continue
+			}
+
+			target := u.Target
 			r := target.Rpcs[graph.RpcOpGet]
 			if r == nil {
 				panic("TODO: target entity does not enables Get rpc")
 				// To resolve this, graph should parse disabled rpcs also
-				// or make one lazily.
+				// or make one on demand.
 			}
 			m := w.msgGetReq(r)
 			v.Type = pbgen.Type(m.FullName)
-		}
-		if f.IsList() {
-			v.Label = pbgen.LabelRepeated
-		} else if !f.Required || f.HasDefault() {
-			v.Label = pbgen.LabelOptional
+
+			d := u.Source().Desc
+			if d.IsList() {
+				v.Label = pbgen.LabelRepeated
+			}
 		}
 
 		body = append(body, v)
@@ -228,7 +234,7 @@ func (w *printWork) rpcAdd(r *graph.Rpc) pbgen.Rpc {
 }
 
 func (w *printWork) nameIndexGet(e *graph.Entity, i *graph.Index) protoreflect.FullName {
-	n := fmt.Sprintf("%sGetBy%s", inflect.Camelize(e.Name()), inflect.Camelize(i.Name()))
+	n := fmt.Sprintf("%sGetBy%s", inflect.Camelize(e.Name()), inflect.Camelize(string(i.Name())))
 	return e.FullName().Parent().Append(protoreflect.Name(n))
 }
 
@@ -243,22 +249,24 @@ func (w *printWork) indexGet(e *graph.Entity, i *graph.Index) *pbgen.Message {
 
 	body := []pbgen.MessageBody{}
 	for _, r := range i.Refs {
-		d := r.Desc
-		if r.IsEdge() {
-			target := r.Edge.Target
-			m := w.msgGetReq(target.Rpcs[graph.RpcOpGet])
+		d := r.Source().Desc
+		switch u := r.(type) {
+		case (*graph.ScalarField):
+			v := pbgen.MessageField{
+				Name:   d.Name(),
+				Type:   pbgen.Type(d.Kind().String()),
+				Number: int(d.Number()),
+			}
+			body = append(body, v)
+
+		case (*graph.Edge):
+			m := w.msgGetReq(u.Target.Rpcs[graph.RpcOpGet])
 			v := pbgen.MessageField{
 				Type:   pbgen.Type(m.FullName),
 				Name:   protoreflect.Name(d.Name()),
 				Number: int(d.Number()),
 			}
 			body = append(body, v)
-		} else {
-			body = append(body, pbgen.MessageField{
-				Name:   d.Name(),
-				Type:   pbgen.Type(d.Kind().String()),
-				Number: int(d.Number()),
-			})
 		}
 	}
 
@@ -276,20 +284,19 @@ func (w *printWork) msgGetReq(r *graph.Rpc) *pbgen.Message {
 	w.messages[full] = m
 
 	oneof := pbgen.MessageOneof{Name: "key"}
-	for _, f := range r.Entity.FieldsSortByNumber() {
-		if !f.Unique {
-			continue
-		}
-		if f.IsEdge() {
-			continue
-		}
+	for _, k := range r.Entity.KeyLikes() {
+		switch v := k.(type) {
+		case *graph.ScalarField:
+			oneof.Body = append(oneof.Body, pbgen.MessageOneofField{
+				Type:   pbgen.Type(v.ProtoType()),
+				Name:   protoreflect.Name(v.Name()),
+				Number: int(v.Number()),
+			})
 
-		d := f.Desc
-		oneof.Body = append(oneof.Body, pbgen.MessageOneofField{
-			Type:   pbgen.Type(d.Kind().String()),
-			Name:   d.Name(),
-			Number: int(d.Number()),
-		})
+		case *graph.Edge:
+			// TODO:
+			continue
+		}
 	}
 	for _, i := range r.Entity.Indexes {
 		if !i.Unique {
@@ -300,7 +307,7 @@ func (w *printWork) msgGetReq(r *graph.Rpc) *pbgen.Message {
 		oneof.Body = append(oneof.Body, pbgen.MessageOneofField{
 			Type:   pbgen.Type(m.FullName),
 			Name:   protoreflect.Name(i.Name()),
-			Number: int(i.Refs[0].Desc.Number()),
+			Number: int(i.Refs[0].Number()),
 		})
 	}
 
@@ -331,38 +338,32 @@ func (w *printWork) msgPatchReq(r *graph.Rpc) *pbgen.Message {
 	}}
 
 	for _, f := range r.Entity.FieldsSortByNumber() {
-		if f.Immutable {
+		if f.IsImmutable() {
 			// Key must be immutable
 			continue
 		}
+		if f.IsList() {
+			continue
+		}
 
-		d := f.Desc
-		n := int(d.Number())*2 - 1
+		n := int(f.Number())*2 - 1
 		if n == body[0].(pbgen.MessageField).Number {
 			continue
 		}
 
 		v := pbgen.MessageField{
-			Name:   d.Name(),
+			Label:  pbgen.LabelOptional,
+			Type:   pbgen.Type(f.ProtoType()),
+			Name:   protoreflect.Name(f.Name()),
 			Number: n,
-		}
-		if f.Message == nil {
-			v.Type = pbgen.Type(d.Kind().String())
-		} else {
-			v.Type = pbgen.Type(f.Message.Desc.FullName())
-		}
-		if f.IsList() {
-			v.Label = pbgen.LabelRepeated
-		} else {
-			v.Label = pbgen.LabelOptional
 		}
 
 		body = append(body, v)
-		if f.Nullable {
+		if f.IsNullable() {
 			body = append(body, pbgen.MessageField{
 				Type:   pbgen.TypeBool,
-				Name:   protoreflect.Name(fmt.Sprintf("%s_null", d.Name())),
-				Number: int(d.Number()) * 2,
+				Name:   protoreflect.Name(fmt.Sprintf("%s_null", f.Name())),
+				Number: int(f.Number()) * 2,
 			})
 		}
 	}

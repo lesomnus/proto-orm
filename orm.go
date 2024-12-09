@@ -38,3 +38,29 @@ func ResolveRpcOptions(f *protogen.File, m *protogen.Message) *RpcOptions {
 
 	return o
 }
+
+func (t Type) IsPrimitive() bool {
+	switch t {
+	case Type_TYPE_BOOL:
+	case Type_TYPE_INT32:
+	case Type_TYPE_SINT32:
+	case Type_TYPE_UINT32:
+	case Type_TYPE_INT64:
+	case Type_TYPE_SINT64:
+	case Type_TYPE_UINT64:
+	case Type_TYPE_SFIXED32:
+	case Type_TYPE_FIXED32:
+	case Type_TYPE_FLOAT:
+	case Type_TYPE_SFIXED64:
+	case Type_TYPE_FIXED64:
+	case Type_TYPE_DOUBLE:
+	case Type_TYPE_STRING:
+	case Type_TYPE_BYTES:
+	case Type_TYPE_MESSAGE:
+
+	default:
+		return false
+	}
+
+	return true
+}

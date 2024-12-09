@@ -31,10 +31,12 @@ func (Like) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("book", Book.Type).
 			Unique().
-			Required(),
+			Required().
+			Immutable(),
 		edge.To("member", Member.Type).
 			Unique().
-			Required(),
+			Required().
+			Immutable(),
 	}
 }
 

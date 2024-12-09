@@ -2,30 +2,28 @@ type {{ $.Name }} struct {
 	{{ ent "Schema" }}
 }
 
-{{ if .HasScalarFields -}}
+{{ if len $.Scalars | lt 0 -}}
 func ({{ $.Name }}) Fields() []{{ ent "Field" }} {
 	return []{{ ent "Field" }} {
-		{{ range $.FieldsSortByNumber -}}
+		{{ range $.ScalarsSortByNumber -}}
 		{{ if .Ignored -}}
 			{{ continue -}}
 		{{ end -}}
-		{{ if .IsEdge -}}
-			{{ continue -}}
-		{{ end -}}
+		
 		{{ def_field . -}}
 		{{ if .HasDefault -}}.
 		Default({{ def_field_default . }})
 		{{- end -}}
-		{{ if not .Required | and (not .IsList) -}}.
+		{{ if .IsOptional | and (not .HasDefault) -}}.
 		Optional()
 		{{- end -}}
-		{{ if .Unique -}}.
+		{{ if .IsUnique -}}.
 		Unique()
 		{{- end -}}
-		{{ if .Immutable -}}.
+		{{ if .IsImmutable -}}.
 		Immutable()
 		{{- end -}}
-		{{ if .Nullable -}}.
+		{{ if .IsNullable -}}.
 		Nillable()
 		{{- end -}},
 		{{ end }}
@@ -33,27 +31,25 @@ func ({{ $.Name }}) Fields() []{{ ent "Field" }} {
 }
 {{ end }}
 
-{{ if .HasEdges -}}
+{{ if len $.Edges | lt 0 -}}
 func ({{ $.Name }}) Edges() []{{ ent "Edge" }} {
 	return []{{ ent "Edge" }}{
-		{{ range $.FieldsSortByNumber -}}
+		{{ range $.EdgesSortByNumber -}}
 			{{ if .Ignored -}}
 				{{ continue -}}
 			{{ end -}}
-			{{ if not .IsEdge -}}
-				{{ continue -}}
-			{{ end -}}
-			{{ def_edge .Edge -}}
-			{{ if .Edge.HasBind -}}.
-			Field({{ .Edge.Bind.Name | printf "%q" }})
+
+			{{ def_edge . -}}
+			{{ if .HasBind -}}.
+			Field({{ .Bind.Name | printf "%q" }})
 			{{- end -}}
-			{{ if not .Edge.HasMany -}}.
+			{{ if not .IsList -}}.
 			Unique()
 			{{- end -}}
-			{{ if .Required -}}.
+			{{ if .IsRequired -}}.
 			Required()
 			{{- end -}}
-			{{ if .Immutable -}}.
+			{{ if .IsImmutable -}}.
 			Immutable()
 			{{- end -}},
 		{{ end }}
@@ -61,12 +57,12 @@ func ({{ $.Name }}) Edges() []{{ ent "Edge" }} {
 }
 {{ end }}
 
-{{ if .HasIndexes -}}
+{{ if len $.Indexes | lt 0 -}}
 func ({{ $.Name }}) Indexes() []{{ ent "Index" }} {
 	return []{{ ent "Index" }}{
 		{{ range $.Indexes -}}
 			{{ def_index . -}}
-			{{ if .Unique -}}.
+			{{ if .IsUnique -}}.
 			Unique()
 			{{- end -}},
 		{{ end }}

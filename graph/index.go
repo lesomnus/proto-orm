@@ -3,9 +3,8 @@ package graph
 type Index struct {
 	name   string
 	Entity *Entity // Message that defines this index.
-	Refs   []*Field
+	Refs   []Field
 
-	Key       bool
 	Unique    bool
 	Immutable bool
 }
@@ -15,16 +14,25 @@ func (i *Index) Name() string {
 }
 
 // Split splits references into scalar fields and edges.
-func (i *Index) Split() ([]*Field, []*Field) {
-	fs := []*Field{}
-	es := []*Field{}
+func (i *Index) Split() ([]*ScalarField, []*Edge) {
+	ss := []*ScalarField{}
+	es := []*Edge{}
 	for _, r := range i.Refs {
-		if r.IsEdge() {
-			es = append(es, r)
-		} else {
-			fs = append(fs, r)
+		switch f := r.(type) {
+		case (*ScalarField):
+			ss = append(ss, f)
+		case (*Edge):
+			es = append(es, f)
 		}
 	}
 
-	return fs, es
+	return ss, es
+}
+
+func (i *Index) IsUnique() bool {
+	return i.Unique
+}
+
+func (i *Index) IsImmutable() bool {
+	return i.Immutable
 }
