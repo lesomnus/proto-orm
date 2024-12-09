@@ -68,6 +68,7 @@ message AuthorPatchRequest {
 message BookAddRequest {
 	optional bytes id = 1;
 	string title = 3;
+	repeated AuthorGetRequest authors = 4;
 	optional google.protobuf.Timestamp date_created = 15;
 }
 
@@ -84,8 +85,6 @@ message BookPatchRequest {
 
 message LikeAddRequest {
 	optional bytes id = 1;
-	BookGetRequest book = 3;
-	MemberGetRequest member = 5;
 	optional google.protobuf.Timestamp date_created = 15;
 }
 
@@ -107,8 +106,6 @@ message LikePatchRequest {
 
 message LoanAddRequest {
 	optional bytes id = 1;
-	BookGetRequest book = 3;
-	MemberGetRequest member = 5;
 	google.protobuf.Timestamp date_due = 13;
 	optional google.protobuf.Timestamp date_return = 14;
 	optional google.protobuf.Timestamp date_created = 15;

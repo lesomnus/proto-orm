@@ -195,15 +195,13 @@ func (w *printWork) msgAddReq(r *graph.Rpc) *pbgen.Message {
 			v.Type = pbgen.Type(u.ProtoType())
 
 			d := u.Source().Desc
-			if d.IsList() {
-				v.Label = pbgen.LabelRepeated
-			} else if d.HasOptionalKeyword() || u.HasDefault() {
+			if d.HasOptionalKeyword() || u.HasDefault() {
 				v.Label = pbgen.LabelOptional
 			}
 
 		case (*graph.Edge):
-			if u.IsList() {
-				// Only O2X is supported.
+			if !u.HasInverse() {
+				// TODO: Should the set of User[pet] be supported at the time of User creation?
 				continue
 			}
 
@@ -216,6 +214,11 @@ func (w *printWork) msgAddReq(r *graph.Rpc) *pbgen.Message {
 			}
 			m := w.msgGetReq(r)
 			v.Type = pbgen.Type(m.FullName)
+
+			d := u.Source().Desc
+			if d.IsList() {
+				v.Label = pbgen.LabelRepeated
+			}
 		}
 
 		body = append(body, v)

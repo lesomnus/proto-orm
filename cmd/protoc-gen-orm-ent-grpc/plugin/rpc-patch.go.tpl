@@ -10,23 +10,27 @@ func (s *{{ $.Name }}ServiceServer) Patch(ctx {{ pkg "context" | ident "Context"
 		{{/* skip: field cannot be patched */ -}}
 		{{ continue -}}
 	{{ end -}}
-	{{ if .IsEdge -}}
-		{{/* skip: edge is edited by Add or Erase */ -}}
-		{{ continue -}}
-	{{ end -}}
+
+
+	{{/* printing scalar field */ -}}
+
+	{{ if is_scalar . }}{{ with as_scalar . -}}
 	{{ if .IsBound -}}
-		{{/* skip: field is bound one */ -}}
+		{{/* skip: field is bounded one */ -}}
 		{{ continue -}}
 	{{ end -}}
 
 	{{ $t := .Type -}}
 	{{ $v := print "req." (pascal .Name) -}}
 	{{ $n := ent_pascal .Name -}}
-	{{ if .Nullable -}}
+
+	{{ if .IsNullable -}}
 	if {{ $v }}Null {
 		q.Clear{{ $n }}()
-	} else if {{ $v }} != nil {
-		{{ if .IsScalar -}}
+	} else {{ end -}}
+
+	if {{ $v }} != nil {
+		{{ if $t.IsPrimitive -}}
 		q.Set{{ $n }}(*{{ $v }})
 		{{ else if is_symmetric $t -}}
 		q.Set{{ $n }}({{ to_symmetric_ent $v $t }})
@@ -39,22 +43,34 @@ func (s *{{ $.Name }}ServiceServer) Patch(ctx {{ pkg "context" | ident "Context"
 		{{ end -}}
 	}
 	{{ continue -}}
+	{{ end }}{{ end }}{{/* scalar field is printed */ -}}
+
+
+	{{/* printing edge field */ -}}
+
+	{{ with as_edge . -}}
+	{{ if or .IsList .HasInverse -}}
+		{{/* skip: patch for list is not supported */ -}}
+		{{/* skip: ownership (which is defined by .Inverse) should be patched by subject (at .Reverse) if it is bidirectional. */ -}}
+		{{ continue -}}
 	{{ end -}}
 
+	{{ $target := .Target -}}
+	{{ $k := $target.Key -}}
+	{{ $v := print "req." (pascal .Name) -}}
+	{{ $n := ent_pascal $target.Name -}}
+
+	{{ if .IsNullable -}}
+	if {{ $v }}Null {
+		q.Clear{{ $n }}()
+	} else {{ end -}}
+
 	if {{ $v }} != nil {
-		{{ if .IsScalar -}}
-		q.Set{{ $n }}(*{{ $v }})
-		{{ else if is_symmetric $t -}}
-		q.Set{{ $n }}({{ to_symmetric_ent $v $t }})
-		{{ else -}}
-		if v, err := {{ convert_to_ent_field $v $t }}; err != nil {
-			return nil, {{ grpc_errf "InvalidArgument" (print .Name ": %s" | quote) "err" }}
-		} else {
-			q.Set{{ $n }}(v)
-		}
-		{{ end -}}
+		q.Set{{ $n }}($v)
 	}
-	{{/* end of range */ -}}
+	{{ continue -}}
+	{{ end }}{{/* edge field is printed */ -}}
+
 	{{ end }}
 
 	v, err := q.Save(ctx)

@@ -13,6 +13,15 @@ import (
 	status "google.golang.org/grpc/status"
 )
 
+type BookServiceServer struct {
+	db *ent.Client
+	library.UnimplementedBookServiceServer
+}
+
+func NewBookServiceServer(db *ent.Client) *BookServiceServer {
+	return &BookServiceServer{db: db}
+}
+
 func (s *BookServiceServer) Add(ctx context.Context, req *library.BookAddRequest) (*library.Book, error) {
 	q := s.db.Book.Create()
 	if v, err := uuid.FromBytes(req.Id); err != nil {
@@ -40,6 +49,53 @@ func (s *BookServiceServer) Add(ctx context.Context, req *library.BookAddRequest
 	}
 
 	return v.Proto(), nil
+}
+
+func (s *BookServiceServer) Get(ctx context.Context, req *library.BookGetRequest) (*library.Book, error) {
+	q := s.db.Book.Query()
+	if p, err := BookPick(req); err != nil {
+		return nil, err
+	} else {
+		q.Where(p)
+	}
+
+	v, err := q.Only(ctx)
+	if err != nil {
+		return nil, StatusFromEntError(err)
+	}
+
+	return v.Proto(), nil
+}
+
+func (s *BookServiceServer) Patch(ctx context.Context, req *library.BookPatchRequest) (*library.Book, error) {
+	id, err := BookGetId(ctx, s.db, req.GetKey())
+	if err != nil {
+		return nil, err
+	}
+
+	q := s.db.Book.UpdateOneID(id)
+	if req.Title != nil {
+		q.SetTitle(*req.Title)
+	}
+
+	v, err := q.Save(ctx)
+	if err != nil {
+		return nil, StatusFromEntError(err)
+	}
+
+	return v.Proto(), nil
+}
+
+func (s *BookServiceServer) Erase(ctx context.Context, req *library.BookGetRequest) (*library.Book, error) {
+	p, err := BookPick(req)
+	if err != nil {
+		return nil, err
+	}
+	if _, err := s.db.Book.Delete().Where(p).Exec(ctx); err != nil {
+		return nil, StatusFromEntError(err)
+	}
+
+	return nil, nil
 }
 
 func BookPick(req *library.BookGetRequest) (predicate.Book, error) {

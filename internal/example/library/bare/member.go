@@ -13,6 +13,15 @@ import (
 	status "google.golang.org/grpc/status"
 )
 
+type MemberServiceServer struct {
+	db *ent.Client
+	library.UnimplementedMemberServiceServer
+}
+
+func NewMemberServiceServer(db *ent.Client) *MemberServiceServer {
+	return &MemberServiceServer{db: db}
+}
+
 func (s *MemberServiceServer) Add(ctx context.Context, req *library.MemberAddRequest) (*library.Member, error) {
 	q := s.db.Member.Create()
 	if v, err := uuid.FromBytes(req.Id); err != nil {
@@ -29,6 +38,53 @@ func (s *MemberServiceServer) Add(ctx context.Context, req *library.MemberAddReq
 	}
 
 	return v.Proto(), nil
+}
+
+func (s *MemberServiceServer) Get(ctx context.Context, req *library.MemberGetRequest) (*library.Member, error) {
+	q := s.db.Member.Query()
+	if p, err := MemberPick(req); err != nil {
+		return nil, err
+	} else {
+		q.Where(p)
+	}
+
+	v, err := q.Only(ctx)
+	if err != nil {
+		return nil, StatusFromEntError(err)
+	}
+
+	return v.Proto(), nil
+}
+
+func (s *MemberServiceServer) Patch(ctx context.Context, req *library.MemberPatchRequest) (*library.Member, error) {
+	id, err := MemberGetId(ctx, s.db, req.GetKey())
+	if err != nil {
+		return nil, err
+	}
+
+	q := s.db.Member.UpdateOneID(id)
+	if req.Name != nil {
+		q.SetName(*req.Name)
+	}
+
+	v, err := q.Save(ctx)
+	if err != nil {
+		return nil, StatusFromEntError(err)
+	}
+
+	return v.Proto(), nil
+}
+
+func (s *MemberServiceServer) Erase(ctx context.Context, req *library.MemberGetRequest) (*library.Member, error) {
+	p, err := MemberPick(req)
+	if err != nil {
+		return nil, err
+	}
+	if _, err := s.db.Member.Delete().Where(p).Exec(ctx); err != nil {
+		return nil, StatusFromEntError(err)
+	}
+
+	return nil, nil
 }
 
 func MemberPick(req *library.MemberGetRequest) (predicate.Member, error) {

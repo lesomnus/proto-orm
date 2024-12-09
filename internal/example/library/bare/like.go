@@ -13,22 +13,21 @@ import (
 	status "google.golang.org/grpc/status"
 )
 
+type LikeServiceServer struct {
+	db *ent.Client
+	library.UnimplementedLikeServiceServer
+}
+
+func NewLikeServiceServer(db *ent.Client) *LikeServiceServer {
+	return &LikeServiceServer{db: db}
+}
+
 func (s *LikeServiceServer) Add(ctx context.Context, req *library.LikeAddRequest) (*library.Like, error) {
 	q := s.db.Like.Create()
 	if v, err := uuid.FromBytes(req.Id); err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "id: %s", err)
 	} else {
 		q.SetID(v)
-	}
-	if id, err := BookGetId(ctx, s.db, req.GetBook()); err != nil {
-		return nil, err
-	} else {
-		q.SetBookID(id)
-	}
-	if id, err := MemberGetId(ctx, s.db, req.GetMember()); err != nil {
-		return nil, err
-	} else {
-		q.SetMemberID(id)
 	}
 	q.SetDateCreated(req.DateCreated.AsTime())
 
@@ -38,6 +37,50 @@ func (s *LikeServiceServer) Add(ctx context.Context, req *library.LikeAddRequest
 	}
 
 	return v.Proto(), nil
+}
+
+func (s *LikeServiceServer) Get(ctx context.Context, req *library.LikeGetRequest) (*library.Like, error) {
+	q := s.db.Like.Query()
+	if p, err := LikePick(req); err != nil {
+		return nil, err
+	} else {
+		q.Where(p)
+	}
+
+	v, err := q.Only(ctx)
+	if err != nil {
+		return nil, StatusFromEntError(err)
+	}
+
+	return v.Proto(), nil
+}
+
+func (s *LikeServiceServer) Patch(ctx context.Context, req *library.LikePatchRequest) (*library.Like, error) {
+	id, err := LikeGetId(ctx, s.db, req.GetKey())
+	if err != nil {
+		return nil, err
+	}
+
+	q := s.db.Like.UpdateOneID(id)
+
+	v, err := q.Save(ctx)
+	if err != nil {
+		return nil, StatusFromEntError(err)
+	}
+
+	return v.Proto(), nil
+}
+
+func (s *LikeServiceServer) Erase(ctx context.Context, req *library.LikeGetRequest) (*library.Like, error) {
+	p, err := LikePick(req)
+	if err != nil {
+		return nil, err
+	}
+	if _, err := s.db.Like.Delete().Where(p).Exec(ctx); err != nil {
+		return nil, StatusFromEntError(err)
+	}
+
+	return nil, nil
 }
 
 func LikePick(req *library.LikeGetRequest) (predicate.Like, error) {

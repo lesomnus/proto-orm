@@ -13,6 +13,15 @@ import (
 	status "google.golang.org/grpc/status"
 )
 
+type AuthorServiceServer struct {
+	db *ent.Client
+	library.UnimplementedAuthorServiceServer
+}
+
+func NewAuthorServiceServer(db *ent.Client) *AuthorServiceServer {
+	return &AuthorServiceServer{db: db}
+}
+
 func (s *AuthorServiceServer) Add(ctx context.Context, req *library.AuthorAddRequest) (*library.Author, error) {
 	q := s.db.Author.Create()
 	if v, err := uuid.FromBytes(req.Id); err != nil {
@@ -22,17 +31,6 @@ func (s *AuthorServiceServer) Add(ctx context.Context, req *library.AuthorAddReq
 	}
 	q.SetAlias(req.Alias)
 	q.SetName(req.Name)
-	{
-		ids := []uuid.UUID{}
-		for _, r := range req.GetBooks() {
-			if id, err := BookGetId(ctx, s.db, r); err != nil {
-				return nil, err
-			} else {
-				ids = append(ids, id)
-			}
-		}
-		q.AddBookIDs(ids...)
-	}
 	q.SetDateCreated(req.DateCreated.AsTime())
 
 	v, err := q.Save(ctx)
@@ -41,6 +39,56 @@ func (s *AuthorServiceServer) Add(ctx context.Context, req *library.AuthorAddReq
 	}
 
 	return v.Proto(), nil
+}
+
+func (s *AuthorServiceServer) Get(ctx context.Context, req *library.AuthorGetRequest) (*library.Author, error) {
+	q := s.db.Author.Query()
+	if p, err := AuthorPick(req); err != nil {
+		return nil, err
+	} else {
+		q.Where(p)
+	}
+
+	v, err := q.Only(ctx)
+	if err != nil {
+		return nil, StatusFromEntError(err)
+	}
+
+	return v.Proto(), nil
+}
+
+func (s *AuthorServiceServer) Patch(ctx context.Context, req *library.AuthorPatchRequest) (*library.Author, error) {
+	id, err := AuthorGetId(ctx, s.db, req.GetKey())
+	if err != nil {
+		return nil, err
+	}
+
+	q := s.db.Author.UpdateOneID(id)
+	if req.Alias != nil {
+		q.SetAlias(*req.Alias)
+	}
+	if req.Name != nil {
+		q.SetName(*req.Name)
+	}
+
+	v, err := q.Save(ctx)
+	if err != nil {
+		return nil, StatusFromEntError(err)
+	}
+
+	return v.Proto(), nil
+}
+
+func (s *AuthorServiceServer) Erase(ctx context.Context, req *library.AuthorGetRequest) (*library.Author, error) {
+	p, err := AuthorPick(req)
+	if err != nil {
+		return nil, err
+	}
+	if _, err := s.db.Author.Delete().Where(p).Exec(ctx); err != nil {
+		return nil, StatusFromEntError(err)
+	}
+
+	return nil, nil
 }
 
 func AuthorPick(req *library.AuthorGetRequest) (predicate.Author, error) {

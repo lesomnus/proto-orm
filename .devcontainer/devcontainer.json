@@ -8,6 +8,7 @@
 			"extensions": [
 				"golang.go",
 				"zxh404.vscode-proto3",
+				"jinliming2.vscode-go-template",
 				"streetsidesoftware.code-spell-checker"
 			]
 		}

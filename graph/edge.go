@@ -14,9 +14,19 @@ type Edge struct {
 	source *protogen.Field
 	entity *Entity // Message that defines this edge.
 
-	Target *Entity
-	From   *Edge
-	Bind   *ScalarField
+	//
+	//              +User[pet].Target
+	//              |   +User[pet].Reverse
+	//              |   |
+	// User.pet --> Pet.owner --> User.pet
+	//                            |     |
+	//                            |     +Pet[owner].Inverse.
+	//                            +Pet[owner].Target
+	//
+	Target  *Entity
+	Reverse *Edge // Back-reference field for this edge.
+	Inverse *Edge // Edge that references this edge.
+	Bind    *ScalarField
 
 	Ignored   bool
 	Unique    bool
@@ -60,7 +70,8 @@ func (e *Entity) parseEdge(f *protogen.Field, o *orm.EdgeOptions, target *Entity
 			err := fmt.Errorf("back-reference edge does not reference this entity")
 			errs = append(errs, err)
 		} else {
-			v.From = t
+			v.Inverse = t
+			t.Reverse = v
 		}
 	}
 	if o.Bind > 0 {
@@ -177,9 +188,17 @@ func (e *Edge) IsImmutable() bool {
 	return e.Immutable
 }
 
+func (e *Edge) HasInverse() bool {
+	return e.Inverse != nil
+}
+
 func (e *Edge) IsSelfLoop() bool {
-	if e.From == nil {
+	if e.Inverse == nil {
 		return false
 	}
-	return e.From.entity == e.entity
+	return e.Inverse.entity == e.entity
+}
+
+func (e *Edge) IsUnidirectional() bool {
+	return e.Reverse == nil
 }

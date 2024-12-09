@@ -3,7 +3,7 @@ FROM ghcr.io/lesomnus/dev-golang:1.23
 RUN TEMP=$(mktemp -d); \
 	ARCH=$(uname -m); \
 	case "$ARCH" in \
-		'x86_86') ;; \
+		'x86_64') ;; \
 		'aarch64') \
 			ARCH='aarch_64'; \
 			;; \
@@ -30,4 +30,4 @@ RUN wget https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -
 	&& git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting \
 	&& git clone https://github.com/zsh-users/zsh-completions             ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-completions
 ADD .zshrc /home/hypnos
-ENV SHELL /bin/zsh
+ENV SHELL=/bin/zsh

@@ -109,13 +109,13 @@ func (p *Plugin) NewTemplate(e *graph.Entity, f *protogen.GeneratedFile) *templa
 		},
 		"def_edge": func(edge *graph.Edge) string {
 			name := edge.Name()
-			if edge.From != nil {
+			if edge.Inverse != nil {
 				return fmt.Sprintf(
 					"%s(%q, %s.Type).Ref(%q)",
 					f.QualifiedGoIdent(import_ent_edge.Ident("From")),
 					name,
 					edge.Target.Source.GoIdent.GoName,
-					edge.From.Name(),
+					edge.Inverse.Name(),
 				)
 			}
 
@@ -126,7 +126,7 @@ func (p *Plugin) NewTemplate(e *graph.Entity, f *protogen.GeneratedFile) *templa
 				edge.Target.Source.GoIdent.GoName,
 			)
 			if edge.IsSelfLoop() {
-				v += fmt.Sprintf(".From(%q)", edge.From.Name())
+				v += fmt.Sprintf(".From(%q)", edge.Inverse.Name())
 			}
 			return v
 		},

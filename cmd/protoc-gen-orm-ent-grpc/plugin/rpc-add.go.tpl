@@ -9,9 +9,11 @@ func (s *{{ $.Name }}ServiceServer) Add(ctx {{ pkg "context" | ident "Context" }
 		{{/* skip: field is bounded one */ -}}
 		{{ continue -}}
 	{{ end -}}
+
 	{{ $t := .Type -}}
 	{{ $n := ent_pascal .Name -}}
 	{{ $v := print "req." (pascal .Name) -}}
+	
 	{{ if is_symmetric $t -}}
 	{{/*   field is symmetric */ -}}
 	q.Set{{ $n }}({{ to_symmetric_ent $v $t }})
@@ -30,9 +32,14 @@ func (s *{{ $.Name }}ServiceServer) Add(ctx {{ pkg "context" | ident "Context" }
 	{{/* printing edge field */ -}}
 
 	{{ with as_edge . -}}
+	{{ if not .HasInverse -}}
+		{{ continue -}}
+	{{ end -}}
+
 	{{ $target := .Target -}}
 	{{ $k := $target.Key -}}
 	{{ $n := $target.Name -}}
+
 	{{ if .IsList -}}
 	{
 		ids := []{{ ent_type $k.Type }}{}

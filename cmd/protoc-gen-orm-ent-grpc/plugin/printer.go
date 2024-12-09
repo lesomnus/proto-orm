@@ -39,34 +39,34 @@ type Printer struct {
 
 func (p *Printer) Print(g graph.Graph, e *graph.Entity, f *protogen.GeneratedFile) error {
 	t := p.newTemplate(f)
-	// if err := t.ExecuteTemplate(f, "service-server.go.tpl", e); err != nil {
-	// 	return err
-	// }
-	// f.P("")
+	if err := t.ExecuteTemplate(f, "service-server.go.tpl", e); err != nil {
+		return err
+	}
+	f.P("")
 	if _, ok := e.Rpcs[graph.RpcOpAdd]; ok {
 		if err := t.ExecuteTemplate(f, "rpc-add.go.tpl", e); err != nil {
 			return err
 		}
 		f.P("")
 	}
-	// if _, ok := e.Rpcs[graph.RpcOpGet]; ok {
-	// 	if err := t.ExecuteTemplate(f, "rpc-get.go.tpl", e); err != nil {
-	// 		return err
-	// 	}
-	// 	f.P("")
-	// }
-	// if _, ok := e.Rpcs[graph.RpcOpPatch]; ok {
-	// 	if err := t.ExecuteTemplate(f, "rpc-patch.go.tpl", e); err != nil {
-	// 		return err
-	// 	}
-	// 	f.P("")
-	// }
-	// if _, ok := e.Rpcs[graph.RpcOpErase]; ok {
-	// 	if err := t.ExecuteTemplate(f, "rpc-erase.go.tpl", e); err != nil {
-	// 		return err
-	// 	}
-	// 	f.P("")
-	// }
+	if _, ok := e.Rpcs[graph.RpcOpGet]; ok {
+		if err := t.ExecuteTemplate(f, "rpc-get.go.tpl", e); err != nil {
+			return err
+		}
+		f.P("")
+	}
+	if _, ok := e.Rpcs[graph.RpcOpPatch]; ok {
+		if err := t.ExecuteTemplate(f, "rpc-patch.go.tpl", e); err != nil {
+			return err
+		}
+		f.P("")
+	}
+	if _, ok := e.Rpcs[graph.RpcOpErase]; ok {
+		if err := t.ExecuteTemplate(f, "rpc-erase.go.tpl", e); err != nil {
+			return err
+		}
+		f.P("")
+	}
 	if err := t.ExecuteTemplate(f, "entity-util.go.tpl", e); err != nil {
 		return err
 	}
