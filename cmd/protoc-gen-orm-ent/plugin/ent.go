@@ -13,25 +13,19 @@ func toEntIdent(t orm.Type) string {
 		v = "Bool"
 	case orm.Type_TYPE_ENUM:
 		panic("todo")
-	case orm.Type_TYPE_INT32:
-		fallthrough
-	case orm.Type_TYPE_SINT32:
-		fallthrough
-	case orm.Type_TYPE_SFIXED32:
+	case orm.Type_TYPE_INT32,
+		orm.Type_TYPE_SINT32,
+		orm.Type_TYPE_SFIXED32:
 		v = "Int32"
-	case orm.Type_TYPE_UINT32:
-		fallthrough
-	case orm.Type_TYPE_FIXED32:
+	case orm.Type_TYPE_UINT32,
+		orm.Type_TYPE_FIXED32:
 		v = "Uint32"
-	case orm.Type_TYPE_INT64:
-		fallthrough
-	case orm.Type_TYPE_SINT64:
-		fallthrough
-	case orm.Type_TYPE_SFIXED64:
+	case orm.Type_TYPE_INT64,
+		orm.Type_TYPE_SINT64,
+		orm.Type_TYPE_SFIXED64:
 		v = "Int64"
-	case orm.Type_TYPE_UINT64:
-		fallthrough
-	case orm.Type_TYPE_FIXED64:
+	case orm.Type_TYPE_UINT64,
+		orm.Type_TYPE_FIXED64:
 		v = "Uint64"
 	case orm.Type_TYPE_FLOAT:
 		v = "Float32"

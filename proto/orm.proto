@@ -86,7 +86,6 @@ enum Type {
 	TYPE_BYTES     = 12;
 	TYPE_MESSAGE   = 11;
 	TYPE_GROUP     = 10;
-
 	
 	TYPE_INT  = 3; // int decay.
 	TYPE_UINT = 4; // unsigned int decay.

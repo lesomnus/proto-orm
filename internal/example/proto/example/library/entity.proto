@@ -97,6 +97,8 @@ message Member {
 	];
 	string name = 3;
 
+	map<string, string> labels = 5;
+
 	google.protobuf.Timestamp date_created = 15 [
 		(orm.field) = {
 			immutable: true

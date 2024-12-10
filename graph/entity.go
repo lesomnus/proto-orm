@@ -68,10 +68,6 @@ func (e *Entity) prase(g Graph, o *orm.MessageOptions) error {
 	errs := []error{}
 	for _, f := range e.Source.Fields {
 		o := f.Desc.Options()
-		if f.Desc.IsMap() {
-			// TODO: warns map is not supported
-			continue
-		}
 
 		of := proto.GetExtension(o, orm.E_Field).(*orm.FieldOptions)
 		oe := proto.GetExtension(o, orm.E_Edge).(*orm.EdgeOptions)
@@ -79,7 +75,7 @@ func (e *Entity) prase(g Graph, o *orm.MessageOptions) error {
 		t := resolveType(f, of)
 		if t != orm.Type_TYPE_MESSAGE {
 			if oe != nil {
-				// TODO: warns field is not an edge
+				// TODO: warns field is an attr
 			}
 
 			if _, err := e.parseAttr(f, of); err != nil {
@@ -90,8 +86,8 @@ func (e *Entity) prase(g Graph, o *orm.MessageOptions) error {
 		} else {
 			if of != nil {
 				// TODO: warns field is an edge
-			}
 
+			}
 			target_name := f.Message.Desc.FullName()
 			target, ok := g[target_name]
 			if !ok {
@@ -303,6 +299,9 @@ func resolveType(f *protogen.Field, o *orm.FieldOptions) orm.Type {
 	}
 	if v != orm.Type_TYPE_MESSAGE {
 		return v
+	}
+	if f.Desc.IsMap() {
+		return orm.Type_TYPE_JSON
 	}
 
 	name := f.Message.Desc.FullName()

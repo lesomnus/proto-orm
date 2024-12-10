@@ -43,6 +43,7 @@ func (e *Entity) parseAttr(f *protogen.Field, o *orm.FieldOptions) (*Attr, error
 		Default:   o.Default,
 	}
 
+	// d := f.Desc
 	n := v.Name()
 	e.Fields[n] = v
 	e.Attrs[n] = v
@@ -91,15 +92,79 @@ func (a *Attr) Type() orm.Type {
 	return a.typ
 }
 
+// `q` is qualifier that returns given `ident` as qualified name like: "Printf" -> "fmt.Printf".
+// You may use `protogen.GeneratedFile.QualifiedGoIdent` in most of cases.
+func (a *Attr) GoType(q func(ident protogen.GoIdent) string) string {
+	return a.goType(a.source, q)
+}
+
+func (a *Attr) goType(f *protogen.Field, q func(ident protogen.GoIdent) string) string {
+	d := f.Desc
+	if d.IsMap() {
+		k := f.Message.Fields[0]
+		v := f.Message.Fields[1]
+		return fmt.Sprintf("map[%s]%s", a.goType(k, q), a.goType(v, q))
+	}
+
+	v := ""
+	k := d.Kind()
+	switch k {
+	case protoreflect.BoolKind:
+		v = "bool"
+	case protoreflect.EnumKind:
+		panic("todo")
+	case protoreflect.Uint32Kind,
+		protoreflect.Fixed32Kind:
+		v = "uint32"
+	case protoreflect.Int32Kind,
+		protoreflect.Sint32Kind,
+		protoreflect.Sfixed32Kind:
+		v = "int32"
+	case protoreflect.Uint64Kind,
+		protoreflect.Fixed64Kind:
+		v = "uint64"
+	case protoreflect.Int64Kind,
+		protoreflect.Sint64Kind,
+		protoreflect.Sfixed64Kind:
+		v = "int64"
+	case protoreflect.FloatKind:
+		v = "float32"
+	case protoreflect.DoubleKind:
+		v = "float64"
+	case protoreflect.StringKind:
+		v = "string"
+	case protoreflect.BytesKind:
+		v = "[]byte"
+	case protoreflect.MessageKind:
+		if q != nil {
+			return q(f.Message.GoIdent)
+		}
+	case protoreflect.GroupKind:
+	default:
+		panic(fmt.Sprintf("unknown type or type not supported: %s", k.String()))
+	}
+
+	return v
+}
+
 func (a *Attr) ProtoType() string {
-	if a.source.Message == nil {
+	return a.protoType(a.source.Desc)
+}
+
+func (a *Attr) protoType(d protoreflect.FieldDescriptor) string {
+	if d.IsMap() {
+		return fmt.Sprintf("map<%s,%s>", a.protoType(d.MapKey()), a.protoType(d.MapValue()))
+	}
+
+	switch k := d.Kind(); k {
+	case protoreflect.MessageKind:
+		// Field type is another message.
+		// e.g. google.protobuf.Timestamp, example.library.Book, ...
+		return string(d.Message().FullName())
+	default:
 		// Field type is proto scalar.
 		// e.g. string, int32, ...
-		return a.source.Desc.Kind().String()
-	} else {
-		// Field type is well known type that can be mapped to scalar.
-		// e.g. google.protobuf.Timestamp -> time.Time
-		return string(a.source.Message.Desc.FullName())
+		return k.String()
 	}
 }
 

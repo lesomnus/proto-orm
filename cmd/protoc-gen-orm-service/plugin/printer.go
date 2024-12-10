@@ -195,7 +195,9 @@ func (w *printWork) msgAddReq(r *graph.Rpc) *pbgen.Message {
 			v.Type = pbgen.Type(u.ProtoType())
 
 			d := u.Source().Desc
-			if d.IsList() {
+			if d.IsMap() {
+				// Map cannot have label.
+			} else if d.IsList() {
 				v.Label = pbgen.LabelRepeated
 			} else if d.HasOptionalKeyword() || u.HasDefault() {
 				v.Label = pbgen.LabelOptional
@@ -351,13 +353,14 @@ func (w *printWork) msgPatchReq(r *graph.Rpc) *pbgen.Message {
 		}
 
 		v := pbgen.MessageField{
-			Label:  pbgen.LabelOptional,
 			Type:   pbgen.Type(f.ProtoType()),
 			Name:   protoreflect.Name(f.Name()),
 			Number: n,
 		}
 		if f.IsList() {
 			v.Label = pbgen.LabelRepeated
+		} else if !f.Source().Desc.IsMap() {
+			v.Label = pbgen.LabelOptional
 		}
 
 		body = append(body, v)

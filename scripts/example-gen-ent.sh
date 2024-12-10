@@ -27,6 +27,9 @@ protoc \
 	--proto_path="$PROTO_ROOT" \
 	--proto_path="$__root/proto" \
 	\
+	--go_out="${OUTPUT_DIR}" \
+	--go_opt=module="${MODULE_NAME}" \
+	\
 	--"$NAME"_out="$OUTPUT_DIR" \
 	--"$NAME"_opt=module="$MODULE_NAME" \
 	--"$NAME"_opt=ent="$MODULE_NAME/example/library/ent" \

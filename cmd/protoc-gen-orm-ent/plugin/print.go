@@ -87,7 +87,9 @@ func (p *Plugin) NewTemplate(e *graph.Entity, f *protogen.GeneratedFile) *templa
 			v := ""
 
 			i := toEntIdent(t)
-			if field.IsList() {
+			if d := field.Source().Desc; d.IsMap() {
+				v = field.GoType(f.QualifiedGoIdent) + "{}"
+			} else if field.IsList() {
 				t := t.Decay()
 				switch t {
 				case orm.Type_TYPE_INT:
@@ -101,7 +103,7 @@ func (p *Plugin) NewTemplate(e *graph.Entity, f *protogen.GeneratedFile) *templa
 				case orm.Type_TYPE_BOOL:
 					i = "JSON"
 				case orm.Type_TYPE_JSON:
-					v = "[]*" + f.QualifiedGoIdent(field.Source().GoIdent) + "{}"
+					v = "[]*" + f.QualifiedGoIdent(field.Source().Message.GoIdent) + "{}"
 				default:
 					panic(fmt.Sprintf("list of %s not supported", t.String()))
 				}
@@ -110,7 +112,7 @@ func (p *Plugin) NewTemplate(e *graph.Entity, f *protogen.GeneratedFile) *templa
 				case orm.Type_TYPE_UUID:
 					v = f.QualifiedGoIdent(import_uuid.Ident("UUID")) + "{}"
 				case orm.Type_TYPE_JSON:
-					v = "*" + f.QualifiedGoIdent(field.Source().GoIdent) + "{}"
+					v = "*" + f.QualifiedGoIdent(field.Source().Message.GoIdent) + "{}"
 				}
 			}
 

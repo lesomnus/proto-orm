@@ -30,6 +30,7 @@ func (s *MemberServiceServer) Add(ctx context.Context, req *library.MemberAddReq
 		q.SetID(v)
 	}
 	q.SetName(req.Name)
+	q.SetLabels(req.Labels)
 	q.SetDateCreated(req.DateCreated.AsTime())
 
 	v, err := q.Save(ctx)
@@ -65,6 +66,9 @@ func (s *MemberServiceServer) Patch(ctx context.Context, req *library.MemberPatc
 	q := s.db.Member.UpdateOneID(id)
 	if req.Name != nil {
 		q.SetName(*req.Name)
+	}
+	if req.Labels != nil {
+		q.SetLabels(req.Labels)
 	}
 
 	v, err := q.Save(ctx)
