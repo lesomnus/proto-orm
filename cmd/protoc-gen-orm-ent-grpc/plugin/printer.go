@@ -227,15 +227,10 @@ func (p *Printer) newTemplate(f *protogen.GeneratedFile) *template.Template {
 		// Test if `t` is same for Proto and Ent.
 		"is_symmetric": func(t orm.Type) bool {
 			switch t {
-			case orm.Type_TYPE_UNSPECIFIED:
-				fallthrough
-			case orm.Type_TYPE_ENUM:
-				fallthrough
-			case orm.Type_TYPE_MESSAGE:
-				fallthrough
-			case orm.Type_TYPE_GROUP:
-				fallthrough
-			case orm.Type_TYPE_UUID:
+			case orm.Type_TYPE_UNSPECIFIED,
+				orm.Type_TYPE_MESSAGE,
+				orm.Type_TYPE_GROUP,
+				orm.Type_TYPE_UUID:
 				return false
 
 			default:
@@ -243,9 +238,15 @@ func (p *Printer) newTemplate(f *protogen.GeneratedFile) *template.Template {
 			}
 		},
 		"to_symmetric_ent": func(ident string, t orm.Type) string {
+			i, _ := strings.CutPrefix(ident, "*")
 			switch t {
+			case orm.Type_TYPE_ENUM:
+				return fmt.Sprintf("int(%s)", ident)
 			case orm.Type_TYPE_TIME:
-				return fmt.Sprintf("%s.AsTime()", ident)
+				return fmt.Sprintf("%s.AsTime()", i)
+			case orm.Type_TYPE_MESSAGE,
+				orm.Type_TYPE_JSON:
+				return i
 			default:
 				return ident
 			}

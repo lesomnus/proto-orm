@@ -20,6 +20,7 @@ func (Member) Fields() []ent.Field {
 			Unique().
 			Immutable(),
 		field.String("name"),
+		field.Int("level"),
 		field.JSON("labels", map[string]string{}),
 		field.Time("date_created").
 			Default(time.Now).

@@ -97,6 +97,13 @@ message Member {
 	];
 	string name = 3;
 
+	enum Level {
+		LEVEL_BRONZE = 0;
+		LEVEL_SILVER = 1;
+		LEVEL_GOLD = 2;
+	}
+	Level level = 4;
+
 	map<string, string> labels = 5;
 
 	google.protobuf.Timestamp date_created = 15 [

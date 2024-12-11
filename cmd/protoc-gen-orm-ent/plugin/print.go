@@ -92,9 +92,9 @@ func (p *Plugin) NewTemplate(e *graph.Entity, f *protogen.GeneratedFile) *templa
 			} else if field.IsList() {
 				t := t.Decay()
 				switch t {
-				case orm.Type_TYPE_INT:
-					fallthrough
-				case orm.Type_TYPE_UINT:
+				case orm.Type_TYPE_INT,
+					orm.Type_TYPE_UINT,
+					orm.Type_TYPE_ENUM:
 					i = "Ints"
 				case orm.Type_TYPE_FLOAT:
 					i = "Floats"
@@ -109,6 +109,8 @@ func (p *Plugin) NewTemplate(e *graph.Entity, f *protogen.GeneratedFile) *templa
 				}
 			} else {
 				switch t {
+				case orm.Type_TYPE_ENUM:
+					i = "Int"
 				case orm.Type_TYPE_UUID:
 					v = f.QualifiedGoIdent(import_uuid.Ident("UUID")) + "{}"
 				case orm.Type_TYPE_JSON:
@@ -194,15 +196,18 @@ func (p *Plugin) NewTemplate(e *graph.Entity, f *protogen.GeneratedFile) *templa
 		},
 		"ent_value_to_proto": func(ident string, field *graph.Attr) string {
 			t := field.Type()
-			n := rules.EntPascal(string(field.Name()))
+			n := fmt.Sprintf("%s.%s", ident, rules.EntPascal(string(field.Name())))
 			switch t {
+			case orm.Type_TYPE_ENUM:
+				c := f.QualifiedGoIdent(field.Source().Enum.GoIdent)
+				return fmt.Sprintf("%s(%s)", c, n)
 			case orm.Type_TYPE_UUID:
-				return fmt.Sprintf("%s.%s[:]", ident, n)
+				return fmt.Sprintf("%s[:]", n)
 			case orm.Type_TYPE_TIME:
 				c := f.QualifiedGoIdent(import_pb_ts.Ident("New"))
-				return fmt.Sprintf("%s(%s.%s)", c, ident, n)
+				return fmt.Sprintf("%s(%s)", c, n)
 			default:
-				return fmt.Sprintf("%s.%s", ident, n)
+				return n
 			}
 		},
 	})

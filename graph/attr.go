@@ -112,7 +112,7 @@ func (a *Attr) goType(f *protogen.Field, q func(ident protogen.GoIdent) string) 
 	case protoreflect.BoolKind:
 		v = "bool"
 	case protoreflect.EnumKind:
-		panic("todo")
+		v = q(f.Enum.GoIdent)
 	case protoreflect.Uint32Kind,
 		protoreflect.Fixed32Kind:
 		v = "uint32"
@@ -136,9 +136,7 @@ func (a *Attr) goType(f *protogen.Field, q func(ident protogen.GoIdent) string) 
 	case protoreflect.BytesKind:
 		v = "[]byte"
 	case protoreflect.MessageKind:
-		if q != nil {
-			return q(f.Message.GoIdent)
-		}
+		v = q(f.Message.GoIdent)
 	case protoreflect.GroupKind:
 	default:
 		panic(fmt.Sprintf("unknown type or type not supported: %s", k.String()))
@@ -157,6 +155,8 @@ func (a *Attr) protoType(d protoreflect.FieldDescriptor) string {
 	}
 
 	switch k := d.Kind(); k {
+	case protoreflect.EnumKind:
+		return string(d.Enum().FullName())
 	case protoreflect.MessageKind:
 		// Field type is another message.
 		// e.g. google.protobuf.Timestamp, example.library.Book, ...

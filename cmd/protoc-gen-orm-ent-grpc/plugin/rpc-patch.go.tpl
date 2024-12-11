@@ -35,7 +35,7 @@ func (s *{{ $.Name }}ServiceServer) Patch(ctx {{ pkg "context" | ident "Context"
 		{{ else if $t.IsPrimitive -}}
 		q.Set{{ $n }}(*{{ $v }})
 		{{ else if is_symmetric $t -}}
-		q.Set{{ $n }}({{ to_symmetric_ent $v $t }})
+		q.Set{{ $n }}({{ to_symmetric_ent (print "*" $v) $t }})
 		{{ else -}}
 		if v, err := {{ convert_to_ent_field $v $t }}; err != nil {
 			return nil, {{ grpc_errf "InvalidArgument" (print .Name ": %s" | quote) "err" }}

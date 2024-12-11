@@ -133,6 +133,7 @@ message LoanPatchRequest {
 message MemberAddRequest {
 	optional bytes id = 1;
 	string name = 3;
+	Member.Level level = 4;
 	map<string,string> labels = 5;
 	optional google.protobuf.Timestamp date_created = 15;
 }
@@ -146,5 +147,6 @@ message MemberGetRequest {
 message MemberPatchRequest {
 	MemberGetRequest key = 1;
 	optional string name = 5;
+	optional Member.Level level = 7;
 	map<string,string> labels = 9;
 }

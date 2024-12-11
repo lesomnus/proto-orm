@@ -12,7 +12,7 @@ func toEntIdent(t orm.Type) string {
 	case orm.Type_TYPE_BOOL:
 		v = "Bool"
 	case orm.Type_TYPE_ENUM:
-		panic("todo")
+		v = "Enum"
 	case orm.Type_TYPE_INT32,
 		orm.Type_TYPE_SINT32,
 		orm.Type_TYPE_SFIXED32:
