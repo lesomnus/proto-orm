@@ -7,7 +7,7 @@ import (
 	edge "entgo.io/ent/schema/edge"
 	field "entgo.io/ent/schema/field"
 	uuid "github.com/google/uuid"
-	library "github.com/lesomnus/proto-orm/internal/example/library"
+	library "github.com/lesomnus/proto-orm/_example/library"
 	time "time"
 )
 

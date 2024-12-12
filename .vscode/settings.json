@@ -2,7 +2,7 @@
 	"protoc": {
 		"options": [
 			"--proto_path=${workspaceRoot}/proto",
-			"--proto_path=${workspaceRoot}/internal/example/proto",
+			"--proto_path=${workspaceRoot}/_example/proto",
 		]
 	}
 }

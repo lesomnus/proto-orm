@@ -4,7 +4,7 @@ package bare
 
 import (
 	sqlgraph "entgo.io/ent/dialect/sql/sqlgraph"
-	ent "github.com/lesomnus/proto-orm/internal/example/library/ent"
+	ent "github.com/lesomnus/proto-orm/example/library/ent"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
 )

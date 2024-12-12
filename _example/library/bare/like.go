@@ -5,10 +5,10 @@ package bare
 import (
 	context "context"
 	uuid "github.com/google/uuid"
-	library "github.com/lesomnus/proto-orm/internal/example/library"
-	ent "github.com/lesomnus/proto-orm/internal/example/library/ent"
-	like "github.com/lesomnus/proto-orm/internal/example/library/ent/like"
-	predicate "github.com/lesomnus/proto-orm/internal/example/library/ent/predicate"
+	library "github.com/lesomnus/proto-orm/_example/library"
+	ent "github.com/lesomnus/proto-orm/example/library/ent"
+	like "github.com/lesomnus/proto-orm/example/library/ent/like"
+	predicate "github.com/lesomnus/proto-orm/example/library/ent/predicate"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
 )

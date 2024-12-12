@@ -5,7 +5,7 @@ package example.library;
 import "orm.proto";
 import "google/protobuf/timestamp.proto";
 
-option go_package = "github.com/lesomnus/proto-orm/internal/example/library";
+option go_package = "github.com/lesomnus/proto-orm/_example/library";
 option (orm.all) = {
 	messages: {}
 	rpcs: {

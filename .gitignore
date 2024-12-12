@@ -1,4 +1,3 @@
-/internal/example/library/*
-!/internal/example/library/bare
-!/internal/example/library/schema
-!/internal/example/library/generate.go
+/_example/library/entity.*.go
+/_example/library/ent/*
+!/_example/library/ent/convert.pb.go
