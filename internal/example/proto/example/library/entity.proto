@@ -72,11 +72,7 @@ message Book {
 		}
 		Range range = 3;
 	}
-	repeated Index index = 5 [
-		(orm.field) = {
-			type: TYPE_JSON
-		}
-	];
+	repeated Index index = 5;
 	repeated string genres = 6;
 
 	google.protobuf.Timestamp date_created = 15 [
@@ -159,8 +155,8 @@ message Like {
 			default: ""
 		}
 	];
-	Book book = 3;
-	Member member = 5;
+	Book book = 3 [(orm.edge) = {}];
+	Member member = 5 [(orm.edge) = {}];
 	
 	google.protobuf.Timestamp date_created = 15 [
 		(orm.field) = {

@@ -73,11 +73,13 @@ func (e *Entity) prase(g Graph, o *orm.MessageOptions) error {
 		oe := proto.GetExtension(o, orm.E_Edge).(*orm.EdgeOptions)
 
 		t := resolveType(f, of)
-		if t != orm.Type_TYPE_MESSAGE {
-			if oe != nil {
-				// TODO: warns field is an attr
-			}
-
+		is_attr := t != orm.Type_TYPE_MESSAGE
+		if t == orm.Type_TYPE_MESSAGE && oe == nil {
+			is_attr = true
+		} else if oe != nil && !oe.Ignored {
+			is_attr = false
+		}
+		if is_attr {
 			if _, err := e.parseAttr(f, of); err != nil {
 				err = fmt.Errorf(`add field "%s": %w`, f.Desc.Name(), err)
 				errs = append(errs, err)
@@ -86,7 +88,6 @@ func (e *Entity) prase(g Graph, o *orm.MessageOptions) error {
 		} else {
 			if of != nil {
 				// TODO: warns field is an edge
-
 			}
 			target_name := f.Message.Desc.FullName()
 			target, ok := g[target_name]

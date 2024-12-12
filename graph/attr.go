@@ -42,6 +42,9 @@ func (e *Entity) parseAttr(f *protogen.Field, o *orm.FieldOptions) (*Attr, error
 		Immutable: o.Immutable,
 		Default:   o.Default,
 	}
+	if v.typ == orm.Type_TYPE_MESSAGE {
+		v.typ = orm.Type_TYPE_JSON
+	}
 
 	// d := f.Desc
 	n := v.Name()
