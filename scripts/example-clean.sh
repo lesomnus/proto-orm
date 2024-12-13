@@ -17,4 +17,4 @@ rm -rf \
 	"$__root/_example/library/ent" \
 	"$__root/_example/library/schema" \
 	"$__root/_example/library/"*.pb.go \
-	"$__root/_example/proto/example/library/entity.svc.proto"
+	"$__root/_example/proto/example/library/entity.g.proto"

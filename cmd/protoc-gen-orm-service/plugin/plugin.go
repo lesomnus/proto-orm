@@ -1,7 +1,10 @@
 package plugin
 
 import (
+	"bytes"
 	"fmt"
+	"path/filepath"
+	"text/template"
 
 	"github.com/lesomnus/proto-orm/graph"
 	"google.golang.org/protobuf/compiler/protogen"
@@ -10,6 +13,7 @@ import (
 )
 
 type Plugin struct {
+	Naming string
 }
 
 func NewPlugin() *Plugin {
@@ -22,6 +26,11 @@ func (p *Plugin) Run(plugin *protogen.Plugin) error {
 	plugin.SupportedFeatures = uint64(0 |
 		pluginpb.CodeGeneratorResponse_FEATURE_PROTO3_OPTIONAL)
 
+	namer, err := template.New("naming").Parse(p.Naming)
+	if err != nil {
+		return fmt.Errorf(`invalid option value "naming=%s": %w`, p.Naming, err)
+	}
+
 	g, err := graph.NewGraph(plugin.Files)
 	if err != nil {
 		return fmt.Errorf("graph: %w", err)
@@ -33,7 +42,11 @@ func (p *Plugin) Run(plugin *protogen.Plugin) error {
 			continue
 		}
 
-		d := e.File.GeneratedFilenamePrefix + ".svc.proto"
+		b := &bytes.Buffer{}
+		d, n := filepath.Split(e.File.GeneratedFilenamePrefix)
+		namer.Execute(b, struct{ Name string }{Name: n})
+
+		d = filepath.Join(d, b.String())
 		if f, ok := fs[d]; ok {
 			f.Entities = append(f.Entities, e)
 			continue

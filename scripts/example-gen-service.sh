@@ -31,5 +31,6 @@ protoc \
 	\
 	--"$NAME"_out="$OUTPUT_DIR" \
 	--"$NAME"_opt=module="$MODULE_NAME" \
+	--"$NAME"_opt=naming="{{ .Name }}.g.proto" \
 	\
 	"$PROTO_ROOT"/**/*.proto
