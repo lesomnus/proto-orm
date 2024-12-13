@@ -6,6 +6,7 @@ import (
 	ent "entgo.io/ent"
 	field "entgo.io/ent/schema/field"
 	uuid "github.com/google/uuid"
+	library "github.com/lesomnus/proto-orm/_example/library"
 	time "time"
 )
 
@@ -20,8 +21,9 @@ func (Member) Fields() []ent.Field {
 			Unique().
 			Immutable(),
 		field.String("name"),
-		field.Int("level"),
 		field.JSON("labels", map[string]string{}),
+		field.JSON("profile", &library.Profile{}),
+		field.Int("level"),
 		field.Time("date_created").
 			Default(time.Now).
 			Immutable(),

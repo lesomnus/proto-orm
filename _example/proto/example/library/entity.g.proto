@@ -49,6 +49,8 @@ message AuthorAddRequest {
 	optional bytes id = 1;
 	string alias = 2;
 	string name = 3;
+	map<string,string> labels = 4;
+	Profile profile = 5;
 	optional google.protobuf.Timestamp date_created = 15;
 }
 
@@ -63,7 +65,9 @@ message AuthorPatchRequest {
 	AuthorGetRequest key = 1;
 	optional string alias = 3;
 	optional string name = 5;
-	repeated Book books = 7;
+	map<string,string> labels = 7;
+	optional Profile profile = 9;
+	repeated Book books = 13;
 }
 
 message BookAddRequest {
@@ -133,8 +137,9 @@ message LoanPatchRequest {
 message MemberAddRequest {
 	optional bytes id = 1;
 	string name = 3;
-	Member.Level level = 4;
-	map<string,string> labels = 5;
+	map<string,string> labels = 4;
+	Profile profile = 5;
+	Member.Level level = 6;
 	optional google.protobuf.Timestamp date_created = 15;
 }
 
@@ -147,6 +152,7 @@ message MemberGetRequest {
 message MemberPatchRequest {
 	MemberGetRequest key = 1;
 	optional string name = 5;
-	optional Member.Level level = 7;
-	map<string,string> labels = 9;
+	map<string,string> labels = 7;
+	optional Profile profile = 9;
+	optional Member.Level level = 11;
 }

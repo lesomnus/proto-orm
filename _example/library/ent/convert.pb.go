@@ -12,6 +12,8 @@ func (e *Author) Proto() *library.Author {
 	m.Id = e.ID[:]
 	m.Alias = e.Alias
 	m.Name = e.Name
+	m.Labels = e.Labels
+	m.Profile = e.Profile
 	for _, v := range e.Edges.Books {
 		m.Books = append(m.Books, v.Proto())
 	}
@@ -72,8 +74,9 @@ func (e *Member) Proto() *library.Member {
 	m := &library.Member{}
 	m.Id = e.ID[:]
 	m.Name = e.Name
-	m.Level = library.Member_Level(e.Level)
 	m.Labels = e.Labels
+	m.Profile = e.Profile
+	m.Level = library.Member_Level(e.Level)
 	m.DateCreated = timestamppb.New(e.DateCreated)
 
 	return m

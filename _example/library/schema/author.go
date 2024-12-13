@@ -7,6 +7,7 @@ import (
 	edge "entgo.io/ent/schema/edge"
 	field "entgo.io/ent/schema/field"
 	uuid "github.com/google/uuid"
+	library "github.com/lesomnus/proto-orm/_example/library"
 	time "time"
 )
 
@@ -23,6 +24,8 @@ func (Author) Fields() []ent.Field {
 		field.String("alias").
 			Unique(),
 		field.String("name"),
+		field.JSON("labels", map[string]string{}),
+		field.JSON("profile", &library.Profile{}),
 		field.Time("date_created").
 			Default(time.Now).
 			Immutable(),

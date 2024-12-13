@@ -17,6 +17,13 @@ option (orm.all) = {
 	}
 };
 
+message Profile {
+	option (orm.message) = { enabled: false };
+	string email = 1;
+
+	google.protobuf.Timestamp date_birth = 15;
+}
+
 message Author {
 	bytes id = 1 [
 		(orm.field) = {
@@ -31,8 +38,10 @@ message Author {
 		}
 	];
 	string name = 3;
+	map<string, string> labels = 4;
+	Profile profile = 5;
 
-	repeated Book books = 4 [
+	repeated Book books = 7 [
 		(orm.edge) = {
 			select: {}
 		}
@@ -57,7 +66,7 @@ message Book {
 	string title = 3;
 	repeated Author authors = 4 [
 		(orm.edge) = {
-			from: 4 // books
+			from: 7 // books
 			select: {}
 		}
 	];
@@ -92,15 +101,15 @@ message Member {
 		}
 	];
 	string name = 3;
+	map<string, string> labels = 4;
 
+	Profile profile = 5;
 	enum Level {
 		LEVEL_BRONZE = 0;
 		LEVEL_SILVER = 1;
 		LEVEL_GOLD = 2;
 	}
-	Level level = 4;
-
-	map<string, string> labels = 5;
+	Level level = 6;
 
 	google.protobuf.Timestamp date_created = 15 [
 		(orm.field) = {

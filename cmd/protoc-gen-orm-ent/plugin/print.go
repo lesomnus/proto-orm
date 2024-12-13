@@ -114,7 +114,7 @@ func (p *Plugin) NewTemplate(e *graph.Entity, f *protogen.GeneratedFile) *templa
 				case orm.Type_TYPE_UUID:
 					v = f.QualifiedGoIdent(import_uuid.Ident("UUID")) + "{}"
 				case orm.Type_TYPE_JSON:
-					v = "*" + f.QualifiedGoIdent(field.Source().Message.GoIdent) + "{}"
+					v = "&" + f.QualifiedGoIdent(field.Source().Message.GoIdent) + "{}"
 				}
 			}
 

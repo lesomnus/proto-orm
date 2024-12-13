@@ -31,6 +31,8 @@ func (s *AuthorServiceServer) Add(ctx context.Context, req *library.AuthorAddReq
 	}
 	q.SetAlias(req.Alias)
 	q.SetName(req.Name)
+	q.SetLabels(req.Labels)
+	q.SetProfile(req.Profile)
 	q.SetDateCreated(req.DateCreated.AsTime())
 
 	v, err := q.Save(ctx)
@@ -69,6 +71,12 @@ func (s *AuthorServiceServer) Patch(ctx context.Context, req *library.AuthorPatc
 	}
 	if req.Name != nil {
 		q.SetName(*req.Name)
+	}
+	if req.Labels != nil {
+		q.SetLabels(req.Labels)
+	}
+	if req.Profile != nil {
+		q.SetProfile(req.Profile)
 	}
 
 	v, err := q.Save(ctx)

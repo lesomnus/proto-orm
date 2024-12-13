@@ -30,8 +30,9 @@ func (s *MemberServiceServer) Add(ctx context.Context, req *library.MemberAddReq
 		q.SetID(v)
 	}
 	q.SetName(req.Name)
-	q.SetLevel(int(req.Level))
 	q.SetLabels(req.Labels)
+	q.SetProfile(req.Profile)
+	q.SetLevel(int(req.Level))
 	q.SetDateCreated(req.DateCreated.AsTime())
 
 	v, err := q.Save(ctx)
@@ -68,11 +69,14 @@ func (s *MemberServiceServer) Patch(ctx context.Context, req *library.MemberPatc
 	if req.Name != nil {
 		q.SetName(*req.Name)
 	}
-	if req.Level != nil {
-		q.SetLevel(int(*req.Level))
-	}
 	if req.Labels != nil {
 		q.SetLabels(req.Labels)
+	}
+	if req.Profile != nil {
+		q.SetProfile(req.Profile)
+	}
+	if req.Level != nil {
+		q.SetLevel(int(*req.Level))
 	}
 
 	v, err := q.Save(ctx)
