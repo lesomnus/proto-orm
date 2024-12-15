@@ -19,7 +19,7 @@ func {{ $.Name }}Pick(req *{{ $req_name }}) ({{ $pred_ent }}, error) {
 
 		{{ if is_symmetric $t -}}
 		{{/*   key is symmetric field */ -}}
-		return {{ $p }}(k.{{ $n }}), nil
+		return {{ $p }}({{ $n }}), nil
 		{{ else -}}
 		{{/*   key is asymmetric field */ -}}
 		if v, err := {{ convert_to_ent_field $n $t }}; err != nil {

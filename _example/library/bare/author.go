@@ -108,7 +108,7 @@ func AuthorPick(req *library.AuthorGetRequest) (predicate.Author, error) {
 			return author.IDEQ(v), nil
 		}
 	case *library.AuthorGetRequest_Alias:
-		return author.AliasEQ(k.k.Alias), nil
+		return author.AliasEQ(k.Alias), nil
 	case nil:
 		return nil, status.Errorf(codes.InvalidArgument, "key not provided")
 	default:
