@@ -38,6 +38,13 @@ service LoanService {
 	rpc Erase (LoanGetRequest) returns (google.protobuf.Empty);
 }
 
+service LockerService {
+	rpc Add (LockerAddRequest) returns (Locker);
+	rpc Get (LockerGetRequest) returns (Locker);
+	rpc Patch (LockerPatchRequest) returns (google.protobuf.Empty);
+	rpc Erase (LockerGetRequest) returns (google.protobuf.Empty);
+}
+
 service MemberService {
 	rpc Add (MemberAddRequest) returns (Member);
 	rpc Get (MemberGetRequest) returns (Member);
@@ -73,7 +80,6 @@ message AuthorPatchRequest {
 message BookAddRequest {
 	optional bytes id = 1;
 	string title = 3;
-	repeated AuthorGetRequest authors = 4;
 	repeated Book.Index index = 5;
 	repeated string genres = 6;
 	optional google.protobuf.Timestamp date_created = 15;
@@ -95,6 +101,8 @@ message BookPatchRequest {
 
 message LikeAddRequest {
 	optional bytes id = 1;
+	BookGetRequest book = 3;
+	MemberGetRequest member = 5;
 	optional google.protobuf.Timestamp date_created = 15;
 }
 
@@ -116,6 +124,8 @@ message LikePatchRequest {
 
 message LoanAddRequest {
 	optional bytes id = 1;
+	BookGetRequest book = 3;
+	MemberGetRequest member = 5;
 	google.protobuf.Timestamp date_due = 13;
 	optional google.protobuf.Timestamp date_return = 14;
 	optional google.protobuf.Timestamp date_created = 15;
@@ -132,6 +142,22 @@ message LoanPatchRequest {
 	optional google.protobuf.Timestamp date_due = 25;
 	optional google.protobuf.Timestamp date_return = 27;
 	bool date_return_null = 28;
+}
+
+message LockerAddRequest {
+	optional bytes id = 1;
+}
+
+message LockerGetRequest {
+	oneof key {
+		bytes id = 1;
+	}
+}
+
+message LockerPatchRequest {
+	LockerGetRequest key = 1;
+	optional Member owner = 3;
+	bool owner_null = 4;
 }
 
 message MemberAddRequest {
@@ -155,4 +181,6 @@ message MemberPatchRequest {
 	map<string,string> labels = 7;
 	optional Profile profile = 9;
 	optional Member.Level level = 11;
+	optional Locker locker = 13;
+	bool locker_null = 14;
 }

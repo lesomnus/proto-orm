@@ -32,7 +32,7 @@ func (s *{{ $.Name }}ServiceServer) Add(ctx {{ pkg "context" | ident "Context" }
 	{{/* printing edges */ -}}
 
 	{{ with as_edge . -}}
-	{{ if not .HasInverse -}}
+	{{ if not .IsUnidirectional -}}
 		{{ continue -}}
 	{{ end -}}
 

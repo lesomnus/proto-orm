@@ -4,6 +4,7 @@ package schema
 
 import (
 	ent "entgo.io/ent"
+	edge "entgo.io/ent/schema/edge"
 	field "entgo.io/ent/schema/field"
 	uuid "github.com/google/uuid"
 	library "github.com/lesomnus/proto-orm/_example/library"
@@ -27,5 +28,12 @@ func (Member) Fields() []ent.Field {
 		field.Time("date_created").
 			Default(time.Now).
 			Immutable(),
+	}
+}
+
+func (Member) Edges() []ent.Edge {
+	return []ent.Edge{
+		edge.To("locker", Locker.Type).
+			Unique(),
 	}
 }

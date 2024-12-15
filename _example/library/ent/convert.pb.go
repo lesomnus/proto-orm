@@ -70,6 +70,16 @@ func (e *Loan) Proto() *library.Loan {
 	return m
 }
 
+func (e *Locker) Proto() *library.Locker {
+	m := &library.Locker{}
+	m.Id = e.ID[:]
+	if v := e.Edges.Owner; v != nil {
+		m.Owner = v.Proto()
+	}
+
+	return m
+}
+
 func (e *Member) Proto() *library.Member {
 	m := &library.Member{}
 	m.Id = e.ID[:]
@@ -77,6 +87,9 @@ func (e *Member) Proto() *library.Member {
 	m.Labels = e.Labels
 	m.Profile = e.Profile
 	m.Level = library.Member_Level(e.Level)
+	if v := e.Edges.Locker; v != nil {
+		m.Locker = v.Proto()
+	}
 	m.DateCreated = timestamppb.New(e.DateCreated)
 
 	return m

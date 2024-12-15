@@ -68,7 +68,7 @@ func (s *{{ $.Name }}ServiceServer) Patch(ctx {{ pkg "context" | ident "Context"
 	} else {{ end -}}
 
 	if {{ $v }} != nil {
-		q.Set{{ $n }}($v)
+		q.Set{{ $n }}({{ $v }})
 	}
 	{{ continue -}}
 	{{ end }}{{/* edge field is printed */ -}}

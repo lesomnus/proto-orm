@@ -78,6 +78,11 @@ func (s *MemberServiceServer) Patch(ctx context.Context, req *library.MemberPatc
 	if req.Level != nil {
 		q.SetLevel(int(*req.Level))
 	}
+	if req.LockerNull {
+		q.ClearLocker()
+	} else if req.Locker != nil {
+		q.SetLocker(req.Locker)
+	}
 
 	v, err := q.Save(ctx)
 	if err != nil {

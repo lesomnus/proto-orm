@@ -204,7 +204,7 @@ func (w *printWork) msgAddReq(r *graph.Rpc) *pbgen.Message {
 			}
 
 		case (*graph.Edge):
-			if !u.HasInverse() {
+			if !u.IsUnidirectional() {
 				// TODO: Should the set of User[pet] be supported at the time of User creation?
 				continue
 			}

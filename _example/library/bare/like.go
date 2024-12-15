@@ -29,6 +29,16 @@ func (s *LikeServiceServer) Add(ctx context.Context, req *library.LikeAddRequest
 	} else {
 		q.SetID(v)
 	}
+	if id, err := BookGetId(ctx, s.db, req.GetBook()); err != nil {
+		return nil, err
+	} else {
+		q.SetBookID(id)
+	}
+	if id, err := MemberGetId(ctx, s.db, req.GetMember()); err != nil {
+		return nil, err
+	} else {
+		q.SetMemberID(id)
+	}
 	q.SetDateCreated(req.DateCreated.AsTime())
 
 	v, err := q.Save(ctx)

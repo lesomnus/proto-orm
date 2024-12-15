@@ -7,32 +7,28 @@ import (
 	uuid "github.com/google/uuid"
 	library "github.com/lesomnus/proto-orm/_example/library"
 	ent "github.com/lesomnus/proto-orm/example/library/ent"
-	book "github.com/lesomnus/proto-orm/example/library/ent/book"
+	locker "github.com/lesomnus/proto-orm/example/library/ent/locker"
 	predicate "github.com/lesomnus/proto-orm/example/library/ent/predicate"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
 )
 
-type BookServiceServer struct {
+type LockerServiceServer struct {
 	db *ent.Client
-	library.UnimplementedBookServiceServer
+	library.UnimplementedLockerServiceServer
 }
 
-func NewBookServiceServer(db *ent.Client) *BookServiceServer {
-	return &BookServiceServer{db: db}
+func NewLockerServiceServer(db *ent.Client) *LockerServiceServer {
+	return &LockerServiceServer{db: db}
 }
 
-func (s *BookServiceServer) Add(ctx context.Context, req *library.BookAddRequest) (*library.Book, error) {
-	q := s.db.Book.Create()
+func (s *LockerServiceServer) Add(ctx context.Context, req *library.LockerAddRequest) (*library.Locker, error) {
+	q := s.db.Locker.Create()
 	if v, err := uuid.FromBytes(req.Id); err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "id: %s", err)
 	} else {
 		q.SetID(v)
 	}
-	q.SetTitle(req.Title)
-	q.SetIndex(req.Index)
-	q.SetGenres(req.Genres)
-	q.SetDateCreated(req.DateCreated.AsTime())
 
 	v, err := q.Save(ctx)
 	if err != nil {
@@ -42,9 +38,9 @@ func (s *BookServiceServer) Add(ctx context.Context, req *library.BookAddRequest
 	return v.Proto(), nil
 }
 
-func (s *BookServiceServer) Get(ctx context.Context, req *library.BookGetRequest) (*library.Book, error) {
-	q := s.db.Book.Query()
-	if p, err := BookPick(req); err != nil {
+func (s *LockerServiceServer) Get(ctx context.Context, req *library.LockerGetRequest) (*library.Locker, error) {
+	q := s.db.Locker.Query()
+	if p, err := LockerPick(req); err != nil {
 		return nil, err
 	} else {
 		q.Where(p)
@@ -58,22 +54,13 @@ func (s *BookServiceServer) Get(ctx context.Context, req *library.BookGetRequest
 	return v.Proto(), nil
 }
 
-func (s *BookServiceServer) Patch(ctx context.Context, req *library.BookPatchRequest) (*library.Book, error) {
-	id, err := BookGetId(ctx, s.db, req.GetKey())
+func (s *LockerServiceServer) Patch(ctx context.Context, req *library.LockerPatchRequest) (*library.Locker, error) {
+	id, err := LockerGetId(ctx, s.db, req.GetKey())
 	if err != nil {
 		return nil, err
 	}
 
-	q := s.db.Book.UpdateOneID(id)
-	if req.Title != nil {
-		q.SetTitle(*req.Title)
-	}
-	if req.Index != nil {
-		q.SetIndex(req.Index)
-	}
-	if req.Genres != nil {
-		q.SetGenres(req.Genres)
-	}
+	q := s.db.Locker.UpdateOneID(id)
 
 	v, err := q.Save(ctx)
 	if err != nil {
@@ -83,25 +70,25 @@ func (s *BookServiceServer) Patch(ctx context.Context, req *library.BookPatchReq
 	return v.Proto(), nil
 }
 
-func (s *BookServiceServer) Erase(ctx context.Context, req *library.BookGetRequest) (*library.Book, error) {
-	p, err := BookPick(req)
+func (s *LockerServiceServer) Erase(ctx context.Context, req *library.LockerGetRequest) (*library.Locker, error) {
+	p, err := LockerPick(req)
 	if err != nil {
 		return nil, err
 	}
-	if _, err := s.db.Book.Delete().Where(p).Exec(ctx); err != nil {
+	if _, err := s.db.Locker.Delete().Where(p).Exec(ctx); err != nil {
 		return nil, StatusFromEntError(err)
 	}
 
 	return nil, nil
 }
 
-func BookPick(req *library.BookGetRequest) (predicate.Book, error) {
+func LockerPick(req *library.LockerGetRequest) (predicate.Locker, error) {
 	switch k := req.GetKey().(type) {
-	case *library.BookGetRequest_Id:
+	case *library.LockerGetRequest_Id:
 		if v, err := uuid.FromBytes(k.Id); err != nil {
 			return nil, status.Errorf(codes.InvalidArgument, "id: %s", "err")
 		} else {
-			return book.IDEQ(v), nil
+			return locker.IDEQ(v), nil
 		}
 	case nil:
 		return nil, status.Errorf(codes.InvalidArgument, "key not provided")
@@ -110,10 +97,10 @@ func BookPick(req *library.BookGetRequest) (predicate.Book, error) {
 	}
 }
 
-func BookGetId(ctx context.Context, db *ent.Client, req *library.BookGetRequest) (uuid.UUID, error) {
+func LockerGetId(ctx context.Context, db *ent.Client, req *library.LockerGetRequest) (uuid.UUID, error) {
 	var z uuid.UUID
 	k := req.GetKey()
-	if r, ok := k.(*library.BookGetRequest_Id); ok {
+	if r, ok := k.(*library.LockerGetRequest_Id); ok {
 		if v, err := uuid.FromBytes(r.Id); err != nil {
 			return z, status.Errorf(codes.InvalidArgument, "Id: %s", "err")
 		} else {
@@ -121,12 +108,12 @@ func BookGetId(ctx context.Context, db *ent.Client, req *library.BookGetRequest)
 		}
 	}
 
-	p, err := BookPick(req)
+	p, err := LockerPick(req)
 	if err != nil {
 		return z, err
 	}
 
-	v, err := db.Book.Query().Where(p).OnlyID(ctx)
+	v, err := db.Locker.Query().Where(p).OnlyID(ctx)
 	if err != nil {
 		return z, status.Errorf(codes.Internal, "query: %s", err)
 	}
