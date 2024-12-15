@@ -15,10 +15,11 @@ import (
 )
 
 type Field interface {
+	ProtoTyped
+
 	FullName() protoreflect.FullName
 	Name() string
 	Number() protowire.Number
-	ProtoType() string
 	GoName() string
 
 	Source() *protogen.Field

@@ -171,6 +171,13 @@ func (a *Attr) protoType(d protoreflect.FieldDescriptor) string {
 	}
 }
 
+func (a *Attr) ImportPath() string {
+	if a.source.Message == nil {
+		return ""
+	}
+	return a.source.Message.Desc.ParentFile().Path()
+}
+
 func (a *Attr) GoName() string {
 	return a.source.GoName
 }

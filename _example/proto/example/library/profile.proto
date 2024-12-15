@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package example.library;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/lesomnus/proto-orm/_example/library";
+
+message Profile {
+	string email = 1;
+
+	google.protobuf.Timestamp date_birth = 15;
+}

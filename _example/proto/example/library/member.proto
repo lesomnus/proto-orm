@@ -1,0 +1,63 @@
+syntax = "proto3";
+
+package example.library;
+
+import "example/library/profile.proto";
+import "google/protobuf/timestamp.proto";
+import "orm.proto";
+
+option go_package = "github.com/lesomnus/proto-orm/_example/library";
+option (orm.all) = {
+	messages: {}
+	rpcs: {
+		crud: true
+	}
+};
+
+message Member {
+	bytes id = 1 [
+		(orm.field) = {
+			type: TYPE_UUID
+			key: true
+			default: ""
+		}
+	];
+	string name = 3;
+	map<string, string> labels = 4;
+
+	Profile profile = 5;
+	enum Level {
+		LEVEL_BRONZE = 0;
+		LEVEL_SILVER = 1;
+		LEVEL_GOLD = 2;
+	}
+	Level level = 6;
+	Locker locker = 7 [(orm.edge) = {
+		nullable: true
+	}];
+
+	google.protobuf.Timestamp date_created = 15 [
+		(orm.field) = {
+			immutable: true
+			default: ""
+		}
+	];
+}
+
+message Locker {
+	bytes id = 1 [
+		(orm.field) = {
+			type: TYPE_UUID
+			key: true
+			default: ""
+		}
+	];
+
+	Member owner = 2 [
+		(orm.edge) = {
+			from: 7
+			nullable: true
+		}
+	];
+}
+

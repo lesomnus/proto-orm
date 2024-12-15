@@ -55,6 +55,8 @@ var (
 )
 
 type ProtoFile struct {
+	Path string
+
 	Edition Edition
 	Package protoreflect.FullName
 	Imports []Import
@@ -68,6 +70,9 @@ func (ProtoFile) TemplateName() string {
 }
 
 func (f *ProtoFile) AddImport(v Import) (int, bool) {
+	if f.Path == v.Name {
+		return -1, false
+	}
 	for i, w := range f.Imports {
 		if w.Name == v.Name {
 			return i, false

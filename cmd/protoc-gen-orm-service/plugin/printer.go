@@ -15,13 +15,18 @@ import (
 )
 
 type Printer struct {
+	// `p` should be `/path/to/file.proto` and
+	// it will returns something like `/path/to/file.svc.prot`.
+	namer func(p string) string
+
+	messages map[protoreflect.FullName]*generatedMessage
 }
 
 func NewPrinter() *Printer {
 	return &Printer{}
 }
 
-func (*Printer) Print(f *File) error {
+func (p *Printer) Print(f *File) error {
 	if len(f.Entities) == 0 {
 		return os.ErrNotExist
 	}
@@ -30,6 +35,7 @@ func (*Printer) Print(f *File) error {
 	f.P("")
 
 	pf := &pbgen.ProtoFile{
+		Path:    f.Path,
 		Edition: pbgen.SyntaxProto3,
 		Imports: []pbgen.Import{
 			{Name: f.Entities[0].File.Desc.Path()},
@@ -43,9 +49,9 @@ func (*Printer) Print(f *File) error {
 	}
 
 	w := printWork{
+		Printer:  p,
 		file:     pf,
 		services: map[protoreflect.FullName]*pbgen.Service{},
-		messages: map[protoreflect.FullName]*pbgen.Message{},
 	}
 	for _, e := range f.Entities {
 		o := orm.ResolveRpcOptions(f.Source(), e.Source)
@@ -120,17 +126,31 @@ func (*Printer) Print(f *File) error {
 }
 
 type printWork struct {
+	*Printer
 	file     *pbgen.ProtoFile
 	services map[protoreflect.FullName]*pbgen.Service
-	messages map[protoreflect.FullName]*pbgen.Message
 }
 
-func (w *printWork) typeMessage(f graph.Field) pbgen.Type {
-	if m := f.Source().Message; m != nil {
-		w.file.AddImport(pbgen.Import{Name: m.Desc.ParentFile().Path()})
+func (w *printWork) newMessage(m *graph.RpcMessage) (*generatedMessage, bool) {
+	n := m.FullName
+	if v, ok := w.messages[n]; ok {
+		return v, false
 	}
 
-	return pbgen.Type(f.ProtoType())
+	v := &generatedMessage{
+		Message: &pbgen.Message{FullName: n},
+		p:       w.namer(m.Entity.File.Desc.Path()),
+	}
+	w.messages[n] = v
+	return v, true
+}
+
+func (w *printWork) typeMessage(t graph.ProtoTyped) pbgen.Type {
+	if p := t.ImportPath(); p != "" {
+		w.file.AddImport(pbgen.Import{Name: p})
+	}
+
+	return pbgen.Type(t.ProtoType())
 }
 
 func (w *printWork) rpc(r *graph.Rpc) pbgen.Rpc {
@@ -165,14 +185,11 @@ func (w *printWork) Do(e *graph.Entity, o *orm.RpcOptions) {
 	w.services[e.FullName()] = s
 }
 
-func (w *printWork) msgAddReq(r *graph.Rpc) *pbgen.Message {
-	full := r.Req.FullName
-	if m, ok := w.messages[full]; ok {
+func (w *printWork) msgAddReq(r *graph.Rpc) *generatedMessage {
+	m, ok := w.newMessage(r.Req)
+	if !ok {
 		return m
 	}
-
-	m := &pbgen.Message{FullName: full}
-	w.messages[full] = m
 
 	body := []pbgen.MessageBody{}
 	for _, f := range r.Entity.FieldsSortByNumber() {
@@ -209,11 +226,11 @@ func (w *printWork) msgAddReq(r *graph.Rpc) *pbgen.Message {
 			r := target.Rpcs[graph.RpcOpGet]
 			if r == nil {
 				panic("TODO: target entity does not enables Get rpc")
-				// To resolve this, graph should parse disabled rpcs also
+				// To resolve this, graph should parse the disabled rpcs also
 				// or make one on demand.
 			}
 			m := w.msgGetReq(r)
-			v.Type = pbgen.Type(m.FullName)
+			v.Type = w.typeMessage(m)
 
 			d := u.Source().Desc
 			if d.IsList() {
@@ -238,13 +255,16 @@ func (w *printWork) nameIndexGet(e *graph.Entity, i *graph.Index) protoreflect.F
 	return e.FullName().Parent().Append(protoreflect.Name(n))
 }
 
-func (w *printWork) indexGet(e *graph.Entity, i *graph.Index) *pbgen.Message {
+func (w *printWork) indexGet(e *graph.Entity, i *graph.Index) *generatedMessage {
 	full := w.nameIndexGet(e, i)
 	if m, ok := w.messages[full]; ok {
 		return m
 	}
 
-	m := &pbgen.Message{FullName: full}
+	m := &generatedMessage{
+		Message: &pbgen.Message{FullName: full},
+		p:       w.namer(e.File.Desc.Path()),
+	}
 	w.messages[full] = m
 
 	body := []pbgen.MessageBody{}
@@ -262,7 +282,7 @@ func (w *printWork) indexGet(e *graph.Entity, i *graph.Index) *pbgen.Message {
 		case (*graph.Edge):
 			m := w.msgGetReq(u.Target.Rpcs[graph.RpcOpGet])
 			v := pbgen.MessageField{
-				Type:   pbgen.Type(m.FullName),
+				Type:   w.typeMessage(m),
 				Name:   protoreflect.Name(d.Name()),
 				Number: int(d.Number()),
 			}
@@ -274,14 +294,11 @@ func (w *printWork) indexGet(e *graph.Entity, i *graph.Index) *pbgen.Message {
 	return m
 }
 
-func (w *printWork) msgGetReq(r *graph.Rpc) *pbgen.Message {
-	full := r.Req.FullName
-	if m, ok := w.messages[full]; ok {
+func (w *printWork) msgGetReq(r *graph.Rpc) *generatedMessage {
+	m, ok := w.newMessage(r.Req)
+	if !ok {
 		return m
 	}
-
-	m := &pbgen.Message{FullName: full}
-	w.messages[full] = m
 
 	oneof := pbgen.MessageOneof{Name: "key"}
 	for _, k := range r.Entity.KeyLikes() {
@@ -300,7 +317,7 @@ func (w *printWork) msgGetReq(r *graph.Rpc) *pbgen.Message {
 		case *graph.Index:
 			m := w.indexGet(r.Entity, v)
 			oneof.Body = append(oneof.Body, pbgen.MessageOneofField{
-				Type:   pbgen.Type(m.FullName),
+				Type:   w.typeMessage(m),
 				Name:   protoreflect.Name(v.Name()),
 				Number: int(v.Refs[0].Number()),
 			})
@@ -316,19 +333,16 @@ func (w *printWork) rpcGet(r *graph.Rpc) pbgen.Rpc {
 	return w.rpc(r)
 }
 
-func (w *printWork) msgPatchReq(r *graph.Rpc) *pbgen.Message {
-	full := r.Req.FullName
-	if m, ok := w.messages[full]; ok {
+func (w *printWork) msgPatchReq(r *graph.Rpc) *generatedMessage {
+	m, ok := w.newMessage(r.Req)
+	if !ok {
 		return m
 	}
-
-	m := &pbgen.Message{FullName: full}
-	w.messages[full] = m
 
 	k := w.msgGetReq(r.Entity.Rpcs[graph.RpcOpGet])
 	k_f := k.Body[0].(pbgen.MessageOneof).Body[0].(pbgen.MessageOneofField)
 	body := []pbgen.MessageBody{pbgen.MessageField{
-		Type:   pbgen.Type(k.FullName),
+		Type:   w.typeMessage(k),
 		Name:   "key",
 		Number: k_f.Number*2 - 1,
 	}}

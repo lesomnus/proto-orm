@@ -1,13 +1,14 @@
 package plugin
 
 import (
-	"github.com/lesomnus/proto-orm/graph"
 	orm "github.com/lesomnus/proto-orm"
+	"github.com/lesomnus/proto-orm/graph"
 	"google.golang.org/protobuf/compiler/protogen"
 )
 
 type File struct {
 	*protogen.GeneratedFile
+	Path       string
 	Entities   []*graph.Entity
 	RpcOptions orm.RpcOptions
 }

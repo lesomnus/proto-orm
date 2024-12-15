@@ -142,6 +142,11 @@ func (e *Edge) Number() protowire.Number {
 func (e *Edge) ProtoType() string {
 	return string(e.source.Message.Desc.FullName())
 }
+
+func (a *Edge) ImportPath() string {
+	return a.source.Message.Desc.ParentFile().Path()
+}
+
 func (e *Edge) GoName() string {
 	return e.source.GoName
 }

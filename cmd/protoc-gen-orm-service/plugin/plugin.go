@@ -4,10 +4,12 @@ import (
 	"bytes"
 	"fmt"
 	"path/filepath"
+	"strings"
 	"text/template"
 
 	"github.com/lesomnus/proto-orm/graph"
 	"google.golang.org/protobuf/compiler/protogen"
+	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/descriptorpb"
 	"google.golang.org/protobuf/types/pluginpb"
 )
@@ -36,29 +38,44 @@ func (p *Plugin) Run(plugin *protogen.Plugin) error {
 		return fmt.Errorf("graph: %w", err)
 	}
 
+	printer := &Printer{
+		namer: func(p string) string {
+			d, n := filepath.Split(p)
+			ext := filepath.Ext(n)
+			n, _ = strings.CutSuffix(n, ext)
+
+			b := &bytes.Buffer{}
+			err := namer.Execute(b, struct{ Name string }{Name: n})
+			if err != nil {
+				panic("namer")
+			}
+
+			return filepath.Join(d, b.String())
+		},
+
+		messages: map[protoreflect.FullName]*generatedMessage{},
+	}
+
 	fs := map[string]*File{}
 	for _, e := range g {
 		if !e.File.Generate {
 			continue
 		}
 
-		b := &bytes.Buffer{}
-		d, n := filepath.Split(e.File.GeneratedFilenamePrefix)
-		namer.Execute(b, struct{ Name string }{Name: n})
-
-		d = filepath.Join(d, b.String())
-		if f, ok := fs[d]; ok {
+		n := printer.namer(e.File.GeneratedFilenamePrefix)
+		if f, ok := fs[n]; ok {
 			f.Entities = append(f.Entities, e)
 			continue
 		}
 
-		fs[d] = &File{
-			GeneratedFile: plugin.NewGeneratedFile(d, e.File.GoImportPath),
+		fs[n] = &File{
+			Path:          printer.namer(e.File.Desc.Path()),
+			GeneratedFile: plugin.NewGeneratedFile(n, e.File.GoImportPath),
 			Entities:      []*graph.Entity{e},
 		}
 	}
 	for _, f := range fs {
-		NewPrinter().Print(f)
+		printer.Print(f)
 	}
 
 	return nil

@@ -1,0 +1,50 @@
+syntax = "proto3";
+
+package example.library;
+
+import "example/library/author.proto";
+import "example/library/member.proto";
+import "google/protobuf/timestamp.proto";
+import "orm.proto";
+
+option go_package = "github.com/lesomnus/proto-orm/_example/library";
+option (orm.all) = {
+	messages: {}
+	rpcs: {
+		crud: true
+	}
+};
+
+message Like {
+	bytes id = 1 [
+		(orm.field) = {
+			type: TYPE_UUID
+			key: true
+			default: ""
+		}
+	];
+	Book book = 3 [(orm.edge) = {
+		immutable: true
+	}];
+	Member member = 5 [(orm.edge) = {
+		immutable: true
+	}];
+	
+	google.protobuf.Timestamp date_created = 15 [
+		(orm.field) = {
+			immutable: true
+			default: ""
+		}
+	];
+	
+	option (orm.message) = {
+		indexes: [
+			{ 
+				name: "holders"
+				refs: [3, 5]
+				unique: true
+				immutable: true
+			}
+		]
+	};
+}

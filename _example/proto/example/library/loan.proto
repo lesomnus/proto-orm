@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+package example.library;
+
+import "example/library/author.proto";
+import "example/library/member.proto";
+import "google/protobuf/timestamp.proto";
+import "orm.proto";
+
+option go_package = "github.com/lesomnus/proto-orm/_example/library";
+option (orm.all) = {
+	messages: {}
+	rpcs: {
+		crud: true
+	}
+};
+
+message Loan {
+	bytes id = 1 [
+		(orm.field) = {
+			type: TYPE_UUID
+			key: true
+			default: ""
+		}
+	];
+	bytes book_id = 2;
+	Book book = 3 [
+		(orm.edge) = {
+			bind: 2
+			immutable: true
+		}
+	];
+	bytes member_id = 4;
+	Member member = 5 [
+		(orm.edge) = {
+			bind: 4
+			immutable: true
+		}
+	];
+
+	google.protobuf.Timestamp date_due = 13;
+	optional google.protobuf.Timestamp date_return = 14 [
+		(orm.field) = {
+			nullable: true
+		}
+	];
+	google.protobuf.Timestamp date_created = 15 [
+		(orm.field) = {
+			immutable: true
+			default: ""
+		}
+	];
+}
