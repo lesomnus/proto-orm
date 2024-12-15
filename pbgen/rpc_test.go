@@ -24,7 +24,7 @@ func TestRpc(t *testing.T) {
 		require.NoError(err)
 
 		v := o.String()
-		require.Equal(`rpc Create (User) returns (User);`, v)
+		require.Equal(`rpc Create(User) returns (User);`, v)
 	})
 
 	t.Run("stream request", func(t *testing.T) {
@@ -40,7 +40,7 @@ func TestRpc(t *testing.T) {
 		require.NoError(err)
 
 		v := o.String()
-		require.Equal(`rpc Create (stream User) returns (User);`, v)
+		require.Equal(`rpc Create(stream User) returns (User);`, v)
 	})
 
 	t.Run("stream response", func(t *testing.T) {
@@ -56,7 +56,7 @@ func TestRpc(t *testing.T) {
 		require.NoError(err)
 
 		v := o.String()
-		require.Equal(`rpc Create (User) returns (stream User);`, v)
+		require.Equal(`rpc Create(User) returns (stream User);`, v)
 	})
 
 	t.Run("options", func(t *testing.T) {
@@ -89,7 +89,7 @@ func TestRpc(t *testing.T) {
 		require.NoError(err)
 
 		v := o.String()
-		require.Equal(`rpc Create (User) returns (User) {
+		require.Equal(`rpc Create(User) returns (User) {
 	option (foo.bar) = {
 		a: "b"
 		c: "d"
@@ -142,7 +142,7 @@ func TestRpc(t *testing.T) {
 		require.NoError(err)
 
 		v := o.String()
-		require.Equal(`rpc Create (User) returns (User) {
+		require.Equal(`rpc Create(User) returns (User) {
 	option (foo.bar) = {
 		a: "b"
 		c: "d"
@@ -215,7 +215,7 @@ func TestRpc(t *testing.T) {
 		require.NoError(err)
 
 		v := o.String()
-		require.Equal(`rpc Create (User) returns (User) {
+		require.Equal(`rpc Create(User) returns (User) {
 	option (foo.bar) = {
 		a: "b"
 		c: "d"

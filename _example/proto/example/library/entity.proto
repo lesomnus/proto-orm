@@ -9,11 +9,7 @@ option go_package = "github.com/lesomnus/proto-orm/_example/library";
 option (orm.all) = {
 	messages: {}
 	rpcs: {
-		add: {}
-		get: {}
-		list: {}
-		patch: {}
-		erase: {}
+		crud: true
 	}
 };
 

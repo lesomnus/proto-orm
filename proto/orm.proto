@@ -97,20 +97,28 @@ enum Type {
 
 message FileRpcOptions {
 	bool disabled = 1;
-	optional RpcAdd add = 2;
-	optional RpcGet get = 3;
-	optional RpcList list = 4;
-	optional RpcPatch patch = 5;
-	optional RpcErase erase = 6;
+
+	// Enables add, get, patch, and erase.
+	bool crud = 2;
+
+	optional RpcAdd add = 16;
+	optional RpcGet get = 17;
+	optional RpcList list = 18;
+	optional RpcPatch patch = 19;
+	optional RpcErase erase = 20;
 }
 
 message RpcOptions {
 	optional bool disabled = 1;
-	optional RpcAdd add = 2;
-	optional RpcGet get = 3;
-	optional RpcList list = 4;
-	optional RpcPatch patch = 5;
-	optional RpcErase erase = 6;
+
+	// Enables add, get, patch, and erase.
+	optional bool crud = 2;
+
+	optional RpcAdd add = 16;
+	optional RpcGet get = 17;
+	optional RpcList list = 18;
+	optional RpcPatch patch = 19;
+	optional RpcErase erase = 20;
 }
 
 message RpcAdd {

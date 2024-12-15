@@ -8,6 +8,7 @@ import (
 func ResolveRpcOptions(f *protogen.File, m *protogen.Message) *RpcOptions {
 	o := &RpcOptions{}
 	if o_ := proto.GetExtension(f.Desc.Options(), E_All).(*FileOptions); o_ != nil && o_.Rpcs != nil && !o_.Rpcs.Disabled {
+		o.Crud = &o_.Rpcs.Crud
 		o.Add = o_.Rpcs.Add
 		o.Get = o_.Rpcs.Get
 		o.List = o_.Rpcs.List
@@ -15,6 +16,7 @@ func ResolveRpcOptions(f *protogen.File, m *protogen.Message) *RpcOptions {
 		o.Erase = o_.Rpcs.Erase
 	}
 	if o_ := proto.GetExtension(m.Desc.Options(), E_Rpcs).(*RpcOptions); o_ != nil && o_.Disabled != nil {
+		o.Crud = o_.Crud
 		if *o_.Disabled {
 			o = nil
 		} else {

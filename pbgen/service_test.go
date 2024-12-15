@@ -30,7 +30,7 @@ func TestService(t *testing.T) {
 
 		v := o.String()
 		require.Equal(`service UserService {
-	rpc Create (User) returns (User);
+	rpc Create(User) returns (User);
 }`, v)
 	})
 
@@ -58,8 +58,8 @@ func TestService(t *testing.T) {
 
 		v := o.String()
 		require.Equal(`service UserService {
-	rpc Create (User) returns (User);
-	rpc Update (User) returns (User);
+	rpc Create(User) returns (User);
+	rpc Update(User) returns (User);
 }`, v)
 	})
 
@@ -95,9 +95,9 @@ func TestService(t *testing.T) {
 	// bar
 	// baz
 	// Royale
-	rpc Create (User) returns (User);
+	rpc Create(User) returns (User);
 	// with
-	rpc Update (User) returns (User);
+	rpc Update(User) returns (User);
 	// cheese
 }`, v)
 	})

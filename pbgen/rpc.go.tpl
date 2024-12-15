@@ -1,4 +1,4 @@
-rpc {{ .Name }} (
+rpc {{ .Name }}(
 {{- with .Request -}}
 	{{ if .Stream }}stream {{ end -}}
 	{{ type .Type -}}

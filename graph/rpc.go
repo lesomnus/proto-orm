@@ -132,17 +132,19 @@ func (w *RpcParser) rpcErase(e *Entity) *Rpc {
 }
 
 func (w *RpcParser) Parse(e *Entity, o *orm.RpcOptions) map[RpcOp]*Rpc {
+	is_crud_enabled := o.Crud != nil && *o.Crud
+
 	vs := map[RpcOp]*Rpc{}
-	if o.Add != nil && !o.Add.Disabled {
+	if is_crud_enabled || (o.Add != nil && !o.Add.Disabled) {
 		vs[RpcOpAdd] = w.rpcAdd(e)
 	}
-	if o.Get != nil && !o.Get.Disabled {
+	if is_crud_enabled || (o.Get != nil && !o.Get.Disabled) {
 		vs[RpcOpGet] = w.rpcGet(e)
 	}
-	if o.Patch != nil && !o.Patch.Disabled {
+	if is_crud_enabled || (o.Patch != nil && !o.Patch.Disabled) {
 		vs[RpcOpPatch] = w.rpcPatch(e)
 	}
-	if o.Erase != nil && !o.Erase.Disabled {
+	if is_crud_enabled || (o.Erase != nil && !o.Erase.Disabled) {
 		vs[RpcOpErase] = w.rpcErase(e)
 	}
 
