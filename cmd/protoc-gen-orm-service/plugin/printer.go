@@ -122,6 +122,9 @@ func (p *Printer) Print(f *File) error {
 		}
 	}
 
+	slices.SortFunc(pf.Imports, func(a, b pbgen.Import) int {
+		return strings.Compare(a.Name, b.Name)
+	})
 	return pbgen.PrintFile(f, pf)
 }
 

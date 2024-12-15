@@ -6,8 +6,8 @@ package example.library;
 
 import "example/library/author.proto";
 import "example/library/profile.proto";
-import "google/protobuf/timestamp.proto";
 import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/lesomnus/proto-orm/_example/library";
 

@@ -4,11 +4,11 @@ syntax = "proto3";
 
 package example.library;
 
-import "example/library/like.proto";
 import "example/library/author.g.proto";
+import "example/library/like.proto";
 import "example/library/member.g.proto";
-import "google/protobuf/timestamp.proto";
 import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/lesomnus/proto-orm/_example/library";
 
