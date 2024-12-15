@@ -16,10 +16,12 @@ func ResolveRpcOptions(f *protogen.File, m *protogen.Message) *RpcOptions {
 		o.Erase = o_.Rpcs.Erase
 	}
 	if o_ := proto.GetExtension(m.Desc.Options(), E_Rpcs).(*RpcOptions); o_ != nil && o_.Disabled != nil {
-		o.Crud = o_.Crud
 		if *o_.Disabled {
 			o = nil
 		} else {
+			if o_.Crud != nil {
+				o.Crud = o_.Crud
+			}
 			if o_.Add != nil && o_.Add.Disabled {
 				o.Add = nil
 			}

@@ -37,12 +37,6 @@ func (*Printer) Print(f *File) error {
 	}
 	if d := f.Source().Proto; d != nil {
 		pf.Package = protoreflect.FullName(*d.Package)
-		for _, s := range d.Dependency {
-			if s == "orm.proto" {
-				continue
-			}
-			pf.AddImport(pbgen.Import{Name: s})
-		}
 		pf.Options = []pbgen.Option{
 			pbgen.OptionGoPackage(*d.Options.GoPackage),
 		}
@@ -131,6 +125,14 @@ type printWork struct {
 	messages map[protoreflect.FullName]*pbgen.Message
 }
 
+func (w *printWork) typeMessage(f graph.Field) pbgen.Type {
+	if m := f.Source().Message; m != nil {
+		w.file.AddImport(pbgen.Import{Name: m.Desc.ParentFile().Path()})
+	}
+
+	return pbgen.Type(f.ProtoType())
+}
+
 func (w *printWork) rpc(r *graph.Rpc) pbgen.Rpc {
 	return pbgen.Rpc{
 		Name: protoreflect.Name(r.Name),
@@ -147,22 +149,16 @@ func (w *printWork) Do(e *graph.Entity, o *orm.RpcOptions) {
 	s := &pbgen.Service{
 		Name: protoreflect.Name(fmt.Sprintf("%sService", e.Name())),
 	}
-	if o.Add != nil && !o.Add.Disabled {
-		r := e.Rpcs[graph.RpcOpAdd]
+	if r, ok := e.Rpcs[graph.RpcOpAdd]; ok {
 		s.Body = append(s.Body, w.rpcAdd(r))
 	}
-	if o.Get != nil && !o.Get.Disabled {
-		r := e.Rpcs[graph.RpcOpGet]
+	if r, ok := e.Rpcs[graph.RpcOpGet]; ok {
 		s.Body = append(s.Body, w.rpcGet(r))
 	}
-	// if o.List != nil && !o.List.Disabled {
-	// }
-	if o.Patch != nil && !o.Patch.Disabled {
-		r := e.Rpcs[graph.RpcOpPatch]
+	if r, ok := e.Rpcs[graph.RpcOpPatch]; ok {
 		s.Body = append(s.Body, w.rpcPatch(r))
 	}
-	if o.Erase != nil && !o.Erase.Disabled {
-		r := e.Rpcs[graph.RpcOpErase]
+	if r, ok := e.Rpcs[graph.RpcOpErase]; ok {
 		s.Body = append(s.Body, w.rpcErase(r))
 	}
 
@@ -192,7 +188,7 @@ func (w *printWork) msgAddReq(r *graph.Rpc) *pbgen.Message {
 				continue
 			}
 
-			v.Type = pbgen.Type(u.ProtoType())
+			v.Type = w.typeMessage(u)
 
 			d := u.Source().Desc
 			if d.IsMap() {
@@ -257,8 +253,8 @@ func (w *printWork) indexGet(e *graph.Entity, i *graph.Index) *pbgen.Message {
 		switch u := r.(type) {
 		case (*graph.Attr):
 			v := pbgen.MessageField{
+				Type:   w.typeMessage(r),
 				Name:   d.Name(),
-				Type:   pbgen.Type(d.Kind().String()),
 				Number: int(d.Number()),
 			}
 			body = append(body, v)
@@ -292,27 +288,23 @@ func (w *printWork) msgGetReq(r *graph.Rpc) *pbgen.Message {
 		switch v := k.(type) {
 		case *graph.Attr:
 			oneof.Body = append(oneof.Body, pbgen.MessageOneofField{
-				Type:   pbgen.Type(v.ProtoType()),
+				Type:   w.typeMessage(v),
 				Name:   protoreflect.Name(v.Name()),
 				Number: int(v.Number()),
 			})
 
 		case *graph.Edge:
 			// TODO:
-			continue
-		}
-	}
-	for _, i := range r.Entity.Indexes {
-		if !i.Unique {
-			continue
-		}
+			panic("todo")
 
-		m := w.indexGet(r.Entity, i)
-		oneof.Body = append(oneof.Body, pbgen.MessageOneofField{
-			Type:   pbgen.Type(m.FullName),
-			Name:   protoreflect.Name(i.Name()),
-			Number: int(i.Refs[0].Number()),
-		})
+		case *graph.Index:
+			m := w.indexGet(r.Entity, v)
+			oneof.Body = append(oneof.Body, pbgen.MessageOneofField{
+				Type:   pbgen.Type(m.FullName),
+				Name:   protoreflect.Name(v.Name()),
+				Number: int(v.Refs[0].Number()),
+			})
+		}
 	}
 
 	m.Body = []pbgen.MessageBody{oneof}
@@ -353,7 +345,7 @@ func (w *printWork) msgPatchReq(r *graph.Rpc) *pbgen.Message {
 		}
 
 		v := pbgen.MessageField{
-			Type:   pbgen.Type(f.ProtoType()),
+			Type:   w.typeMessage(f),
 			Name:   protoreflect.Name(f.Name()),
 			Number: n,
 		}

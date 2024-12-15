@@ -132,19 +132,35 @@ func (w *RpcParser) rpcErase(e *Entity) *Rpc {
 }
 
 func (w *RpcParser) Parse(e *Entity, o *orm.RpcOptions) map[RpcOp]*Rpc {
-	is_crud_enabled := o.Crud != nil && *o.Crud
+	is_enabled_crud := o.Crud != nil && *o.Crud
+	is_enabled_add := is_enabled_crud
+	if o.Add != nil {
+		is_enabled_add = !o.Add.Disabled
+	}
+	is_enabled_get := is_enabled_crud
+	if o.Add != nil {
+		is_enabled_get = !o.Get.Disabled
+	}
+	is_enabled_patch := is_enabled_crud
+	if o.Add != nil {
+		is_enabled_patch = !o.Patch.Disabled
+	}
+	is_enabled_erase := is_enabled_crud
+	if o.Add != nil {
+		is_enabled_erase = !o.Erase.Disabled
+	}
 
 	vs := map[RpcOp]*Rpc{}
-	if is_crud_enabled || (o.Add != nil && !o.Add.Disabled) {
+	if is_enabled_add {
 		vs[RpcOpAdd] = w.rpcAdd(e)
 	}
-	if is_crud_enabled || (o.Get != nil && !o.Get.Disabled) {
+	if is_enabled_get {
 		vs[RpcOpGet] = w.rpcGet(e)
 	}
-	if is_crud_enabled || (o.Patch != nil && !o.Patch.Disabled) {
+	if is_enabled_patch {
 		vs[RpcOpPatch] = w.rpcPatch(e)
 	}
-	if is_crud_enabled || (o.Erase != nil && !o.Erase.Disabled) {
+	if is_enabled_erase {
 		vs[RpcOpErase] = w.rpcErase(e)
 	}
 
