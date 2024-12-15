@@ -29,15 +29,15 @@ func (s *LoanServiceServer) Add(ctx context.Context, req *library.LoanAddRequest
 	} else {
 		q.SetID(v)
 	}
-	if id, err := BookGetId(ctx, s.db, req.GetBook()); err != nil {
+	if id, err := BookGetId(ctx, s.db, req.GetSubject()); err != nil {
 		return nil, err
 	} else {
-		q.SetBookID(id)
+		q.SetSubjectID(id)
 	}
-	if id, err := MemberGetId(ctx, s.db, req.GetMember()); err != nil {
+	if id, err := MemberGetId(ctx, s.db, req.GetBorrower()); err != nil {
 		return nil, err
 	} else {
-		q.SetMemberID(id)
+		q.SetBorrowerID(id)
 	}
 	q.SetDateDue(req.DateDue.AsTime())
 	q.SetDateReturn(req.DateReturn.AsTime())

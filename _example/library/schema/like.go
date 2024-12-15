@@ -21,6 +21,8 @@ func (Like) Fields() []ent.Field {
 			Default(uuid.New).
 			Unique().
 			Immutable(),
+		field.UUID("subject_id", uuid.UUID{}).
+			Immutable(),
 		field.Time("date_created").
 			Default(time.Now).
 			Immutable(),
@@ -29,11 +31,12 @@ func (Like) Fields() []ent.Field {
 
 func (Like) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("book", Book.Type).
+		edge.To("subject", Book.Type).
+			Field("subject_id").
 			Unique().
 			Required().
 			Immutable(),
-		edge.To("member", Member.Type).
+		edge.To("actor", Member.Type).
 			Unique().
 			Required().
 			Immutable(),
@@ -42,7 +45,7 @@ func (Like) Edges() []ent.Edge {
 
 func (Like) Indexes() []ent.Index {
 	return []ent.Index{
-		index.Edges("book", "member").
+		index.Fields("subject_id").Edges("actor").
 			Unique(),
 	}
 }

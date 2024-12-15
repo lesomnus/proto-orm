@@ -39,11 +39,12 @@ func (e *Book) Proto() *library.Book {
 func (e *Like) Proto() *library.Like {
 	m := &library.Like{}
 	m.Id = e.ID[:]
-	if v := e.Edges.Book; v != nil {
-		m.Book = v.Proto()
+	m.SubjectId = e.SubjectID[:]
+	if v := e.Edges.Subject; v != nil {
+		m.Subject = v.Proto()
 	}
-	if v := e.Edges.Member; v != nil {
-		m.Member = v.Proto()
+	if v := e.Edges.Actor; v != nil {
+		m.Actor = v.Proto()
 	}
 	m.DateCreated = timestamppb.New(e.DateCreated)
 
@@ -53,13 +54,13 @@ func (e *Like) Proto() *library.Like {
 func (e *Loan) Proto() *library.Loan {
 	m := &library.Loan{}
 	m.Id = e.ID[:]
-	m.BookId = e.BookID[:]
-	if v := e.Edges.Book; v != nil {
-		m.Book = v.Proto()
+	m.SubjectId = e.SubjectID[:]
+	if v := e.Edges.Subject; v != nil {
+		m.Subject = v.Proto()
 	}
-	m.MemberId = e.MemberID[:]
-	if v := e.Edges.Member; v != nil {
-		m.Member = v.Proto()
+	m.BorrowerId = e.BorrowerID[:]
+	if v := e.Edges.Borrower; v != nil {
+		m.Borrower = v.Proto()
 	}
 	m.DateDue = timestamppb.New(e.DateDue)
 	if v := e.DateReturn; v != nil {

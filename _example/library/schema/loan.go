@@ -20,9 +20,9 @@ func (Loan) Fields() []ent.Field {
 			Default(uuid.New).
 			Unique().
 			Immutable(),
-		field.UUID("book_id", uuid.UUID{}).
+		field.UUID("subject_id", uuid.UUID{}).
 			Immutable(),
-		field.UUID("member_id", uuid.UUID{}).
+		field.UUID("borrower_id", uuid.UUID{}).
 			Immutable(),
 		field.Time("date_due"),
 		field.Time("date_return").
@@ -36,13 +36,13 @@ func (Loan) Fields() []ent.Field {
 
 func (Loan) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("book", Book.Type).
-			Field("book_id").
+		edge.To("subject", Book.Type).
+			Field("subject_id").
 			Unique().
 			Required().
 			Immutable(),
-		edge.To("member", Member.Type).
-			Field("member_id").
+		edge.To("borrower", Member.Type).
+			Field("borrower_id").
 			Unique().
 			Required().
 			Immutable(),

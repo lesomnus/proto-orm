@@ -37,15 +37,15 @@ func (s *{{ $.Name }}ServiceServer) Add(ctx {{ pkg "context" | ident "Context" }
 	{{ end -}}
 
 	{{ $target := .Target -}}
+	{{ $n := pascal .Name -}}
 	{{ $k := $target.Key -}}
-	{{ $n := $target.Name -}}
 
 	{{ if .IsList -}}
 	{
 		ids := []{{ ent_type $k.Type }}{}
-		for _, r := range req.Get{{ plural $n }}() {
+		for _, r := range req.Get{{ $n }}() {
 			{{/* TODO: optimize: get multiple in single query */ -}}
-			if id, err := {{ $n }}GetId(ctx, s.db, r); err != nil {
+			if id, err := {{ $target.Name }}GetId(ctx, s.db, r); err != nil {
 				return nil, err
 			} else {
 				ids = append(ids, id)
@@ -54,7 +54,7 @@ func (s *{{ $.Name }}ServiceServer) Add(ctx {{ pkg "context" | ident "Context" }
 		q.Add{{ $n }}IDs(ids...)
 	}
 	{{ else -}}
-	if id, err := {{ $n }}GetId(ctx, s.db, req.Get{{ $n }}()); err != nil {
+	if id, err := {{ $target.Name }}GetId(ctx, s.db, req.Get{{ $n }}()); err != nil {
 		return nil, err
 	} else {
 		q.Set{{ $n }}ID(id)

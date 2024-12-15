@@ -21,21 +21,21 @@ service LikeService {
 
 message LikeAddRequest {
 	optional bytes id = 1;
-	BookGetRequest book = 3;
-	MemberGetRequest member = 5;
+	BookGetRequest subject = 3;
+	MemberGetRequest actor = 5;
 	optional google.protobuf.Timestamp date_created = 15;
 }
 
 message LikeGetRequest {
 	oneof key {
 		bytes id = 1;
-		example.library.LikeGetByHolders holders = 3;
+		example.library.LikeGetByHolders holders = 2;
 	}
 }
 
 message LikeGetByHolders {
-	BookGetRequest book = 3;
-	MemberGetRequest member = 5;
+	bytes subject_id = 2;
+	MemberGetRequest actor = 5;
 }
 
 message LikePatchRequest {

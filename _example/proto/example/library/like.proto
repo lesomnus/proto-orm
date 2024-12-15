@@ -23,10 +23,12 @@ message Like {
 			default: ""
 		}
 	];
-	Book book = 3 [(orm.edge) = {
+	bytes subject_id = 2;
+	Book subject = 3 [(orm.edge) = {
+		bind: 2
 		immutable: true
 	}];
-	Member member = 5 [(orm.edge) = {
+	Member actor = 5 [(orm.edge) = {
 		immutable: true
 	}];
 	
@@ -41,7 +43,7 @@ message Like {
 		indexes: [
 			{ 
 				name: "holders"
-				refs: [3, 5]
+				refs: [2, 5]
 				unique: true
 				immutable: true
 			}

@@ -3,6 +3,7 @@
 func {{ $.Name }}Pick(req *{{ $req_name }}) ({{ $pred_ent }}, error) {
 	switch k := req.GetKey().(type) {
 	{{ range .KeyLikes -}}
+	{{ $n := print "k." (pascal .Name) -}}
 	case *{{ pb (print $.Name "GetRequest_" (pascal .Name)) }}:
 		{{/* printing field key */ -}}
 
@@ -14,7 +15,6 @@ func {{ $.Name }}Pick(req *{{ $req_name }}) ({{ $pred_ent }}, error) {
 
 		{{ with as_attr . -}}
 		{{ $t := .Type -}}
-		{{ $n := pascal .Name -}}
 		{{ $p := entity $ | ident (print (ent_pascal .Name) "EQ") -}}
 
 		{{ if is_symmetric $t -}}
@@ -22,7 +22,7 @@ func {{ $.Name }}Pick(req *{{ $req_name }}) ({{ $pred_ent }}, error) {
 		return {{ $p }}(k.{{ $n }}), nil
 		{{ else -}}
 		{{/*   key is asymmetric field */ -}}
-		if v, err := {{ convert_to_ent_field (print "k." $n) $t }}; err != nil {
+		if v, err := {{ convert_to_ent_field $n $t }}; err != nil {
 			return nil, {{ grpc_errf "InvalidArgument" (print .Name ": %s" | quote) "\"err\"" }}
 		} else {
 			return {{ $p }}(v), nil
@@ -38,10 +38,9 @@ func {{ $.Name }}Pick(req *{{ $req_name }}) ({{ $pred_ent }}, error) {
 		{{/* printing index key */ -}}
 
 		{{ $v := key_as_index . -}}
-		{{ $n := pascal $v.Name -}}
 		ps := make([]{{ $pred_ent }}, 0, {{ len $v.Refs }})
 		{{ range $v.Refs }}{{/* for each refs in the index */ -}}
-		{{ $ref_name := pascal .Name -}}
+		{{ $ref_name := print $n "." (pascal .Name) -}}
 
 		{{ if is_attr . }}{{ with as_attr . -}}
 		{{/* ref is attribute */ -}}
@@ -49,11 +48,11 @@ func {{ $.Name }}Pick(req *{{ $req_name }}) ({{ $pred_ent }}, error) {
 		{{ $p := entity $ | ident (print (ent_pascal .Name) "EQ") -}}
 		{{ if is_symmetric $t -}}
 		{{/*   ref attribute is symmetric */ -}}
-		ps = append(ps, {{ $p }}(k.{{ $ref_name }}))
+		ps = append(ps, {{ $p }}({{ $ref_name }}))
 		{{ else -}}
 		{{/*   ref attribute is asymmetric */ -}}
-		if v, err := {{ convert_to_ent_field (print "k." $ref_name) $t }}; err != nil {
-			return nil, {{ grpc_errf "InvalidArgument" (print .Name "." $ref_name ": %s" | quote) "\"err\"" }}
+		if v, err := {{ convert_to_ent_field $ref_name $t }}; err != nil {
+			return nil, {{ grpc_errf "InvalidArgument" (print $v.Name "." .Name ": %s" | quote) "\"err\"" }}
 		} else {
 			ps = append(ps, {{ $p }}(v))
 		}
@@ -63,9 +62,9 @@ func {{ $.Name }}Pick(req *{{ $req_name }}) ({{ $pred_ent }}, error) {
 
 		{{ with as_edge . -}}
 		{{/* ref is edge */ -}}
-		if p, err := {{ $ref_name }}Pick(k.{{ $n }}.Get{{ $ref_name }}()); err != nil {
+		if p, err := {{ .Target.Name }}Pick({{ $n }}.Get{{ pascal .Name }}()); err != nil {
 			s, _ := {{ grpc_status "FromError" }}(err)
-			return nil, {{ grpc_errf "InvalidArgument" (print .Name ".%s" | quote) "s.Message()" }}
+			return nil, {{ grpc_errf "InvalidArgument" (print $v.Name "." .Name ": %s" | quote) "s.Message()" }}
 		} else {
 			ps = append(ps, {{ entity $ | ident (print "Has" (ent_pascal .Name) "With") }}(p))
 		}

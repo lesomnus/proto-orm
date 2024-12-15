@@ -29,15 +29,15 @@ func (s *LikeServiceServer) Add(ctx context.Context, req *library.LikeAddRequest
 	} else {
 		q.SetID(v)
 	}
-	if id, err := BookGetId(ctx, s.db, req.GetBook()); err != nil {
+	if id, err := BookGetId(ctx, s.db, req.GetSubject()); err != nil {
 		return nil, err
 	} else {
-		q.SetBookID(id)
+		q.SetSubjectID(id)
 	}
-	if id, err := MemberGetId(ctx, s.db, req.GetMember()); err != nil {
+	if id, err := MemberGetId(ctx, s.db, req.GetActor()); err != nil {
 		return nil, err
 	} else {
-		q.SetMemberID(id)
+		q.SetActorID(id)
 	}
 	q.SetDateCreated(req.DateCreated.AsTime())
 
@@ -103,17 +103,16 @@ func LikePick(req *library.LikeGetRequest) (predicate.Like, error) {
 		}
 	case *library.LikeGetRequest_Holders:
 		ps := make([]predicate.Like, 0, 2)
-		if p, err := BookPick(k.Holders.GetBook()); err != nil {
-			s, _ := status.FromError(err)
-			return nil, status.Errorf(codes.InvalidArgument, "book.%s", s.Message())
+		if v, err := uuid.FromBytes(k.Holders.SubjectId); err != nil {
+			return nil, status.Errorf(codes.InvalidArgument, "holders.subject_id: %s", "err")
 		} else {
-			ps = append(ps, like.HasBookWith(p))
+			ps = append(ps, like.SubjectIDEQ(v))
 		}
-		if p, err := MemberPick(k.Holders.GetMember()); err != nil {
+		if p, err := MemberPick(k.Holders.GetActor()); err != nil {
 			s, _ := status.FromError(err)
-			return nil, status.Errorf(codes.InvalidArgument, "member.%s", s.Message())
+			return nil, status.Errorf(codes.InvalidArgument, "holders.actor: %s", s.Message())
 		} else {
-			ps = append(ps, like.HasMemberWith(p))
+			ps = append(ps, like.HasActorWith(p))
 		}
 		return like.And(ps...), nil
 	case nil:

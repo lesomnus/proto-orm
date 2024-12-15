@@ -21,8 +21,8 @@ service LoanService {
 
 message LoanAddRequest {
 	optional bytes id = 1;
-	BookGetRequest book = 3;
-	MemberGetRequest member = 5;
+	BookGetRequest subject = 3;
+	MemberGetRequest borrower = 5;
 	google.protobuf.Timestamp date_due = 13;
 	optional google.protobuf.Timestamp date_return = 14;
 	optional google.protobuf.Timestamp date_created = 15;

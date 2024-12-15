@@ -23,15 +23,15 @@ message Loan {
 			default: ""
 		}
 	];
-	bytes book_id = 2;
-	Book book = 3 [
+	bytes subject_id = 2;
+	Book subject = 3 [
 		(orm.edge) = {
 			bind: 2
 			immutable: true
 		}
 	];
-	bytes member_id = 4;
-	Member member = 5 [
+	bytes borrower_id = 4;
+	Member borrower = 5 [
 		(orm.edge) = {
 			bind: 4
 			immutable: true
