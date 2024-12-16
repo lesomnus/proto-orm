@@ -205,7 +205,7 @@ func (e *Edge) IsSelfLoop() bool {
 }
 
 func (e *Edge) IsUnidirectional() bool {
-	return e.Reverse == nil && e.Inverse == nil
+	return e.Reverse == nil && e.Inverse == nil && !e.IsList()
 }
 
 func (e *Edge) IsExclusive() bool {

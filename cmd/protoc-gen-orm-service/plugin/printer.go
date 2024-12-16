@@ -220,7 +220,7 @@ func (w *printWork) msgAddReq(r *graph.Rpc) *generatedMessage {
 			}
 
 		case (*graph.Edge):
-			if !u.IsUnidirectional() && !u.IsExclusive() {
+			if !(u.IsUnidirectional() || u.IsExclusive()) {
 				continue
 			}
 
@@ -379,7 +379,7 @@ func (w *printWork) msgPatchReq(r *graph.Rpc) *generatedMessage {
 			}
 
 		case (*graph.Edge):
-			if !u.IsUnidirectional() && !u.IsExclusive() {
+			if !(u.IsUnidirectional() || u.IsExclusive()) {
 				continue
 			}
 

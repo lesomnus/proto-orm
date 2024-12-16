@@ -33,6 +33,11 @@ func (s *MemberServiceServer) Add(ctx context.Context, req *library.MemberAddReq
 	q.SetLabels(req.Labels)
 	q.SetProfile(req.Profile)
 	q.SetLevel(int(req.Level))
+	if id, err := LockerGetId(ctx, s.db, req.GetLocker()); err != nil {
+		return nil, err
+	} else {
+		q.SetLockerID(id)
+	}
 	q.SetDateCreated(req.DateCreated.AsTime())
 
 	v, err := q.Save(ctx)

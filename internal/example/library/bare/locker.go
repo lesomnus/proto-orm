@@ -29,6 +29,11 @@ func (s *LockerServiceServer) Add(ctx context.Context, req *library.LockerAddReq
 	} else {
 		q.SetID(v)
 	}
+	if id, err := MemberGetId(ctx, s.db, req.GetOwner()); err != nil {
+		return nil, err
+	} else {
+		q.SetOwnerID(id)
+	}
 
 	v, err := q.Save(ctx)
 	if err != nil {
@@ -61,6 +66,13 @@ func (s *LockerServiceServer) Patch(ctx context.Context, req *library.LockerPatc
 	}
 
 	q := s.db.Locker.UpdateOneID(id)
+	if req.OwnerNull {
+		q.ClearOwner()
+	} else if id, err := LockerGetId(ctx, s.db, req.GetKey()); err != nil {
+		return nil, err
+	} else {
+		q.SetOwnerID(id)
+	}
 
 	v, err := q.Save(ctx)
 	if err != nil {

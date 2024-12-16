@@ -51,9 +51,7 @@ func (s *{{ $.Name }}ServiceServer) Patch(ctx {{ pkg "context" | ident "Context"
 	{{/* printing edges */ -}}
 
 	{{ with as_edge . -}}
-	{{ if or .IsList .HasInverse -}}
-		{{/* skip: patch for list is not supported */ -}}
-		{{/* skip: ownership (which is defined by .Inverse) should be patched by subject (at .Reverse) if it is bidirectional. */ -}}
+	{{ if not (or .IsUnidirectional .IsExclusive) -}}
 		{{ continue -}}
 	{{ end -}}
 
@@ -65,13 +63,13 @@ func (s *{{ $.Name }}ServiceServer) Patch(ctx {{ pkg "context" | ident "Context"
 
 	{{ if .IsNullable -}}
 	if {{ $v }}Null {
-		q.Clear{{ $n }}()
+		q.Clear{{ pascal .Name }}()
 	} else {{ end -}}
 
 	if id, err := {{ $.Name }}GetId(ctx, s.db, req.GetKey()); err != nil {
 		return nil, err
 	} else {
-		q.Set{{ $n }}ID(id)
+		q.Set{{ pascal .Name }}ID(id)
 	}
 	{{ continue -}}
 	{{ end }}{{/* edge field is printed */ -}}
