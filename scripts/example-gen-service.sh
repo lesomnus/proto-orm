@@ -17,9 +17,9 @@ cd "$__root"
 
 go build -o "/tmp/$APP" "./cmd/$APP"
 
-MODULE_NAME=github.com/lesomnus/proto-orm/_example
-PROTO_ROOT="${__root}/_example/proto"
-OUTPUT_DIR="${__root}/_example/proto/example"
+MODULE_NAME=github.com/lesomnus/proto-orm/internal/example
+PROTO_ROOT="${__root}/internal/example/proto"
+OUTPUT_DIR="${__root}/internal/example/proto/example"
 cd "${PROTO_ROOT}"
 
 rm -rf "$OUTPUT_DIR"/**/*.svc.proto

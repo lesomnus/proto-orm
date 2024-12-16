@@ -59,6 +59,7 @@ func (s *{{ $.Name }}ServiceServer) Patch(ctx {{ pkg "context" | ident "Context"
 
 	{{ $target := .Target -}}
 	{{ $k := $target.Key -}}
+	{{ $t := $k.Type -}}
 	{{ $v := print "req." (pascal .Name) -}}
 	{{ $n := ent_pascal $target.Name -}}
 
@@ -67,8 +68,10 @@ func (s *{{ $.Name }}ServiceServer) Patch(ctx {{ pkg "context" | ident "Context"
 		q.Clear{{ $n }}()
 	} else {{ end -}}
 
-	if {{ $v }} != nil {
-		q.Set{{ $n }}({{ $v }})
+	if id, err := {{ $.Name }}GetId(ctx, s.db, req.GetKey()); err != nil {
+		return nil, err
+	} else {
+		q.Set{{ $n }}ID(id)
 	}
 	{{ continue -}}
 	{{ end }}{{/* edge field is printed */ -}}

@@ -18,7 +18,7 @@ cd "$__root"
 go build -o "/tmp/$APP" "./cmd/$APP"
 
 MODULE_NAME=github.com/lesomnus/proto-orm
-PROTO_ROOT="${__root}/_example/proto"
+PROTO_ROOT="${__root}/internal/example/proto"
 OUTPUT_DIR="${__root}"
 cd "${PROTO_ROOT}"
 
@@ -32,6 +32,6 @@ protoc \
 	\
 	--"$NAME"_out="$OUTPUT_DIR" \
 	--"$NAME"_opt=module="$MODULE_NAME" \
-	--"$NAME"_opt=ent="$MODULE_NAME/_example/library/ent" \
+	--"$NAME"_opt=ent="$MODULE_NAME/internal/example/library/ent" \
 	\
 	"$PROTO_ROOT"/**/*.proto

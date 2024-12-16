@@ -220,8 +220,7 @@ func (w *printWork) msgAddReq(r *graph.Rpc) *generatedMessage {
 			}
 
 		case (*graph.Edge):
-			if !u.IsUnidirectional() {
-				// TODO: Should the set of User[pet] be supported at the time of User creation?
+			if !u.IsUnidirectional() && !u.IsExclusive() {
 				continue
 			}
 
@@ -352,24 +351,52 @@ func (w *printWork) msgPatchReq(r *graph.Rpc) *generatedMessage {
 
 	for _, f := range r.Entity.FieldsSortByNumber() {
 		if f.IsImmutable() {
-			// Key must be immutable
+			// Key must be immutable.
 			continue
 		}
 
 		n := int(f.Number())*2 - 1
-		if n == body[0].(pbgen.MessageField).Number {
-			continue
-		}
-
 		v := pbgen.MessageField{
-			Type:   w.typeMessage(f),
 			Name:   protoreflect.Name(f.Name()),
 			Number: n,
 		}
-		if f.IsList() {
-			v.Label = pbgen.LabelRepeated
-		} else if !f.Source().Desc.IsMap() {
-			v.Label = pbgen.LabelOptional
+		switch u := f.(type) {
+		case (*graph.Attr):
+			if u.IsBound() {
+				// Skip since edge (which is accessed by `f.Bound`) will be added.
+				continue
+			}
+
+			v.Type = w.typeMessage(u)
+
+			d := u.Source().Desc
+			if d.IsMap() {
+				// Map cannot have label.
+			} else if d.IsList() {
+				v.Label = pbgen.LabelRepeated
+			} else if !f.Source().Desc.IsMap() {
+				v.Label = pbgen.LabelOptional
+			}
+
+		case (*graph.Edge):
+			if !u.IsUnidirectional() && !u.IsExclusive() {
+				continue
+			}
+
+			target := u.Target
+			r := target.Rpcs[graph.RpcOpGet]
+			if r == nil {
+				panic("TODO: target entity does not enables Get rpc")
+				// To resolve this, graph should parse the disabled rpcs also
+				// or make one on demand.
+			}
+			m := w.msgGetReq(r)
+			v.Type = w.typeMessage(m)
+
+			d := u.Source().Desc
+			if d.IsList() {
+				v.Label = pbgen.LabelRepeated
+			}
 		}
 
 		body = append(body, v)

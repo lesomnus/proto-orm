@@ -207,3 +207,19 @@ func (e *Edge) IsSelfLoop() bool {
 func (e *Edge) IsUnidirectional() bool {
 	return e.Reverse == nil && e.Inverse == nil
 }
+
+func (e *Edge) IsExclusive() bool {
+	if e.IsUnidirectional() {
+		return false
+	}
+
+	return !e.IsList() && !e.Opposite().IsList()
+}
+
+func (e *Edge) Opposite() *Edge {
+	if e.Reverse != nil {
+		return e.Reverse
+	} else {
+		return e.Inverse
+	}
+}

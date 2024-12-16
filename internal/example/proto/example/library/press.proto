@@ -1,0 +1,54 @@
+syntax = "proto3";
+
+package example.library;
+
+import "example/library/author.proto";
+import "google/protobuf/timestamp.proto";
+import "orm.proto";
+
+option go_package = "github.com/lesomnus/proto-orm/internal/example/library";
+option (orm.all) = {
+	messages: {}
+	rpcs: {
+		crud: true
+	}
+};
+
+message Press {
+	bytes id = 1 [
+		(orm.field) = {
+			type: TYPE_UUID
+			key: true
+			default: ""
+		}
+	];
+
+	Book book = 2 [
+		(orm.edge) = {
+			immutable: true
+		}
+	];
+	string serial_number = 3 [
+		(orm.field) = {
+			immutable: true
+		}
+	];
+
+	google.protobuf.Timestamp date_created = 15 [
+		(orm.field) = {
+			immutable: true
+			default: ""
+		}
+	];
+
+	option (orm.message) = {
+		indexes: [
+			{
+				name: "serial_number"
+				refs: [2, 3]
+				unique: true
+				immutable: true
+			}
+		]
+	};
+}

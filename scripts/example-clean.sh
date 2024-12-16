@@ -13,8 +13,8 @@ __root="$(cd "$(dirname "${__dir}")" && pwd)"         # Root directory of projec
 
 cd "$__root"
 rm -rf \
-	"$__root/_example/library/bare" \
-	"$__root/_example/library/ent" \
-	"$__root/_example/library/schema" \
-	"$__root/_example/library/"*.pb.go \
-	"$__root/_example/proto/example/library/"*.g.proto
+	"$__root/internal/example/library/bare" \
+	"$__root/internal/example/library/ent" \
+	"$__root/internal/example/library/schema" \
+	"$__root/internal/example/library/"*.pb.go \
+	"$__root/internal/example/proto/example/library/"*.g.proto

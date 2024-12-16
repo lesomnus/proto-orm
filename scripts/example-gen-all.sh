@@ -16,4 +16,4 @@ cd "$__root"
 ./scripts/example-gen-ent.sh
 ./scripts/example-gen-ent-grpc.sh
 
-go generate ./_example/library
+go generate ./internal/example/library
