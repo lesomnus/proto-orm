@@ -24,16 +24,24 @@ func NewAuthorServiceServer(db *ent.Client) *AuthorServiceServer {
 
 func (s *AuthorServiceServer) Add(ctx context.Context, req *library.AuthorAddRequest) (*library.Author, error) {
 	q := s.db.Author.Create()
-	if v, err := uuid.FromBytes(req.Id); err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "id: %s", err)
-	} else {
-		q.SetID(v)
+	if v := req.Id; v != nil {
+		if w, err := uuid.FromBytes(v); err != nil {
+			return nil, status.Errorf(codes.InvalidArgument, "id: %s", err)
+		} else {
+			q.SetID(w)
+		}
 	}
 	q.SetAlias(req.Alias)
 	q.SetName(req.Name)
-	q.SetLabels(req.Labels)
-	q.SetProfile(req.Profile)
-	q.SetDateCreated(req.DateCreated.AsTime())
+	if v := req.Labels; v != nil {
+		q.SetLabels(v)
+	}
+	if v := req.Profile; v != nil {
+		q.SetProfile(v)
+	}
+	if v := req.DateCreated; v != nil {
+		q.SetDateCreated(v.AsTime())
+	}
 
 	v, err := q.Save(ctx)
 	if err != nil {
@@ -66,17 +74,17 @@ func (s *AuthorServiceServer) Patch(ctx context.Context, req *library.AuthorPatc
 	}
 
 	q := s.db.Author.UpdateOneID(id)
-	if req.Alias != nil {
-		q.SetAlias(*req.Alias)
+	if v := req.Alias; v != nil {
+		q.SetAlias(*v)
 	}
-	if req.Name != nil {
-		q.SetName(*req.Name)
+	if v := req.Name; v != nil {
+		q.SetName(*v)
 	}
-	if req.Labels != nil {
-		q.SetLabels(req.Labels)
+	if v := req.Labels; v != nil {
+		q.SetLabels(v)
 	}
-	if req.Profile != nil {
-		q.SetProfile(req.Profile)
+	if v := req.Profile; v != nil {
+		q.SetProfile(v)
 	}
 
 	v, err := q.Save(ctx)
@@ -121,7 +129,7 @@ func AuthorGetId(ctx context.Context, db *ent.Client, req *library.AuthorGetRequ
 	k := req.GetKey()
 	if r, ok := k.(*library.AuthorGetRequest_Id); ok {
 		if v, err := uuid.FromBytes(r.Id); err != nil {
-			return z, status.Errorf(codes.InvalidArgument, "Id: %s", "err")
+			return z, status.Errorf(codes.InvalidArgument, "key.id: %s", err)
 		} else {
 			return v, nil
 		}

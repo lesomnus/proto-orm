@@ -24,10 +24,12 @@ func NewPressServiceServer(db *ent.Client) *PressServiceServer {
 
 func (s *PressServiceServer) Add(ctx context.Context, req *library.PressAddRequest) (*library.Press, error) {
 	q := s.db.Press.Create()
-	if v, err := uuid.FromBytes(req.Id); err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "id: %s", err)
-	} else {
-		q.SetID(v)
+	if v := req.Id; v != nil {
+		if w, err := uuid.FromBytes(v); err != nil {
+			return nil, status.Errorf(codes.InvalidArgument, "id: %s", err)
+		} else {
+			q.SetID(w)
+		}
 	}
 	if id, err := BookGetId(ctx, s.db, req.GetBook()); err != nil {
 		return nil, err
@@ -35,7 +37,9 @@ func (s *PressServiceServer) Add(ctx context.Context, req *library.PressAddReque
 		q.SetBookID(id)
 	}
 	q.SetSerialNumber(req.SerialNumber)
-	q.SetDateCreated(req.DateCreated.AsTime())
+	if v := req.DateCreated; v != nil {
+		q.SetDateCreated(v.AsTime())
+	}
 
 	v, err := q.Save(ctx)
 	if err != nil {
@@ -119,7 +123,7 @@ func PressGetId(ctx context.Context, db *ent.Client, req *library.PressGetReques
 	k := req.GetKey()
 	if r, ok := k.(*library.PressGetRequest_Id); ok {
 		if v, err := uuid.FromBytes(r.Id); err != nil {
-			return z, status.Errorf(codes.InvalidArgument, "Id: %s", "err")
+			return z, status.Errorf(codes.InvalidArgument, "key.id: %s", err)
 		} else {
 			return v, nil
 		}

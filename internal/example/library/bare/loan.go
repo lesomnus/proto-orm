@@ -24,10 +24,12 @@ func NewLoanServiceServer(db *ent.Client) *LoanServiceServer {
 
 func (s *LoanServiceServer) Add(ctx context.Context, req *library.LoanAddRequest) (*library.Loan, error) {
 	q := s.db.Loan.Create()
-	if v, err := uuid.FromBytes(req.Id); err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "id: %s", err)
-	} else {
-		q.SetID(v)
+	if v := req.Id; v != nil {
+		if w, err := uuid.FromBytes(v); err != nil {
+			return nil, status.Errorf(codes.InvalidArgument, "id: %s", err)
+		} else {
+			q.SetID(w)
+		}
 	}
 	if id, err := BookGetId(ctx, s.db, req.GetSubject()); err != nil {
 		return nil, err
@@ -39,9 +41,15 @@ func (s *LoanServiceServer) Add(ctx context.Context, req *library.LoanAddRequest
 	} else {
 		q.SetBorrowerID(id)
 	}
-	q.SetDateDue(req.DateDue.AsTime())
-	q.SetDateReturn(req.DateReturn.AsTime())
-	q.SetDateCreated(req.DateCreated.AsTime())
+	if v := req.DateDue; v != nil {
+		q.SetDateDue(v.AsTime())
+	}
+	if v := req.DateReturn; v != nil {
+		q.SetDateReturn(v.AsTime())
+	}
+	if v := req.DateCreated; v != nil {
+		q.SetDateCreated(v.AsTime())
+	}
 
 	v, err := q.Save(ctx)
 	if err != nil {
@@ -74,13 +82,13 @@ func (s *LoanServiceServer) Patch(ctx context.Context, req *library.LoanPatchReq
 	}
 
 	q := s.db.Loan.UpdateOneID(id)
-	if req.DateDue != nil {
-		q.SetDateDue(req.DateDue.AsTime())
+	if v := req.DateDue; v != nil {
+		q.SetDateDue(v.AsTime())
 	}
 	if req.DateReturnNull {
 		q.ClearDateReturn()
-	} else if req.DateReturn != nil {
-		q.SetDateReturn(req.DateReturn.AsTime())
+	} else if v := req.DateReturn; v != nil {
+		q.SetDateReturn(v.AsTime())
 	}
 
 	v, err := q.Save(ctx)
@@ -123,7 +131,7 @@ func LoanGetId(ctx context.Context, db *ent.Client, req *library.LoanGetRequest)
 	k := req.GetKey()
 	if r, ok := k.(*library.LoanGetRequest_Id); ok {
 		if v, err := uuid.FromBytes(r.Id); err != nil {
-			return z, status.Errorf(codes.InvalidArgument, "Id: %s", "err")
+			return z, status.Errorf(codes.InvalidArgument, "key.id: %s", err)
 		} else {
 			return v, nil
 		}

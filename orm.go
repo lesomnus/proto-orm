@@ -46,6 +46,7 @@ func ResolveRpcOptions(f *protogen.File, m *protogen.Message) *RpcOptions {
 func (t Type) IsPrimitive() bool {
 	switch t {
 	case Type_TYPE_BOOL:
+	case Type_TYPE_ENUM:
 	case Type_TYPE_INT32:
 	case Type_TYPE_SINT32:
 	case Type_TYPE_UINT32:

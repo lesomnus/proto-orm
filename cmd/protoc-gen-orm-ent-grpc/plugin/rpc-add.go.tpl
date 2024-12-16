@@ -13,6 +13,23 @@ func (s *{{ $.Name }}ServiceServer) Add(ctx {{ pkg "context" | ident "Context" }
 	{{ $t := .Type -}}
 	{{ $n := ent_pascal .Name -}}
 	{{ $v := print "req." (pascal .Name) -}}
+
+	{{ if not $t.IsPrimitive | or .IsNullable | or .HasDefault | or .IsList -}}
+	if v := {{ $v }}; v != nil {
+		{{ if .IsList -}}
+		q.Set{{ $n }}(v)
+		{{ else if is_symmetric $t -}}
+		q.Set{{ $n }}({{ to_symmetric_ent "*v" $t }})
+		{{ else -}}
+		if w, err := {{ convert_to_ent_field "v" $t }}; err != nil {
+			return nil, {{ grpc_errf "InvalidArgument" (print .Name ": %s" | quote) "err" }}
+		} else {
+			q.Set{{ $n }}(w)
+		}
+		{{ end -}}
+	}
+	{{ continue -}}
+	{{ end -}}
 	
 	{{ if is_symmetric $t -}}
 	{{/*   type is symmetric */ -}}

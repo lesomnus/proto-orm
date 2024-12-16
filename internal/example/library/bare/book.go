@@ -24,15 +24,23 @@ func NewBookServiceServer(db *ent.Client) *BookServiceServer {
 
 func (s *BookServiceServer) Add(ctx context.Context, req *library.BookAddRequest) (*library.Book, error) {
 	q := s.db.Book.Create()
-	if v, err := uuid.FromBytes(req.Id); err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "id: %s", err)
-	} else {
-		q.SetID(v)
+	if v := req.Id; v != nil {
+		if w, err := uuid.FromBytes(v); err != nil {
+			return nil, status.Errorf(codes.InvalidArgument, "id: %s", err)
+		} else {
+			q.SetID(w)
+		}
 	}
 	q.SetTitle(req.Title)
-	q.SetIndex(req.Index)
-	q.SetGenres(req.Genres)
-	q.SetDateCreated(req.DateCreated.AsTime())
+	if v := req.Index; v != nil {
+		q.SetIndex(v)
+	}
+	if v := req.Genres; v != nil {
+		q.SetGenres(v)
+	}
+	if v := req.DateCreated; v != nil {
+		q.SetDateCreated(v.AsTime())
+	}
 
 	v, err := q.Save(ctx)
 	if err != nil {
@@ -65,14 +73,14 @@ func (s *BookServiceServer) Patch(ctx context.Context, req *library.BookPatchReq
 	}
 
 	q := s.db.Book.UpdateOneID(id)
-	if req.Title != nil {
-		q.SetTitle(*req.Title)
+	if v := req.Title; v != nil {
+		q.SetTitle(*v)
 	}
-	if req.Index != nil {
-		q.SetIndex(req.Index)
+	if v := req.Index; v != nil {
+		q.SetIndex(v)
 	}
-	if req.Genres != nil {
-		q.SetGenres(req.Genres)
+	if v := req.Genres; v != nil {
+		q.SetGenres(v)
 	}
 
 	v, err := q.Save(ctx)
@@ -115,7 +123,7 @@ func BookGetId(ctx context.Context, db *ent.Client, req *library.BookGetRequest)
 	k := req.GetKey()
 	if r, ok := k.(*library.BookGetRequest_Id); ok {
 		if v, err := uuid.FromBytes(r.Id); err != nil {
-			return z, status.Errorf(codes.InvalidArgument, "Id: %s", "err")
+			return z, status.Errorf(codes.InvalidArgument, "key.id: %s", err)
 		} else {
 			return v, nil
 		}

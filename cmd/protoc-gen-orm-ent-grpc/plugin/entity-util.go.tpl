@@ -91,7 +91,7 @@ func {{ .Name }}GetId(ctx {{ pkg "context" | ident "Context" }}, db *{{ ent "Cli
 		return r.{{ $n }}
 		{{ else -}}
 		if v, err := {{ convert_to_ent_field (print "r." $n) $t }}; err != nil {
-			return z, {{ grpc_errf "InvalidArgument" (print $n ": %s" | quote) "\"err\"" }}
+			return z, {{ grpc_errf "InvalidArgument" (print "key." $k.Name ": %s" | quote) "err" }}
 		} else {
 			return v, nil
 		}

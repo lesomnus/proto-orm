@@ -24,21 +24,29 @@ func NewMemberServiceServer(db *ent.Client) *MemberServiceServer {
 
 func (s *MemberServiceServer) Add(ctx context.Context, req *library.MemberAddRequest) (*library.Member, error) {
 	q := s.db.Member.Create()
-	if v, err := uuid.FromBytes(req.Id); err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "id: %s", err)
-	} else {
-		q.SetID(v)
+	if v := req.Id; v != nil {
+		if w, err := uuid.FromBytes(v); err != nil {
+			return nil, status.Errorf(codes.InvalidArgument, "id: %s", err)
+		} else {
+			q.SetID(w)
+		}
 	}
 	q.SetName(req.Name)
-	q.SetLabels(req.Labels)
-	q.SetProfile(req.Profile)
+	if v := req.Labels; v != nil {
+		q.SetLabels(v)
+	}
+	if v := req.Profile; v != nil {
+		q.SetProfile(v)
+	}
 	q.SetLevel(int(req.Level))
 	if id, err := LockerGetId(ctx, s.db, req.GetLocker()); err != nil {
 		return nil, err
 	} else {
 		q.SetLockerID(id)
 	}
-	q.SetDateCreated(req.DateCreated.AsTime())
+	if v := req.DateCreated; v != nil {
+		q.SetDateCreated(v.AsTime())
+	}
 
 	v, err := q.Save(ctx)
 	if err != nil {
@@ -71,17 +79,17 @@ func (s *MemberServiceServer) Patch(ctx context.Context, req *library.MemberPatc
 	}
 
 	q := s.db.Member.UpdateOneID(id)
-	if req.Name != nil {
-		q.SetName(*req.Name)
+	if v := req.Name; v != nil {
+		q.SetName(*v)
 	}
-	if req.Labels != nil {
-		q.SetLabels(req.Labels)
+	if v := req.Labels; v != nil {
+		q.SetLabels(v)
 	}
-	if req.Profile != nil {
-		q.SetProfile(req.Profile)
+	if v := req.Profile; v != nil {
+		q.SetProfile(v)
 	}
-	if req.Level != nil {
-		q.SetLevel(int(*req.Level))
+	if v := req.Level; v != nil {
+		q.SetLevel(int(*v))
 	}
 	if req.LockerNull {
 		q.ClearLocker()
@@ -131,7 +139,7 @@ func MemberGetId(ctx context.Context, db *ent.Client, req *library.MemberGetRequ
 	k := req.GetKey()
 	if r, ok := k.(*library.MemberGetRequest_Id); ok {
 		if v, err := uuid.FromBytes(r.Id); err != nil {
-			return z, status.Errorf(codes.InvalidArgument, "Id: %s", "err")
+			return z, status.Errorf(codes.InvalidArgument, "key.id: %s", err)
 		} else {
 			return v, nil
 		}
