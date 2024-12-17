@@ -11,6 +11,7 @@ import (
 	predicate "github.com/lesomnus/proto-orm/internal/example/library/ent/predicate"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 type MemberServiceServer struct {
@@ -72,7 +73,7 @@ func (s *MemberServiceServer) Get(ctx context.Context, req *library.MemberGetReq
 	return v.Proto(), nil
 }
 
-func (s *MemberServiceServer) Patch(ctx context.Context, req *library.MemberPatchRequest) (*library.Member, error) {
+func (s *MemberServiceServer) Patch(ctx context.Context, req *library.MemberPatchRequest) (*emptypb.Empty, error) {
 	id, err := MemberGetId(ctx, s.db, req.GetKey())
 	if err != nil {
 		return nil, err
@@ -99,15 +100,14 @@ func (s *MemberServiceServer) Patch(ctx context.Context, req *library.MemberPatc
 		q.SetLockerID(id)
 	}
 
-	v, err := q.Save(ctx)
-	if err != nil {
+	if _, err := q.Save(ctx); err != nil {
 		return nil, StatusFromEntError(err)
 	}
 
-	return v.Proto(), nil
+	return nil, nil
 }
 
-func (s *MemberServiceServer) Erase(ctx context.Context, req *library.MemberGetRequest) (*library.Member, error) {
+func (s *MemberServiceServer) Erase(ctx context.Context, req *library.MemberGetRequest) (*emptypb.Empty, error) {
 	p, err := MemberPick(req)
 	if err != nil {
 		return nil, err

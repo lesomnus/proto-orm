@@ -11,6 +11,7 @@ import (
 	predicate "github.com/lesomnus/proto-orm/internal/example/library/ent/predicate"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 type AuthorServiceServer struct {
@@ -67,7 +68,7 @@ func (s *AuthorServiceServer) Get(ctx context.Context, req *library.AuthorGetReq
 	return v.Proto(), nil
 }
 
-func (s *AuthorServiceServer) Patch(ctx context.Context, req *library.AuthorPatchRequest) (*library.Author, error) {
+func (s *AuthorServiceServer) Patch(ctx context.Context, req *library.AuthorPatchRequest) (*emptypb.Empty, error) {
 	id, err := AuthorGetId(ctx, s.db, req.GetKey())
 	if err != nil {
 		return nil, err
@@ -87,15 +88,14 @@ func (s *AuthorServiceServer) Patch(ctx context.Context, req *library.AuthorPatc
 		q.SetProfile(v)
 	}
 
-	v, err := q.Save(ctx)
-	if err != nil {
+	if _, err := q.Save(ctx); err != nil {
 		return nil, StatusFromEntError(err)
 	}
 
-	return v.Proto(), nil
+	return nil, nil
 }
 
-func (s *AuthorServiceServer) Erase(ctx context.Context, req *library.AuthorGetRequest) (*library.Author, error) {
+func (s *AuthorServiceServer) Erase(ctx context.Context, req *library.AuthorGetRequest) (*emptypb.Empty, error) {
 	p, err := AuthorPick(req)
 	if err != nil {
 		return nil, err

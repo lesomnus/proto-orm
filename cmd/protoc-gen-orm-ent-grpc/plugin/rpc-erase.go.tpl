@@ -1,4 +1,4 @@
-func (s *{{ $.Name }}ServiceServer) Erase(ctx {{ pkg "context" | ident "Context" }}, req *{{ pb (print $.Name "GetRequest") }}) (*{{ pb $.Name }}, error) {
+func (s *{{ $.Name }}ServiceServer) Erase(ctx {{ pkg "context" | ident "Context" }}, req *{{ pb (print $.Name "GetRequest") }}) (*{{ pkg "google.golang.org/protobuf/types/known/emptypb" | ident "Empty" }}, error) {
 	p, err := {{ $.Name }}Pick(req)
 	if err != nil {
 		return nil, err

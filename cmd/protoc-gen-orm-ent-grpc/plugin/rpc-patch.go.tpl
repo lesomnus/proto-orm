@@ -1,4 +1,4 @@
-func (s *{{ $.Name }}ServiceServer) Patch(ctx {{ pkg "context" | ident "Context" }}, req *{{ pb (print $.Name "PatchRequest") }}) (*{{ pb $.Name }}, error) {
+func (s *{{ $.Name }}ServiceServer) Patch(ctx {{ pkg "context" | ident "Context" }}, req *{{ pb (print $.Name "PatchRequest") }}) (*{{ pkg "google.golang.org/protobuf/types/known/emptypb" | ident "Empty" }}, error) {
 	id, err := {{ $.Name }}GetId(ctx, s.db, req.GetKey())
 	if err != nil {
 		return nil, err
@@ -74,10 +74,9 @@ func (s *{{ $.Name }}ServiceServer) Patch(ctx {{ pkg "context" | ident "Context"
 
 	{{ end }}
 
-	v, err := q.Save(ctx)
-	if err != nil {
+	if _, err := q.Save(ctx); err != nil {
 		return nil, StatusFromEntError(err)
 	}
 
-	return v.Proto(), nil
+	return nil, nil
 }

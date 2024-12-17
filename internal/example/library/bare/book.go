@@ -11,6 +11,7 @@ import (
 	predicate "github.com/lesomnus/proto-orm/internal/example/library/ent/predicate"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 type BookServiceServer struct {
@@ -66,7 +67,7 @@ func (s *BookServiceServer) Get(ctx context.Context, req *library.BookGetRequest
 	return v.Proto(), nil
 }
 
-func (s *BookServiceServer) Patch(ctx context.Context, req *library.BookPatchRequest) (*library.Book, error) {
+func (s *BookServiceServer) Patch(ctx context.Context, req *library.BookPatchRequest) (*emptypb.Empty, error) {
 	id, err := BookGetId(ctx, s.db, req.GetKey())
 	if err != nil {
 		return nil, err
@@ -83,15 +84,14 @@ func (s *BookServiceServer) Patch(ctx context.Context, req *library.BookPatchReq
 		q.SetGenres(v)
 	}
 
-	v, err := q.Save(ctx)
-	if err != nil {
+	if _, err := q.Save(ctx); err != nil {
 		return nil, StatusFromEntError(err)
 	}
 
-	return v.Proto(), nil
+	return nil, nil
 }
 
-func (s *BookServiceServer) Erase(ctx context.Context, req *library.BookGetRequest) (*library.Book, error) {
+func (s *BookServiceServer) Erase(ctx context.Context, req *library.BookGetRequest) (*emptypb.Empty, error) {
 	p, err := BookPick(req)
 	if err != nil {
 		return nil, err

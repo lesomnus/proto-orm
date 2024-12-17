@@ -11,6 +11,7 @@ import (
 	predicate "github.com/lesomnus/proto-orm/internal/example/library/ent/predicate"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 type LoanServiceServer struct {
@@ -75,7 +76,7 @@ func (s *LoanServiceServer) Get(ctx context.Context, req *library.LoanGetRequest
 	return v.Proto(), nil
 }
 
-func (s *LoanServiceServer) Patch(ctx context.Context, req *library.LoanPatchRequest) (*library.Loan, error) {
+func (s *LoanServiceServer) Patch(ctx context.Context, req *library.LoanPatchRequest) (*emptypb.Empty, error) {
 	id, err := LoanGetId(ctx, s.db, req.GetKey())
 	if err != nil {
 		return nil, err
@@ -91,15 +92,14 @@ func (s *LoanServiceServer) Patch(ctx context.Context, req *library.LoanPatchReq
 		q.SetDateReturn(v.AsTime())
 	}
 
-	v, err := q.Save(ctx)
-	if err != nil {
+	if _, err := q.Save(ctx); err != nil {
 		return nil, StatusFromEntError(err)
 	}
 
-	return v.Proto(), nil
+	return nil, nil
 }
 
-func (s *LoanServiceServer) Erase(ctx context.Context, req *library.LoanGetRequest) (*library.Loan, error) {
+func (s *LoanServiceServer) Erase(ctx context.Context, req *library.LoanGetRequest) (*emptypb.Empty, error) {
 	p, err := LoanPick(req)
 	if err != nil {
 		return nil, err

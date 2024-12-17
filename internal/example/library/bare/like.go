@@ -11,6 +11,7 @@ import (
 	predicate "github.com/lesomnus/proto-orm/internal/example/library/ent/predicate"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 type LikeServiceServer struct {
@@ -69,7 +70,7 @@ func (s *LikeServiceServer) Get(ctx context.Context, req *library.LikeGetRequest
 	return v.Proto(), nil
 }
 
-func (s *LikeServiceServer) Patch(ctx context.Context, req *library.LikePatchRequest) (*library.Like, error) {
+func (s *LikeServiceServer) Patch(ctx context.Context, req *library.LikePatchRequest) (*emptypb.Empty, error) {
 	id, err := LikeGetId(ctx, s.db, req.GetKey())
 	if err != nil {
 		return nil, err
@@ -77,15 +78,14 @@ func (s *LikeServiceServer) Patch(ctx context.Context, req *library.LikePatchReq
 
 	q := s.db.Like.UpdateOneID(id)
 
-	v, err := q.Save(ctx)
-	if err != nil {
+	if _, err := q.Save(ctx); err != nil {
 		return nil, StatusFromEntError(err)
 	}
 
-	return v.Proto(), nil
+	return nil, nil
 }
 
-func (s *LikeServiceServer) Erase(ctx context.Context, req *library.LikeGetRequest) (*library.Like, error) {
+func (s *LikeServiceServer) Erase(ctx context.Context, req *library.LikeGetRequest) (*emptypb.Empty, error) {
 	p, err := LikePick(req)
 	if err != nil {
 		return nil, err

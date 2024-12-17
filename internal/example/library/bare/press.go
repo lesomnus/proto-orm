@@ -11,6 +11,7 @@ import (
 	press "github.com/lesomnus/proto-orm/internal/example/library/ent/press"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 type PressServiceServer struct {
@@ -65,7 +66,7 @@ func (s *PressServiceServer) Get(ctx context.Context, req *library.PressGetReque
 	return v.Proto(), nil
 }
 
-func (s *PressServiceServer) Patch(ctx context.Context, req *library.PressPatchRequest) (*library.Press, error) {
+func (s *PressServiceServer) Patch(ctx context.Context, req *library.PressPatchRequest) (*emptypb.Empty, error) {
 	id, err := PressGetId(ctx, s.db, req.GetKey())
 	if err != nil {
 		return nil, err
@@ -73,15 +74,14 @@ func (s *PressServiceServer) Patch(ctx context.Context, req *library.PressPatchR
 
 	q := s.db.Press.UpdateOneID(id)
 
-	v, err := q.Save(ctx)
-	if err != nil {
+	if _, err := q.Save(ctx); err != nil {
 		return nil, StatusFromEntError(err)
 	}
 
-	return v.Proto(), nil
+	return nil, nil
 }
 
-func (s *PressServiceServer) Erase(ctx context.Context, req *library.PressGetRequest) (*library.Press, error) {
+func (s *PressServiceServer) Erase(ctx context.Context, req *library.PressGetRequest) (*emptypb.Empty, error) {
 	p, err := PressPick(req)
 	if err != nil {
 		return nil, err
