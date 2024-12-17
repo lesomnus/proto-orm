@@ -30,7 +30,7 @@ message AuthorAddRequest {
 	string alias = 2;
 	string name = 3;
 	map<string,string> labels = 4;
-	Profile profile = 5;
+	optional Profile profile = 5;
 	optional google.protobuf.Timestamp date_created = 15;
 }
 

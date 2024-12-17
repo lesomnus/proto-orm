@@ -28,8 +28,16 @@ message Author {
 		}
 	];
 	string name = 3;
-	map<string, string> labels = 4;
-	Profile profile = 5;
+	map<string, string> labels = 4 [
+		(orm.field) = {
+			default: ""
+		}
+	];
+	Profile profile = 5 [
+		(orm.field) = {
+			default: ""
+		}
+	];
 
 	repeated Book books = 7 [
 		(orm.edge) = {

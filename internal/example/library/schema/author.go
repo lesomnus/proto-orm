@@ -24,8 +24,10 @@ func (Author) Fields() []ent.Field {
 		field.String("alias").
 			Unique(),
 		field.String("name"),
-		field.JSON("labels", map[string]string{}),
-		field.JSON("profile", &library.Profile{}),
+		field.JSON("labels", map[string]string{}).
+			Default(map[string]string{}),
+		field.JSON("profile", &library.Profile{}).
+			Default(&library.Profile{}),
 		field.Time("date_created").
 			Default(time.Now).
 			Immutable(),

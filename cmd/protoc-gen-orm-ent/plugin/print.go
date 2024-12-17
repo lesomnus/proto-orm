@@ -11,6 +11,7 @@ import (
 	"github.com/lesomnus/proto-orm/graph"
 	"github.com/lesomnus/proto-orm/internal/rules"
 	"google.golang.org/protobuf/compiler/protogen"
+	"google.golang.org/protobuf/reflect/protoreflect"
 )
 
 const (
@@ -132,6 +133,15 @@ func (p *Plugin) NewTemplate(e *graph.Entity, f *protogen.GeneratedFile) *templa
 
 			t := field.Type()
 			switch t {
+			case orm.Type_TYPE_JSON:
+				v := field.GoType(f.QualifiedGoIdent) + "{}"
+				d := field.Source().Desc
+				if d.Kind() == protoreflect.MessageKind && !d.IsMap() {
+					// Go type is a struct.
+					// Note that kind of proto map is a message.
+					v = "&" + v
+				}
+				return v
 			case orm.Type_TYPE_UUID:
 				return f.QualifiedGoIdent(import_uuid.Ident("New"))
 			case orm.Type_TYPE_TIME:
