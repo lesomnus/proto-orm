@@ -25,27 +25,27 @@ func NewMemberServiceServer(db *ent.Client) *MemberServiceServer {
 
 func (s *MemberServiceServer) Add(ctx context.Context, req *library.MemberAddRequest) (*library.Member, error) {
 	q := s.db.Member.Create()
-	if v := req.Id; v != nil {
+	if v := req.GetId(); v != nil {
 		if w, err := uuid.FromBytes(v); err != nil {
 			return nil, status.Errorf(codes.InvalidArgument, "id: %s", err)
 		} else {
 			q.SetID(w)
 		}
 	}
-	q.SetName(req.Name)
-	if v := req.Labels; v != nil {
+	q.SetName(req.GetName())
+	if v := req.GetLabels(); v != nil {
 		q.SetLabels(v)
 	}
-	if v := req.Profile; v != nil {
+	if v := req.GetProfile(); v != nil {
 		q.SetProfile(v)
 	}
-	q.SetLevel(int(req.Level))
+	q.SetLevel(int(req.GetLevel()))
 	if id, err := LockerGetId(ctx, s.db, req.GetLocker()); err != nil {
 		return nil, err
 	} else {
 		q.SetLockerID(id)
 	}
-	if v := req.DateCreated; v != nil {
+	if v := req.GetDateCreated(); v != nil {
 		q.SetDateCreated(v.AsTime())
 	}
 
@@ -80,19 +80,19 @@ func (s *MemberServiceServer) Patch(ctx context.Context, req *library.MemberPatc
 	}
 
 	q := s.db.Member.UpdateOneID(id)
-	if v := req.Name; v != nil {
-		q.SetName(*v)
+	if req.HasName() {
+		q.SetName(req.GetName())
 	}
-	if v := req.Labels; v != nil {
+	if v := req.GetLabels(); v != nil {
 		q.SetLabels(v)
 	}
-	if v := req.Profile; v != nil {
-		q.SetProfile(v)
+	if req.HasProfile() {
+		q.SetProfile(req.GetProfile())
 	}
-	if v := req.Level; v != nil {
-		q.SetLevel(int(*v))
+	if req.HasLevel() {
+		q.SetLevel(int(req.GetLevel()))
 	}
-	if req.LockerNull {
+	if req.GetLockerNull() {
 		q.ClearLocker()
 	} else if id, err := MemberGetId(ctx, s.db, req.GetKey()); err != nil {
 		return nil, err
@@ -120,14 +120,14 @@ func (s *MemberServiceServer) Erase(ctx context.Context, req *library.MemberGetR
 }
 
 func MemberPick(req *library.MemberGetRequest) (predicate.Member, error) {
-	switch k := req.GetKey().(type) {
-	case *library.MemberGetRequest_Id:
-		if v, err := uuid.FromBytes(k.Id); err != nil {
+	switch req.WhichKey() {
+	case library.MemberGetRequest_Id_case:
+		if v, err := uuid.FromBytes(req.GetId()); err != nil {
 			return nil, status.Errorf(codes.InvalidArgument, "id: %s", "err")
 		} else {
 			return member.IDEQ(v), nil
 		}
-	case nil:
+	case library.MemberGetRequest_Key_not_set_case:
 		return nil, status.Errorf(codes.InvalidArgument, "key not provided")
 	default:
 		return nil, status.Errorf(codes.Unimplemented, "unknown type of key")
@@ -136,9 +136,8 @@ func MemberPick(req *library.MemberGetRequest) (predicate.Member, error) {
 
 func MemberGetId(ctx context.Context, db *ent.Client, req *library.MemberGetRequest) (uuid.UUID, error) {
 	var z uuid.UUID
-	k := req.GetKey()
-	if r, ok := k.(*library.MemberGetRequest_Id); ok {
-		if v, err := uuid.FromBytes(r.Id); err != nil {
+	if req.HasId() {
+		if v, err := uuid.FromBytes(req.GetId()); err != nil {
 			return z, status.Errorf(codes.InvalidArgument, "key.id: %s", err)
 		} else {
 			return v, nil

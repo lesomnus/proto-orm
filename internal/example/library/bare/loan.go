@@ -25,7 +25,7 @@ func NewLoanServiceServer(db *ent.Client) *LoanServiceServer {
 
 func (s *LoanServiceServer) Add(ctx context.Context, req *library.LoanAddRequest) (*library.Loan, error) {
 	q := s.db.Loan.Create()
-	if v := req.Id; v != nil {
+	if v := req.GetId(); v != nil {
 		if w, err := uuid.FromBytes(v); err != nil {
 			return nil, status.Errorf(codes.InvalidArgument, "id: %s", err)
 		} else {
@@ -42,13 +42,13 @@ func (s *LoanServiceServer) Add(ctx context.Context, req *library.LoanAddRequest
 	} else {
 		q.SetBorrowerID(id)
 	}
-	if v := req.DateDue; v != nil {
+	if v := req.GetDateDue(); v != nil {
 		q.SetDateDue(v.AsTime())
 	}
-	if v := req.DateReturn; v != nil {
+	if v := req.GetDateReturn(); v != nil {
 		q.SetDateReturn(v.AsTime())
 	}
-	if v := req.DateCreated; v != nil {
+	if v := req.GetDateCreated(); v != nil {
 		q.SetDateCreated(v.AsTime())
 	}
 
@@ -83,13 +83,13 @@ func (s *LoanServiceServer) Patch(ctx context.Context, req *library.LoanPatchReq
 	}
 
 	q := s.db.Loan.UpdateOneID(id)
-	if v := req.DateDue; v != nil {
-		q.SetDateDue(v.AsTime())
+	if req.HasDateDue() {
+		q.SetDateDue(req.GetDateDue().AsTime())
 	}
-	if req.DateReturnNull {
+	if req.GetDateReturnNull() {
 		q.ClearDateReturn()
-	} else if v := req.DateReturn; v != nil {
-		q.SetDateReturn(v.AsTime())
+	} else if req.HasDateReturn() {
+		q.SetDateReturn(req.GetDateReturn().AsTime())
 	}
 
 	if _, err := q.Save(ctx); err != nil {
@@ -112,14 +112,14 @@ func (s *LoanServiceServer) Erase(ctx context.Context, req *library.LoanGetReque
 }
 
 func LoanPick(req *library.LoanGetRequest) (predicate.Loan, error) {
-	switch k := req.GetKey().(type) {
-	case *library.LoanGetRequest_Id:
-		if v, err := uuid.FromBytes(k.Id); err != nil {
+	switch req.WhichKey() {
+	case library.LoanGetRequest_Id_case:
+		if v, err := uuid.FromBytes(req.GetId()); err != nil {
 			return nil, status.Errorf(codes.InvalidArgument, "id: %s", "err")
 		} else {
 			return loan.IDEQ(v), nil
 		}
-	case nil:
+	case library.LoanGetRequest_Key_not_set_case:
 		return nil, status.Errorf(codes.InvalidArgument, "key not provided")
 	default:
 		return nil, status.Errorf(codes.Unimplemented, "unknown type of key")
@@ -128,9 +128,8 @@ func LoanPick(req *library.LoanGetRequest) (predicate.Loan, error) {
 
 func LoanGetId(ctx context.Context, db *ent.Client, req *library.LoanGetRequest) (uuid.UUID, error) {
 	var z uuid.UUID
-	k := req.GetKey()
-	if r, ok := k.(*library.LoanGetRequest_Id); ok {
-		if v, err := uuid.FromBytes(r.Id); err != nil {
+	if req.HasId() {
+		if v, err := uuid.FromBytes(req.GetId()); err != nil {
 			return z, status.Errorf(codes.InvalidArgument, "key.id: %s", err)
 		} else {
 			return v, nil

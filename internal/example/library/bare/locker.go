@@ -25,7 +25,7 @@ func NewLockerServiceServer(db *ent.Client) *LockerServiceServer {
 
 func (s *LockerServiceServer) Add(ctx context.Context, req *library.LockerAddRequest) (*library.Locker, error) {
 	q := s.db.Locker.Create()
-	if v := req.Id; v != nil {
+	if v := req.GetId(); v != nil {
 		if w, err := uuid.FromBytes(v); err != nil {
 			return nil, status.Errorf(codes.InvalidArgument, "id: %s", err)
 		} else {
@@ -69,7 +69,7 @@ func (s *LockerServiceServer) Patch(ctx context.Context, req *library.LockerPatc
 	}
 
 	q := s.db.Locker.UpdateOneID(id)
-	if req.OwnerNull {
+	if req.GetOwnerNull() {
 		q.ClearOwner()
 	} else if id, err := LockerGetId(ctx, s.db, req.GetKey()); err != nil {
 		return nil, err
@@ -97,14 +97,14 @@ func (s *LockerServiceServer) Erase(ctx context.Context, req *library.LockerGetR
 }
 
 func LockerPick(req *library.LockerGetRequest) (predicate.Locker, error) {
-	switch k := req.GetKey().(type) {
-	case *library.LockerGetRequest_Id:
-		if v, err := uuid.FromBytes(k.Id); err != nil {
+	switch req.WhichKey() {
+	case library.LockerGetRequest_Id_case:
+		if v, err := uuid.FromBytes(req.GetId()); err != nil {
 			return nil, status.Errorf(codes.InvalidArgument, "id: %s", "err")
 		} else {
 			return locker.IDEQ(v), nil
 		}
-	case nil:
+	case library.LockerGetRequest_Key_not_set_case:
 		return nil, status.Errorf(codes.InvalidArgument, "key not provided")
 	default:
 		return nil, status.Errorf(codes.Unimplemented, "unknown type of key")
@@ -113,9 +113,8 @@ func LockerPick(req *library.LockerGetRequest) (predicate.Locker, error) {
 
 func LockerGetId(ctx context.Context, db *ent.Client, req *library.LockerGetRequest) (uuid.UUID, error) {
 	var z uuid.UUID
-	k := req.GetKey()
-	if r, ok := k.(*library.LockerGetRequest_Id); ok {
-		if v, err := uuid.FromBytes(r.Id); err != nil {
+	if req.HasId() {
+		if v, err := uuid.FromBytes(req.GetId()); err != nil {
 			return z, status.Errorf(codes.InvalidArgument, "key.id: %s", err)
 		} else {
 			return v, nil

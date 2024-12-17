@@ -12,7 +12,7 @@ func (s *{{ $.Name }}ServiceServer) Add(ctx {{ pkg "context" | ident "Context" }
 
 	{{ $t := .Type -}}
 	{{ $n := ent_pascal .Name -}}
-	{{ $v := print "req." (pascal .Name) -}}
+	{{ $v := print "req.Get" (pascal .Name) "()" -}}
 
 	{{ if not $t.IsPrimitive | or .IsNullable | or .HasDefault | or .IsList -}}
 	if v := {{ $v }}; v != nil {

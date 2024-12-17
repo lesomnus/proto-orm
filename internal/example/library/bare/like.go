@@ -25,7 +25,7 @@ func NewLikeServiceServer(db *ent.Client) *LikeServiceServer {
 
 func (s *LikeServiceServer) Add(ctx context.Context, req *library.LikeAddRequest) (*library.Like, error) {
 	q := s.db.Like.Create()
-	if v := req.Id; v != nil {
+	if v := req.GetId(); v != nil {
 		if w, err := uuid.FromBytes(v); err != nil {
 			return nil, status.Errorf(codes.InvalidArgument, "id: %s", err)
 		} else {
@@ -42,7 +42,7 @@ func (s *LikeServiceServer) Add(ctx context.Context, req *library.LikeAddRequest
 	} else {
 		q.SetActorID(id)
 	}
-	if v := req.DateCreated; v != nil {
+	if v := req.GetDateCreated(); v != nil {
 		q.SetDateCreated(v.AsTime())
 	}
 
@@ -98,28 +98,28 @@ func (s *LikeServiceServer) Erase(ctx context.Context, req *library.LikeGetReque
 }
 
 func LikePick(req *library.LikeGetRequest) (predicate.Like, error) {
-	switch k := req.GetKey().(type) {
-	case *library.LikeGetRequest_Id:
-		if v, err := uuid.FromBytes(k.Id); err != nil {
+	switch req.WhichKey() {
+	case library.LikeGetRequest_Id_case:
+		if v, err := uuid.FromBytes(req.GetId()); err != nil {
 			return nil, status.Errorf(codes.InvalidArgument, "id: %s", "err")
 		} else {
 			return like.IDEQ(v), nil
 		}
-	case *library.LikeGetRequest_Holders:
+	case library.LikeGetRequest_Holders_case:
 		ps := make([]predicate.Like, 0, 2)
-		if v, err := uuid.FromBytes(k.Holders.SubjectId); err != nil {
+		if v, err := uuid.FromBytes(req.GetHolders().GetSubjectId()); err != nil {
 			return nil, status.Errorf(codes.InvalidArgument, "holders.subject_id: %s", "err")
 		} else {
 			ps = append(ps, like.SubjectIDEQ(v))
 		}
-		if p, err := MemberPick(k.Holders.GetActor()); err != nil {
+		if p, err := MemberPick(req.GetHolders().GetActor()); err != nil {
 			s, _ := status.FromError(err)
 			return nil, status.Errorf(codes.InvalidArgument, "holders.actor: %s", s.Message())
 		} else {
 			ps = append(ps, like.HasActorWith(p))
 		}
 		return like.And(ps...), nil
-	case nil:
+	case library.LikeGetRequest_Key_not_set_case:
 		return nil, status.Errorf(codes.InvalidArgument, "key not provided")
 	default:
 		return nil, status.Errorf(codes.Unimplemented, "unknown type of key")
@@ -128,9 +128,8 @@ func LikePick(req *library.LikeGetRequest) (predicate.Like, error) {
 
 func LikeGetId(ctx context.Context, db *ent.Client, req *library.LikeGetRequest) (uuid.UUID, error) {
 	var z uuid.UUID
-	k := req.GetKey()
-	if r, ok := k.(*library.LikeGetRequest_Id); ok {
-		if v, err := uuid.FromBytes(r.Id); err != nil {
+	if req.HasId() {
+		if v, err := uuid.FromBytes(req.GetId()); err != nil {
 			return z, status.Errorf(codes.InvalidArgument, "key.id: %s", err)
 		} else {
 			return v, nil

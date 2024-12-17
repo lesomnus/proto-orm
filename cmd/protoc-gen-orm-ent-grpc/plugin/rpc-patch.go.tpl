@@ -21,19 +21,22 @@ func (s *{{ $.Name }}ServiceServer) Patch(ctx {{ pkg "context" | ident "Context"
 	{{ end -}}
 
 	{{ $t := .Type -}}
-	{{ $v := print "req." (pascal .Name) -}}
+	{{ $v := print "req.Get" (pascal .Name) "()" -}}
 	{{ $n := ent_pascal .Name -}}
 
 	{{ if .IsNullable -}}
-	if {{ $v }}Null {
+	if {{ print "req.Get" (pascal .Name) "Null()" }} {
 		q.Clear{{ $n }}()
 	} else {{ end -}}
 
+	{{ if .IsSoft -}}
 	if v := {{ $v }}; v != nil {
-		{{ if .IsList -}}
 		q.Set{{ $n }}(v)
-		{{ else if is_symmetric $t -}}
-		q.Set{{ $n }}({{ to_symmetric_ent "*v" $t }})
+	}
+	{{ else -}}
+	if {{ print "req.Has" (pascal .Name) "()" }} {
+		{{ if is_symmetric $t -}}
+		q.Set{{ $n }}({{ to_symmetric_ent $v $t }})
 		{{ else -}}
 		if v, err := {{ convert_to_ent_field $v $t }}; err != nil {
 			return nil, {{ grpc_errf "InvalidArgument" (print .Name ": %s" | quote) "err" }}
@@ -42,6 +45,8 @@ func (s *{{ $.Name }}ServiceServer) Patch(ctx {{ pkg "context" | ident "Context"
 		}
 		{{ end -}}
 	}
+	{{ end -}}
+	
 	{{ continue -}}
 	{{ end }}{{ end }}{{/* attribute is printed */ -}}
 
@@ -60,7 +65,7 @@ func (s *{{ $.Name }}ServiceServer) Patch(ctx {{ pkg "context" | ident "Context"
 	{{ $n := ent_pascal $target.Name -}}
 
 	{{ if .IsNullable -}}
-	if {{ $v }}Null {
+	if {{ print "req.Get" (pascal .Name) "Null()" }} {
 		q.Clear{{ pascal .Name }}()
 	} else {{ end -}}
 

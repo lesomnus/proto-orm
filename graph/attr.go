@@ -208,11 +208,21 @@ func (a *Attr) IsIgnored() bool {
 
 func (a *Attr) IsOptional() bool {
 	d := a.source.Desc
-	return d.HasOptionalKeyword() || d.IsList()
+	return d.HasOptionalKeyword() || d.IsList() || d.IsMap()
+}
+
+// The type of proto field implies optional.
+// TODO: better name?
+func (a *Attr) IsSoft() bool {
+	return a.IsList() || a.IsMap()
 }
 
 func (a *Attr) IsList() bool {
 	return a.source.Desc.IsList()
+}
+
+func (a *Attr) IsMap() bool {
+	return a.source.Desc.IsMap()
 }
 
 func (a *Attr) IsUnique() bool {

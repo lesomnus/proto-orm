@@ -25,22 +25,22 @@ func NewAuthorServiceServer(db *ent.Client) *AuthorServiceServer {
 
 func (s *AuthorServiceServer) Add(ctx context.Context, req *library.AuthorAddRequest) (*library.Author, error) {
 	q := s.db.Author.Create()
-	if v := req.Id; v != nil {
+	if v := req.GetId(); v != nil {
 		if w, err := uuid.FromBytes(v); err != nil {
 			return nil, status.Errorf(codes.InvalidArgument, "id: %s", err)
 		} else {
 			q.SetID(w)
 		}
 	}
-	q.SetAlias(req.Alias)
-	q.SetName(req.Name)
-	if v := req.Labels; v != nil {
+	q.SetAlias(req.GetAlias())
+	q.SetName(req.GetName())
+	if v := req.GetLabels(); v != nil {
 		q.SetLabels(v)
 	}
-	if v := req.Profile; v != nil {
+	if v := req.GetProfile(); v != nil {
 		q.SetProfile(v)
 	}
-	if v := req.DateCreated; v != nil {
+	if v := req.GetDateCreated(); v != nil {
 		q.SetDateCreated(v.AsTime())
 	}
 
@@ -75,17 +75,17 @@ func (s *AuthorServiceServer) Patch(ctx context.Context, req *library.AuthorPatc
 	}
 
 	q := s.db.Author.UpdateOneID(id)
-	if v := req.Alias; v != nil {
-		q.SetAlias(*v)
+	if req.HasAlias() {
+		q.SetAlias(req.GetAlias())
 	}
-	if v := req.Name; v != nil {
-		q.SetName(*v)
+	if req.HasName() {
+		q.SetName(req.GetName())
 	}
-	if v := req.Labels; v != nil {
+	if v := req.GetLabels(); v != nil {
 		q.SetLabels(v)
 	}
-	if v := req.Profile; v != nil {
-		q.SetProfile(v)
+	if req.HasProfile() {
+		q.SetProfile(req.GetProfile())
 	}
 
 	if _, err := q.Save(ctx); err != nil {
@@ -108,16 +108,16 @@ func (s *AuthorServiceServer) Erase(ctx context.Context, req *library.AuthorGetR
 }
 
 func AuthorPick(req *library.AuthorGetRequest) (predicate.Author, error) {
-	switch k := req.GetKey().(type) {
-	case *library.AuthorGetRequest_Id:
-		if v, err := uuid.FromBytes(k.Id); err != nil {
+	switch req.WhichKey() {
+	case library.AuthorGetRequest_Id_case:
+		if v, err := uuid.FromBytes(req.GetId()); err != nil {
 			return nil, status.Errorf(codes.InvalidArgument, "id: %s", "err")
 		} else {
 			return author.IDEQ(v), nil
 		}
-	case *library.AuthorGetRequest_Alias:
-		return author.AliasEQ(k.Alias), nil
-	case nil:
+	case library.AuthorGetRequest_Alias_case:
+		return author.AliasEQ(req.GetAlias()), nil
+	case library.AuthorGetRequest_Key_not_set_case:
 		return nil, status.Errorf(codes.InvalidArgument, "key not provided")
 	default:
 		return nil, status.Errorf(codes.Unimplemented, "unknown type of key")
@@ -126,9 +126,8 @@ func AuthorPick(req *library.AuthorGetRequest) (predicate.Author, error) {
 
 func AuthorGetId(ctx context.Context, db *ent.Client, req *library.AuthorGetRequest) (uuid.UUID, error) {
 	var z uuid.UUID
-	k := req.GetKey()
-	if r, ok := k.(*library.AuthorGetRequest_Id); ok {
-		if v, err := uuid.FromBytes(r.Id); err != nil {
+	if req.HasId() {
+		if v, err := uuid.FromBytes(req.GetId()); err != nil {
 			return z, status.Errorf(codes.InvalidArgument, "key.id: %s", err)
 		} else {
 			return v, nil

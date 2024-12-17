@@ -25,21 +25,21 @@ func NewBookServiceServer(db *ent.Client) *BookServiceServer {
 
 func (s *BookServiceServer) Add(ctx context.Context, req *library.BookAddRequest) (*library.Book, error) {
 	q := s.db.Book.Create()
-	if v := req.Id; v != nil {
+	if v := req.GetId(); v != nil {
 		if w, err := uuid.FromBytes(v); err != nil {
 			return nil, status.Errorf(codes.InvalidArgument, "id: %s", err)
 		} else {
 			q.SetID(w)
 		}
 	}
-	q.SetTitle(req.Title)
-	if v := req.Index; v != nil {
+	q.SetTitle(req.GetTitle())
+	if v := req.GetIndex(); v != nil {
 		q.SetIndex(v)
 	}
-	if v := req.Genres; v != nil {
+	if v := req.GetGenres(); v != nil {
 		q.SetGenres(v)
 	}
-	if v := req.DateCreated; v != nil {
+	if v := req.GetDateCreated(); v != nil {
 		q.SetDateCreated(v.AsTime())
 	}
 
@@ -74,13 +74,13 @@ func (s *BookServiceServer) Patch(ctx context.Context, req *library.BookPatchReq
 	}
 
 	q := s.db.Book.UpdateOneID(id)
-	if v := req.Title; v != nil {
-		q.SetTitle(*v)
+	if req.HasTitle() {
+		q.SetTitle(req.GetTitle())
 	}
-	if v := req.Index; v != nil {
+	if v := req.GetIndex(); v != nil {
 		q.SetIndex(v)
 	}
-	if v := req.Genres; v != nil {
+	if v := req.GetGenres(); v != nil {
 		q.SetGenres(v)
 	}
 
@@ -104,14 +104,14 @@ func (s *BookServiceServer) Erase(ctx context.Context, req *library.BookGetReque
 }
 
 func BookPick(req *library.BookGetRequest) (predicate.Book, error) {
-	switch k := req.GetKey().(type) {
-	case *library.BookGetRequest_Id:
-		if v, err := uuid.FromBytes(k.Id); err != nil {
+	switch req.WhichKey() {
+	case library.BookGetRequest_Id_case:
+		if v, err := uuid.FromBytes(req.GetId()); err != nil {
 			return nil, status.Errorf(codes.InvalidArgument, "id: %s", "err")
 		} else {
 			return book.IDEQ(v), nil
 		}
-	case nil:
+	case library.BookGetRequest_Key_not_set_case:
 		return nil, status.Errorf(codes.InvalidArgument, "key not provided")
 	default:
 		return nil, status.Errorf(codes.Unimplemented, "unknown type of key")
@@ -120,9 +120,8 @@ func BookPick(req *library.BookGetRequest) (predicate.Book, error) {
 
 func BookGetId(ctx context.Context, db *ent.Client, req *library.BookGetRequest) (uuid.UUID, error) {
 	var z uuid.UUID
-	k := req.GetKey()
-	if r, ok := k.(*library.BookGetRequest_Id); ok {
-		if v, err := uuid.FromBytes(r.Id); err != nil {
+	if req.HasId() {
+		if v, err := uuid.FromBytes(req.GetId()); err != nil {
 			return z, status.Errorf(codes.InvalidArgument, "key.id: %s", err)
 		} else {
 			return v, nil

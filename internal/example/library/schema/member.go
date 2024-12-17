@@ -22,7 +22,8 @@ func (Member) Fields() []ent.Field {
 			Unique().
 			Immutable(),
 		field.String("name"),
-		field.JSON("labels", map[string]string{}),
+		field.JSON("labels", map[string]string{}).
+			Optional(),
 		field.JSON("profile", &library.Profile{}),
 		field.Int("level"),
 		field.Time("date_created").

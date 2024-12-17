@@ -65,3 +65,4 @@ message Pet {
 ## Limitations
 
 - Does not support composite key.
+- Only opaque API is supported for Go generated code.

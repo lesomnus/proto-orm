@@ -25,7 +25,7 @@ func NewPressServiceServer(db *ent.Client) *PressServiceServer {
 
 func (s *PressServiceServer) Add(ctx context.Context, req *library.PressAddRequest) (*library.Press, error) {
 	q := s.db.Press.Create()
-	if v := req.Id; v != nil {
+	if v := req.GetId(); v != nil {
 		if w, err := uuid.FromBytes(v); err != nil {
 			return nil, status.Errorf(codes.InvalidArgument, "id: %s", err)
 		} else {
@@ -37,8 +37,8 @@ func (s *PressServiceServer) Add(ctx context.Context, req *library.PressAddReque
 	} else {
 		q.SetBookID(id)
 	}
-	q.SetSerialNumber(req.SerialNumber)
-	if v := req.DateCreated; v != nil {
+	q.SetSerialNumber(req.GetSerialNumber())
+	if v := req.GetDateCreated(); v != nil {
 		q.SetDateCreated(v.AsTime())
 	}
 
@@ -94,24 +94,24 @@ func (s *PressServiceServer) Erase(ctx context.Context, req *library.PressGetReq
 }
 
 func PressPick(req *library.PressGetRequest) (predicate.Press, error) {
-	switch k := req.GetKey().(type) {
-	case *library.PressGetRequest_Id:
-		if v, err := uuid.FromBytes(k.Id); err != nil {
+	switch req.WhichKey() {
+	case library.PressGetRequest_Id_case:
+		if v, err := uuid.FromBytes(req.GetId()); err != nil {
 			return nil, status.Errorf(codes.InvalidArgument, "id: %s", "err")
 		} else {
 			return press.IDEQ(v), nil
 		}
-	case *library.PressGetRequest_SerialNumber:
+	case library.PressGetRequest_SerialNumber_case:
 		ps := make([]predicate.Press, 0, 2)
-		if p, err := BookPick(k.SerialNumber.GetBook()); err != nil {
+		if p, err := BookPick(req.GetSerialNumber().GetBook()); err != nil {
 			s, _ := status.FromError(err)
 			return nil, status.Errorf(codes.InvalidArgument, "serial_number.book: %s", s.Message())
 		} else {
 			ps = append(ps, press.HasBookWith(p))
 		}
-		ps = append(ps, press.SerialNumberEQ(k.SerialNumber.SerialNumber))
+		ps = append(ps, press.SerialNumberEQ(req.GetSerialNumber().GetSerialNumber()))
 		return press.And(ps...), nil
-	case nil:
+	case library.PressGetRequest_Key_not_set_case:
 		return nil, status.Errorf(codes.InvalidArgument, "key not provided")
 	default:
 		return nil, status.Errorf(codes.Unimplemented, "unknown type of key")
@@ -120,9 +120,8 @@ func PressPick(req *library.PressGetRequest) (predicate.Press, error) {
 
 func PressGetId(ctx context.Context, db *ent.Client, req *library.PressGetRequest) (uuid.UUID, error) {
 	var z uuid.UUID
-	k := req.GetKey()
-	if r, ok := k.(*library.PressGetRequest_Id); ok {
-		if v, err := uuid.FromBytes(r.Id); err != nil {
+	if req.HasId() {
+		if v, err := uuid.FromBytes(req.GetId()); err != nil {
 			return z, status.Errorf(codes.InvalidArgument, "key.id: %s", err)
 		} else {
 			return v, nil

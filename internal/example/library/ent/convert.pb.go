@@ -9,73 +9,83 @@ import (
 
 func (e *Author) Proto() *library.Author {
 	m := &library.Author{}
-	m.Id = e.ID[:]
-	m.Alias = e.Alias
-	m.Name = e.Name
-	m.Labels = e.Labels
-	m.Profile = e.Profile
-	for _, v := range e.Edges.Books {
-		m.Books = append(m.Books, v.Proto())
-	}
-	m.DateCreated = timestamppb.New(e.DateCreated)
+	m.SetId(e.ID[:])
+	m.SetAlias(e.Alias)
+	m.SetName(e.Name)
+	m.SetLabels(e.Labels)
+	m.SetProfile(e.Profile)
+	m.SetBooks(func() []*library.Book {
+		ts := e.Edges.Books
+		vs := make([]*library.Book, len(ts))
+		for i, t := range ts {
+			vs[i] = t.Proto()
+		}
+		return vs
+	}())
+	m.SetDateCreated(timestamppb.New(e.DateCreated))
 
 	return m
 }
 
 func (e *Book) Proto() *library.Book {
 	m := &library.Book{}
-	m.Id = e.ID[:]
-	m.Title = e.Title
-	for _, v := range e.Edges.Authors {
-		m.Authors = append(m.Authors, v.Proto())
-	}
-	m.Index = e.Index
-	m.Genres = e.Genres
-	m.DateCreated = timestamppb.New(e.DateCreated)
+	m.SetId(e.ID[:])
+	m.SetTitle(e.Title)
+	m.SetAuthors(func() []*library.Author {
+		ts := e.Edges.Authors
+		vs := make([]*library.Author, len(ts))
+		for i, t := range ts {
+			vs[i] = t.Proto()
+		}
+		return vs
+	}())
+	m.SetIndex(e.Index)
+	m.SetGenres(e.Genres)
+	m.SetDateCreated(timestamppb.New(e.DateCreated))
 
 	return m
 }
 
 func (e *Like) Proto() *library.Like {
 	m := &library.Like{}
-	m.Id = e.ID[:]
-	m.SubjectId = e.SubjectID[:]
+	m.SetId(e.ID[:])
+	m.SetSubjectId(e.SubjectID[:])
 	if v := e.Edges.Subject; v != nil {
-		m.Subject = v.Proto()
+		m.SetSubject(v.Proto())
 	}
 	if v := e.Edges.Actor; v != nil {
-		m.Actor = v.Proto()
+		m.SetActor(v.Proto())
 	}
-	m.DateCreated = timestamppb.New(e.DateCreated)
+	m.SetDateCreated(timestamppb.New(e.DateCreated))
 
 	return m
 }
 
 func (e *Loan) Proto() *library.Loan {
 	m := &library.Loan{}
-	m.Id = e.ID[:]
-	m.SubjectId = e.SubjectID[:]
+	m.SetId(e.ID[:])
+	m.SetSubjectId(e.SubjectID[:])
 	if v := e.Edges.Subject; v != nil {
-		m.Subject = v.Proto()
+		m.SetSubject(v.Proto())
 	}
-	m.BorrowerId = e.BorrowerID[:]
+	m.SetBorrowerId(e.BorrowerID[:])
 	if v := e.Edges.Borrower; v != nil {
-		m.Borrower = v.Proto()
+		m.SetBorrower(v.Proto())
 	}
-	m.DateDue = timestamppb.New(e.DateDue)
+	m.SetDateDue(timestamppb.New(e.DateDue))
 	if v := e.DateReturn; v != nil {
-		m.DateReturn = timestamppb.New(*e.DateReturn)
+		m.SetDateReturn(timestamppb.New(*e.DateReturn))
 	}
-	m.DateCreated = timestamppb.New(e.DateCreated)
+	m.SetDateCreated(timestamppb.New(e.DateCreated))
 
 	return m
 }
 
 func (e *Locker) Proto() *library.Locker {
 	m := &library.Locker{}
-	m.Id = e.ID[:]
+	m.SetId(e.ID[:])
 	if v := e.Edges.Owner; v != nil {
-		m.Owner = v.Proto()
+		m.SetOwner(v.Proto())
 	}
 
 	return m
@@ -83,27 +93,27 @@ func (e *Locker) Proto() *library.Locker {
 
 func (e *Member) Proto() *library.Member {
 	m := &library.Member{}
-	m.Id = e.ID[:]
-	m.Name = e.Name
-	m.Labels = e.Labels
-	m.Profile = e.Profile
-	m.Level = library.Member_Level(e.Level)
+	m.SetId(e.ID[:])
+	m.SetName(e.Name)
+	m.SetLabels(e.Labels)
+	m.SetProfile(e.Profile)
+	m.SetLevel(library.Member_Level(e.Level))
 	if v := e.Edges.Locker; v != nil {
-		m.Locker = v.Proto()
+		m.SetLocker(v.Proto())
 	}
-	m.DateCreated = timestamppb.New(e.DateCreated)
+	m.SetDateCreated(timestamppb.New(e.DateCreated))
 
 	return m
 }
 
 func (e *Press) Proto() *library.Press {
 	m := &library.Press{}
-	m.Id = e.ID[:]
+	m.SetId(e.ID[:])
 	if v := e.Edges.Book; v != nil {
-		m.Book = v.Proto()
+		m.SetBook(v.Proto())
 	}
-	m.SerialNumber = e.SerialNumber
-	m.DateCreated = timestamppb.New(e.DateCreated)
+	m.SetSerialNumber(e.SerialNumber)
+	m.SetDateCreated(timestamppb.New(e.DateCreated))
 
 	return m
 }

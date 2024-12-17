@@ -1,10 +1,10 @@
 {{ $pred_ent := predicate $.Name -}}
 {{ $req_name := pb (print $.Name "GetRequest") -}}
 func {{ $.Name }}Pick(req *{{ $req_name }}) ({{ $pred_ent }}, error) {
-	switch k := req.GetKey().(type) {
+	switch req.WhichKey() {
 	{{ range .KeyLikes -}}
-	{{ $n := print "k." (pascal .Name) -}}
-	case *{{ pb (print $.Name "GetRequest_" (pascal .Name)) }}:
+	{{ $n := print "req.Get" (pascal .Name) "()" -}}
+	case {{ pb (print $.Name "GetRequest_" (pascal .Name) "_case") }}:
 		{{/* printing field key */ -}}
 
 		{{ if key_is_field . }}{{ with key_as_field . -}}
@@ -40,7 +40,7 @@ func {{ $.Name }}Pick(req *{{ $req_name }}) ({{ $pred_ent }}, error) {
 		{{ $v := key_as_index . -}}
 		ps := make([]{{ $pred_ent }}, 0, {{ len $v.Refs }})
 		{{ range $v.Refs }}{{/* for each refs in the index */ -}}
-		{{ $ref_name := print $n "." (pascal .Name) -}}
+		{{ $ref_name := print $n ".Get" (pascal .Name) "()" -}}
 
 		{{ if is_attr . }}{{ with as_attr . -}}
 		{{/* ref is attribute */ -}}
@@ -73,7 +73,7 @@ func {{ $.Name }}Pick(req *{{ $req_name }}) ({{ $pred_ent }}, error) {
 		{{ end }}{{/* end of ref range */ -}}
 		return {{ entity $ | ident "And" }}(ps...), nil
 	{{ end -}}
-	case nil:
+	case {{ pb (print $.Name "GetRequest_Key_not_set_case") }}:
 		return nil, {{ grpc_errf "InvalidArgument" "\"key not provided\"" }}
 	default:
 		return nil, {{ grpc_errf "Unimplemented" "\"unknown type of key\"" }}
@@ -85,12 +85,11 @@ func {{ $.Name }}Pick(req *{{ $req_name }}) ({{ $pred_ent }}, error) {
 {{ $n := pascal $k.Name }}
 func {{ .Name }}GetId(ctx {{ pkg "context" | ident "Context" }}, db *{{ ent "Client" }}, req *{{ $req_name }}) ({{ ent_type $t }}, error) {
 	var z {{ ent_type $t }}
-	k := req.GetKey()
-	if r, ok := k.(*{{ pb (print $.Name "GetRequest_" $n) }}); ok {
+	if req.Has{{ $n }}() {
 		{{ if is_symmetric $t -}}
-		return r.{{ $n }}
+		return req.Get{{ $n }}()
 		{{ else -}}
-		if v, err := {{ convert_to_ent_field (print "r." $n) $t }}; err != nil {
+		if v, err := {{ convert_to_ent_field (print "req.Get" $n "()") $t }}; err != nil {
 			return z, {{ grpc_errf "InvalidArgument" (print "key." $k.Name ": %s" | quote) "err" }}
 		} else {
 			return v, nil

@@ -29,6 +29,7 @@ protoc \
 	\
 	--go_out="${OUTPUT_DIR}" \
 	--go_opt=module="${MODULE_NAME}" \
+	--go_opt=default_api_level=API_OPAQUE \
 	\
 	--go-grpc_out="${OUTPUT_DIR}" \
 	--go-grpc_opt=module="${MODULE_NAME}" \
