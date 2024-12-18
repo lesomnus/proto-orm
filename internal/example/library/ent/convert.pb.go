@@ -46,6 +46,150 @@ func (e *Book) Proto() *library.Book {
 	return m
 }
 
+func (e *FooEf) Proto() *library.FooEf {
+	m := &library.FooEf{}
+	m.SetId(e.ID)
+	m.SetEfVAuthor(e.EfVAuthor)
+	m.SetEfVdAuthor(e.EfVdAuthor)
+	m.SetEfVrAuthor(e.EfVrAuthor)
+	m.SetEfVoAuthor(e.EfVoAuthor)
+	m.SetEfMiAuthor(e.EfMiAuthor)
+	m.SetEfMsAuthor(e.EfMsAuthor)
+	m.SetEfMsdAuthor(e.EfMsdAuthor)
+
+	return m
+}
+
+func (e *FooK) Proto() *library.FooK {
+	m := &library.FooK{}
+	m.SetId(e.ID)
+	m.SetKVTime(timestamppb.New(e.KVTime))
+	m.SetKVdTime(timestamppb.New(e.KVdTime))
+	m.SetKVrTime(e.KVrTime)
+	m.SetKVoTime(timestamppb.New(e.KVoTime))
+	m.SetKMiTime(e.KMiTime)
+	m.SetKMsTime(e.KMsTime)
+	m.SetKMsdTime(e.KMsdTime)
+
+	return m
+}
+
+func (e *FooMi) Proto() *library.FooMi {
+	m := &library.FooMi{}
+	m.SetId(e.ID)
+	m.SetVmiDouble(e.VmiDouble)
+	m.SetVmiInt64(e.VmiInt64)
+	m.SetVmiUint64(e.VmiUint64)
+	m.SetVmiBool(e.VmiBool)
+	m.SetVmiString(e.VmiString)
+	m.SetVmiBytes(e.VmiBytes)
+
+	return m
+}
+
+func (e *FooMs) Proto() *library.FooMs {
+	m := &library.FooMs{}
+	m.SetId(e.ID)
+	m.SetVmsDouble(e.VmsDouble)
+	m.SetVmsInt64(e.VmsInt64)
+	m.SetVmsUint64(e.VmsUint64)
+	m.SetVmsBool(e.VmsBool)
+	m.SetVmsString(e.VmsString)
+	m.SetVmsBytes(e.VmsBytes)
+
+	return m
+}
+
+func (e *FooMsd) Proto() *library.FooMsd {
+	m := &library.FooMsd{}
+	m.SetId(e.ID)
+	m.SetMsdDouble(e.MsdDouble)
+	m.SetMsdInt64(e.MsdInt64)
+	m.SetMsdUint64(e.MsdUint64)
+	m.SetMsdBool(e.MsdBool)
+	m.SetMsdString(e.MsdString)
+	m.SetMsdBytes(e.MsdBytes)
+
+	return m
+}
+
+func (e *FooV) Proto() *library.FooV {
+	m := &library.FooV{}
+	m.SetId(e.ID)
+	m.SetVDouble(e.VDouble)
+	m.SetVInt64(e.VInt64)
+	m.SetVUint64(e.VUint64)
+	m.SetVBool(e.VBool)
+	m.SetVString(e.VString)
+	m.SetVBytes(e.VBytes)
+
+	return m
+}
+
+func (e *FooVd) Proto() *library.FooVd {
+	m := &library.FooVd{}
+	m.SetId(e.ID)
+	m.SetVdDouble(e.VdDouble)
+	m.SetVdInt64(e.VdInt64)
+	m.SetVdUint64(e.VdUint64)
+	m.SetVdBool(e.VdBool)
+	m.SetVdString(e.VdString)
+	m.SetVdBytes(e.VdBytes)
+
+	return m
+}
+
+func (e *FooVo) Proto() *library.FooVo {
+	m := &library.FooVo{}
+	m.SetId(e.ID)
+	m.SetVoDouble(e.VoDouble)
+	m.SetVoInt64(e.VoInt64)
+	m.SetVoUint64(e.VoUint64)
+	m.SetVoBool(e.VoBool)
+	m.SetVoString(e.VoString)
+	m.SetVoBytes(e.VoBytes)
+
+	return m
+}
+
+func (e *FooVon) Proto() *library.FooVon {
+	m := &library.FooVon{}
+	m.SetId(e.ID)
+	if v := e.VonDouble; v != nil {
+		m.SetVonDouble(*e.VonDouble)
+	}
+	if v := e.VonInt64; v != nil {
+		m.SetVonInt64(*e.VonInt64)
+	}
+	if v := e.VonUint64; v != nil {
+		m.SetVonUint64(*e.VonUint64)
+	}
+	if v := e.VonBool; v != nil {
+		m.SetVonBool(*e.VonBool)
+	}
+	if v := e.VonString; v != nil {
+		m.SetVonString(*e.VonString)
+	}
+	if v := e.VonBytes; v != nil {
+		m.SetVonBytes(*e.VonBytes)
+	}
+
+	return m
+}
+
+func (e *FooVr) Proto() *library.FooVr {
+	m := &library.FooVr{}
+	m.SetId(e.ID)
+	m.SetVrDouble(e.VrDouble)
+	m.SetVrInt64(e.VrInt64)
+	m.SetVrUint64(e.VrUint64)
+	m.SetVrBool(e.VrBool)
+	m.SetVrString(e.VrString)
+	m.SetVrBytes(e.VrBytes)
+
+	return m
+}
+
 func (e *Like) Proto() *library.Like {
 	m := &library.Like{}
 	m.SetId(e.ID[:])

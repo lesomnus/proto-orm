@@ -201,11 +201,11 @@ func (p *Printer) newTemplate(f *protogen.GeneratedFile) *template.Template {
 			case orm.Type_TYPE_SINT64:
 				fallthrough
 			case orm.Type_TYPE_SFIXED64:
-				return "int"
+				return "int64"
 			case orm.Type_TYPE_UINT64:
 				fallthrough
 			case orm.Type_TYPE_FIXED64:
-				return "uint"
+				return "uint64"
 			case orm.Type_TYPE_FLOAT:
 				return "float32"
 			case orm.Type_TYPE_DOUBLE:

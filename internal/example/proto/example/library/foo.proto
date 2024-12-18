@@ -1,0 +1,127 @@
+syntax = "proto3";
+
+package example.library;
+
+import "example/library/author.proto";
+import "google/protobuf/timestamp.proto";
+import "orm.proto";
+
+option go_package = "github.com/lesomnus/proto-orm/internal/example/library";
+option (orm.all) = {
+	messages: {}
+	rpcs: {
+		crud: true
+	}
+};
+
+message FooV {
+	int64 id = 1 [(orm.field) = {key: true}];
+
+	double v_double = 11;
+	int64  v_int64  = 12;
+	uint64 v_uint64 = 13;
+	bool   v_bool   = 14;
+	string v_string = 15;
+	bytes  v_bytes  = 16;
+}
+
+message FooVd {
+	int64 id = 1 [(orm.field) = {key: true}];
+
+	double vd_double = 11 [(orm.field) = {default: ""}];
+	int64  vd_int64  = 12 [(orm.field) = {default: ""}];
+	uint64 vd_uint64 = 13 [(orm.field) = {default: ""}];
+	bool   vd_bool   = 14 [(orm.field) = {default: ""}];
+	string vd_string = 15 [(orm.field) = {default: ""}];
+	bytes  vd_bytes  = 16 [(orm.field) = {default: ""}];
+}
+
+message FooVr {
+	int64 id = 1 [(orm.field) = {key: true}];
+
+	repeated double vr_double = 11;
+	repeated int64  vr_int64  = 12;
+	repeated uint64 vr_uint64 = 13;
+	repeated bool   vr_bool   = 14;
+	repeated string vr_string = 15;
+	repeated bytes  vr_bytes  = 16;
+}
+
+message FooVo {
+	int64 id = 1 [(orm.field) = {key: true}];
+
+	optional double vo_double = 11;
+	optional int64  vo_int64  = 12;
+	optional uint64 vo_uint64 = 13;
+	optional bool   vo_bool   = 14;
+	optional string vo_string = 15;
+	optional bytes  vo_bytes  = 16;
+}
+
+message FooVon {
+	int64 id = 1 [(orm.field) = {key: true}];
+
+	optional double von_double = 11 [(orm.field) = {nullable: true}];
+	optional int64  von_int64  = 12 [(orm.field) = {nullable: true}];
+	optional uint64 von_uint64 = 13 [(orm.field) = {nullable: true}];
+	optional bool   von_bool   = 14 [(orm.field) = {nullable: true}];
+	optional string von_string = 15 [(orm.field) = {nullable: true}];
+	optional bytes  von_bytes  = 16 [(orm.field) = {nullable: true}];
+}
+
+message FooMi {
+	int64 id = 1 [(orm.field) = {key: true}];
+
+	map<int64, double> vmi_double = 11;
+	map<int64, int64>  vmi_int64  = 12;
+	map<int64, uint64> vmi_uint64 = 13;
+	map<int64, bool>   vmi_bool   = 14;
+	map<int64, string> vmi_string = 15;
+	map<int64, bytes>  vmi_bytes  = 16;
+}
+
+message FooMs {
+	int64 id = 1 [(orm.field) = {key: true}];
+
+	map<string, double> vms_double = 11;
+	map<string, int64>  vms_int64  = 12;
+	map<string, uint64> vms_uint64 = 13;
+	map<string, bool>   vms_bool   = 14;
+	map<string, string> vms_string = 15;
+	map<string, bytes>  vms_bytes  = 16;
+}
+
+message FooMsd {
+	int64 id = 1 [(orm.field) = {key: true}];
+
+	map<string, double> msd_double = 11 [(orm.field) = {default: ""}];
+	map<string, int64>  msd_int64  = 12 [(orm.field) = {default: ""}];
+	map<string, uint64> msd_uint64 = 13 [(orm.field) = {default: ""}];
+	map<string, bool>   msd_bool   = 14 [(orm.field) = {default: ""}];
+	map<string, string> msd_string = 15 [(orm.field) = {default: ""}];
+	map<string, bytes>  msd_bytes  = 16 [(orm.field) = {default: ""}];
+}
+
+message FooK {
+	int64 id = 1 [(orm.field) = {key: true}];
+
+	google.protobuf.Timestamp              k_v_time   = 11;
+	google.protobuf.Timestamp              k_vd_time  = 12 [(orm.field) = {default: ""}];
+	repeated google.protobuf.Timestamp     k_vr_time  = 13;
+	optional google.protobuf.Timestamp     k_vo_time  = 14;
+	map<int64, google.protobuf.Timestamp>  k_mi_time  = 15;
+	map<string, google.protobuf.Timestamp> k_ms_time  = 16;
+	map<string, google.protobuf.Timestamp> k_msd_time = 17 [(orm.field) = {default: ""}];
+}
+
+message FooEf {
+	int64 id = 1 [(orm.field) = {key: true}];
+
+	Author              ef_v_author   = 11;
+	Author              ef_vd_author  = 12 [(orm.field) = {default: ""}];
+	repeated Author     ef_vr_author  = 13;
+	optional Author     ef_vo_author  = 14;
+	map<int64, Author>  ef_mi_author  = 15;
+	map<string, Author> ef_ms_author  = 16;
+	map<string, Author> ef_msd_author = 17 [(orm.field) = {default: ""}];
+}

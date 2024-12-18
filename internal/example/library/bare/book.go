@@ -25,11 +25,11 @@ func NewBookServiceServer(db *ent.Client) *BookServiceServer {
 
 func (s *BookServiceServer) Add(ctx context.Context, req *library.BookAddRequest) (*library.Book, error) {
 	q := s.db.Book.Create()
-	if v := req.GetId(); v != nil {
-		if w, err := uuid.FromBytes(v); err != nil {
+	if req.HasId() {
+		if v, err := uuid.FromBytes(req.GetId()); err != nil {
 			return nil, status.Errorf(codes.InvalidArgument, "id: %s", err)
 		} else {
-			q.SetID(w)
+			q.SetID(v)
 		}
 	}
 	q.SetTitle(req.GetTitle())
@@ -39,8 +39,8 @@ func (s *BookServiceServer) Add(ctx context.Context, req *library.BookAddRequest
 	if v := req.GetGenres(); v != nil {
 		q.SetGenres(v)
 	}
-	if v := req.GetDateCreated(); v != nil {
-		q.SetDateCreated(v.AsTime())
+	if req.HasDateCreated() {
+		q.SetDateCreated(req.GetDateCreated().AsTime())
 	}
 
 	v, err := q.Save(ctx)

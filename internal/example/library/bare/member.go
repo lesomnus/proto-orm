@@ -25,28 +25,26 @@ func NewMemberServiceServer(db *ent.Client) *MemberServiceServer {
 
 func (s *MemberServiceServer) Add(ctx context.Context, req *library.MemberAddRequest) (*library.Member, error) {
 	q := s.db.Member.Create()
-	if v := req.GetId(); v != nil {
-		if w, err := uuid.FromBytes(v); err != nil {
+	if req.HasId() {
+		if v, err := uuid.FromBytes(req.GetId()); err != nil {
 			return nil, status.Errorf(codes.InvalidArgument, "id: %s", err)
 		} else {
-			q.SetID(w)
+			q.SetID(v)
 		}
 	}
 	q.SetName(req.GetName())
 	if v := req.GetLabels(); v != nil {
 		q.SetLabels(v)
 	}
-	if v := req.GetProfile(); v != nil {
-		q.SetProfile(v)
-	}
+	q.SetProfile(req.GetProfile())
 	q.SetLevel(int(req.GetLevel()))
 	if id, err := LockerGetId(ctx, s.db, req.GetLocker()); err != nil {
 		return nil, err
 	} else {
 		q.SetLockerID(id)
 	}
-	if v := req.GetDateCreated(); v != nil {
-		q.SetDateCreated(v.AsTime())
+	if req.HasDateCreated() {
+		q.SetDateCreated(req.GetDateCreated().AsTime())
 	}
 
 	v, err := q.Save(ctx)

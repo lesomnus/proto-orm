@@ -91,23 +91,8 @@ func (p *Plugin) NewTemplate(e *graph.Entity, f *protogen.GeneratedFile) *templa
 			if d := field.Source().Desc; d.IsMap() {
 				v = field.GoType(f.QualifiedGoIdent) + "{}"
 			} else if field.IsList() {
-				t := t.Decay()
-				switch t {
-				case orm.Type_TYPE_INT,
-					orm.Type_TYPE_UINT,
-					orm.Type_TYPE_ENUM:
-					i = "Ints"
-				case orm.Type_TYPE_FLOAT:
-					i = "Floats"
-				case orm.Type_TYPE_STRING:
-					i = "Strings"
-				case orm.Type_TYPE_BOOL:
-					i = "JSON"
-				case orm.Type_TYPE_JSON:
-					v = "[]*" + f.QualifiedGoIdent(field.Source().Message.GoIdent) + "{}"
-				default:
-					panic(fmt.Sprintf("list of %s not supported", t.String()))
-				}
+				i = "JSON"
+				v = field.GoType(f.QualifiedGoIdent) + "{}"
 			} else {
 				switch t {
 				case orm.Type_TYPE_ENUM:
@@ -139,7 +124,8 @@ func (p *Plugin) NewTemplate(e *graph.Entity, f *protogen.GeneratedFile) *templa
 				if d.Kind() == protoreflect.MessageKind && !d.IsMap() {
 					// Go type is a struct.
 					// Note that kind of proto map is a message.
-					v = "&" + v
+					// Since this is a struct, type string start with "*".
+					v = "&" + v[1:]
 				}
 				return v
 			case orm.Type_TYPE_UUID:
@@ -204,9 +190,16 @@ func (p *Plugin) NewTemplate(e *graph.Entity, f *protogen.GeneratedFile) *templa
 
 			return v
 		},
+		"ent_type": func(field *graph.Attr) string {
+			return field.GoType(f.QualifiedGoIdent)
+		},
 		"ent_value_to_proto": func(ident string, field *graph.Attr) string {
-			t := field.Type()
 			n := fmt.Sprintf("%s.%s", ident, rules.EntPascal(string(field.Name())))
+			if field.IsList() {
+				return n
+			}
+
+			t := field.Type()
 			switch t {
 			case orm.Type_TYPE_ENUM:
 				c := f.QualifiedGoIdent(field.Source().Enum.GoIdent)

@@ -98,6 +98,15 @@ func (a *Attr) Type() orm.Type {
 // `q` is qualifier that returns given `ident` as qualified name like: "Printf" -> "fmt.Printf".
 // You may use `protogen.GeneratedFile.QualifiedGoIdent` in most of cases.
 func (a *Attr) GoType(q func(ident protogen.GoIdent) string) string {
+	if !a.IsList() {
+		switch a.Type() {
+		case orm.Type_TYPE_UUID:
+			return q(protogen.GoImportPath("github.com/google/uuid").Ident("UUID"))
+		case orm.Type_TYPE_TIME:
+			return q(protogen.GoImportPath("time").Ident("Date"))
+		}
+	}
+
 	return a.goType(a.source, q)
 }
 
@@ -139,12 +148,15 @@ func (a *Attr) goType(f *protogen.Field, q func(ident protogen.GoIdent) string) 
 	case protoreflect.BytesKind:
 		v = "[]byte"
 	case protoreflect.MessageKind:
-		v = q(f.Message.GoIdent)
+		v = "*" + q(f.Message.GoIdent)
 	case protoreflect.GroupKind:
 	default:
 		panic(fmt.Sprintf("unknown type or type not supported: %s", k.String()))
 	}
 
+	if d.IsList() {
+		return "[]" + v
+	}
 	return v
 }
 
@@ -195,7 +207,7 @@ func (a *Attr) IsBound() bool {
 }
 
 func (a *Attr) HasDefault() bool {
-	return a.Default != nil
+	return !a.typ.IsPrimitive() && a.Default != nil
 }
 
 func (a *Attr) IsJson() bool {

@@ -25,11 +25,11 @@ func NewLockerServiceServer(db *ent.Client) *LockerServiceServer {
 
 func (s *LockerServiceServer) Add(ctx context.Context, req *library.LockerAddRequest) (*library.Locker, error) {
 	q := s.db.Locker.Create()
-	if v := req.GetId(); v != nil {
-		if w, err := uuid.FromBytes(v); err != nil {
+	if req.HasId() {
+		if v, err := uuid.FromBytes(req.GetId()); err != nil {
 			return nil, status.Errorf(codes.InvalidArgument, "id: %s", err)
 		} else {
-			q.SetID(w)
+			q.SetID(v)
 		}
 	}
 	if id, err := MemberGetId(ctx, s.db, req.GetOwner()); err != nil {

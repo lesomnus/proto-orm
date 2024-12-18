@@ -14,17 +14,22 @@ func (s *{{ $.Name }}ServiceServer) Add(ctx {{ pkg "context" | ident "Context" }
 	{{ $n := ent_pascal .Name -}}
 	{{ $v := print "req.Get" (pascal .Name) "()" -}}
 
-	{{ if not $t.IsPrimitive | or .IsNullable | or .HasDefault | or .IsList -}}
+	{{ if .IsSoft -}}
 	if v := {{ $v }}; v != nil {
-		{{ if .IsList -}}
 		q.Set{{ $n }}(v)
-		{{ else if is_symmetric $t -}}
-		q.Set{{ $n }}({{ to_symmetric_ent "*v" $t }})
+	}
+	{{ continue -}}
+	{{ end -}}
+
+	{{ if .IsNullable | or .HasDefault -}}
+	if {{ print "req.Has" (pascal .Name) "()" }} {
+		{{ if is_symmetric $t -}}
+		q.Set{{ $n }}({{ to_symmetric_ent $v $t }})
 		{{ else -}}
-		if w, err := {{ convert_to_ent_field "v" $t }}; err != nil {
+		if v, err := {{ convert_to_ent_field $v $t }}; err != nil {
 			return nil, {{ grpc_errf "InvalidArgument" (print .Name ": %s" | quote) "err" }}
 		} else {
-			q.Set{{ $n }}(w)
+			q.Set{{ $n }}(v)
 		}
 		{{ end -}}
 	}

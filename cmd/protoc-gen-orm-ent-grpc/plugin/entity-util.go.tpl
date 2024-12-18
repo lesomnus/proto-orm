@@ -87,7 +87,7 @@ func {{ .Name }}GetId(ctx {{ pkg "context" | ident "Context" }}, db *{{ ent "Cli
 	var z {{ ent_type $t }}
 	if req.Has{{ $n }}() {
 		{{ if is_symmetric $t -}}
-		return req.Get{{ $n }}()
+		return req.Get{{ $n }}(), nil
 		{{ else -}}
 		if v, err := {{ convert_to_ent_field (print "req.Get" $n "()") $t }}; err != nil {
 			return z, {{ grpc_errf "InvalidArgument" (print "key." $k.Name ": %s" | quote) "err" }}

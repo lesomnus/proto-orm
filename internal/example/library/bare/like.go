@@ -25,11 +25,11 @@ func NewLikeServiceServer(db *ent.Client) *LikeServiceServer {
 
 func (s *LikeServiceServer) Add(ctx context.Context, req *library.LikeAddRequest) (*library.Like, error) {
 	q := s.db.Like.Create()
-	if v := req.GetId(); v != nil {
-		if w, err := uuid.FromBytes(v); err != nil {
+	if req.HasId() {
+		if v, err := uuid.FromBytes(req.GetId()); err != nil {
 			return nil, status.Errorf(codes.InvalidArgument, "id: %s", err)
 		} else {
-			q.SetID(w)
+			q.SetID(v)
 		}
 	}
 	if id, err := BookGetId(ctx, s.db, req.GetSubject()); err != nil {
@@ -42,8 +42,8 @@ func (s *LikeServiceServer) Add(ctx context.Context, req *library.LikeAddRequest
 	} else {
 		q.SetActorID(id)
 	}
-	if v := req.GetDateCreated(); v != nil {
-		q.SetDateCreated(v.AsTime())
+	if req.HasDateCreated() {
+		q.SetDateCreated(req.GetDateCreated().AsTime())
 	}
 
 	v, err := q.Save(ctx)

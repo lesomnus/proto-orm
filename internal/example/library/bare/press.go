@@ -25,11 +25,11 @@ func NewPressServiceServer(db *ent.Client) *PressServiceServer {
 
 func (s *PressServiceServer) Add(ctx context.Context, req *library.PressAddRequest) (*library.Press, error) {
 	q := s.db.Press.Create()
-	if v := req.GetId(); v != nil {
-		if w, err := uuid.FromBytes(v); err != nil {
+	if req.HasId() {
+		if v, err := uuid.FromBytes(req.GetId()); err != nil {
 			return nil, status.Errorf(codes.InvalidArgument, "id: %s", err)
 		} else {
-			q.SetID(w)
+			q.SetID(v)
 		}
 	}
 	if id, err := BookGetId(ctx, s.db, req.GetBook()); err != nil {
@@ -38,8 +38,8 @@ func (s *PressServiceServer) Add(ctx context.Context, req *library.PressAddReque
 		q.SetBookID(id)
 	}
 	q.SetSerialNumber(req.GetSerialNumber())
-	if v := req.GetDateCreated(); v != nil {
-		q.SetDateCreated(v.AsTime())
+	if req.HasDateCreated() {
+		q.SetDateCreated(req.GetDateCreated().AsTime())
 	}
 
 	v, err := q.Save(ctx)

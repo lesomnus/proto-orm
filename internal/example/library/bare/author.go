@@ -25,11 +25,11 @@ func NewAuthorServiceServer(db *ent.Client) *AuthorServiceServer {
 
 func (s *AuthorServiceServer) Add(ctx context.Context, req *library.AuthorAddRequest) (*library.Author, error) {
 	q := s.db.Author.Create()
-	if v := req.GetId(); v != nil {
-		if w, err := uuid.FromBytes(v); err != nil {
+	if req.HasId() {
+		if v, err := uuid.FromBytes(req.GetId()); err != nil {
 			return nil, status.Errorf(codes.InvalidArgument, "id: %s", err)
 		} else {
-			q.SetID(w)
+			q.SetID(v)
 		}
 	}
 	q.SetAlias(req.GetAlias())
@@ -37,11 +37,11 @@ func (s *AuthorServiceServer) Add(ctx context.Context, req *library.AuthorAddReq
 	if v := req.GetLabels(); v != nil {
 		q.SetLabels(v)
 	}
-	if v := req.GetProfile(); v != nil {
-		q.SetProfile(v)
+	if req.HasProfile() {
+		q.SetProfile(req.GetProfile())
 	}
-	if v := req.GetDateCreated(); v != nil {
-		q.SetDateCreated(v.AsTime())
+	if req.HasDateCreated() {
+		q.SetDateCreated(req.GetDateCreated().AsTime())
 	}
 
 	v, err := q.Save(ctx)

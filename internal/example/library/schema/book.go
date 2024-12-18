@@ -24,7 +24,7 @@ func (Book) Fields() []ent.Field {
 		field.String("title"),
 		field.JSON("index", []*library.Book_Index{}).
 			Optional(),
-		field.Strings("genres").
+		field.JSON("genres", []string{}).
 			Optional(),
 		field.Time("date_created").
 			Default(time.Now).

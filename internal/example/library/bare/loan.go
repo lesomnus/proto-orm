@@ -25,11 +25,11 @@ func NewLoanServiceServer(db *ent.Client) *LoanServiceServer {
 
 func (s *LoanServiceServer) Add(ctx context.Context, req *library.LoanAddRequest) (*library.Loan, error) {
 	q := s.db.Loan.Create()
-	if v := req.GetId(); v != nil {
-		if w, err := uuid.FromBytes(v); err != nil {
+	if req.HasId() {
+		if v, err := uuid.FromBytes(req.GetId()); err != nil {
 			return nil, status.Errorf(codes.InvalidArgument, "id: %s", err)
 		} else {
-			q.SetID(w)
+			q.SetID(v)
 		}
 	}
 	if id, err := BookGetId(ctx, s.db, req.GetSubject()); err != nil {
@@ -42,14 +42,12 @@ func (s *LoanServiceServer) Add(ctx context.Context, req *library.LoanAddRequest
 	} else {
 		q.SetBorrowerID(id)
 	}
-	if v := req.GetDateDue(); v != nil {
-		q.SetDateDue(v.AsTime())
+	q.SetDateDue(req.GetDateDue().AsTime())
+	if req.HasDateReturn() {
+		q.SetDateReturn(req.GetDateReturn().AsTime())
 	}
-	if v := req.GetDateReturn(); v != nil {
-		q.SetDateReturn(v.AsTime())
-	}
-	if v := req.GetDateCreated(); v != nil {
-		q.SetDateCreated(v.AsTime())
+	if req.HasDateCreated() {
+		q.SetDateCreated(req.GetDateCreated().AsTime())
 	}
 
 	v, err := q.Save(ctx)
