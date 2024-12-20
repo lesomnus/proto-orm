@@ -49,6 +49,7 @@ message MemberAddRequest {
 	Profile profile = 5;
 	Member.Level level = 6;
 	LockerGetRequest locker = 7;
+	MemberGetRequest parent = 8;
 	optional google.protobuf.Timestamp date_created = 15;
 }
 
@@ -66,4 +67,5 @@ message MemberPatchRequest {
 	optional Member.Level level = 11;
 	LockerGetRequest locker = 13;
 	bool locker_null = 14;
+	MemberGetRequest parent = 15;
 }

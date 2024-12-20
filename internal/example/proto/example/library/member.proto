@@ -36,6 +36,9 @@ message Member {
 		nullable: true
 	}];
 
+	Member parent = 8 [(orm.edge) = { from: 9 }];
+	repeated Member children = 9 [(orm.edge) = {}];
+
 	google.protobuf.Timestamp date_created = 15 [
 		(orm.field) = {
 			immutable: true

@@ -245,6 +245,17 @@ func (e *Member) Proto() *library.Member {
 	if v := e.Edges.Locker; v != nil {
 		m.SetLocker(v.Proto())
 	}
+	if v := e.Edges.Parent; v != nil {
+		m.SetParent(v.Proto())
+	}
+	m.SetChildren(func() []*library.Member {
+		ts := e.Edges.Children
+		vs := make([]*library.Member, len(ts))
+		for i, t := range ts {
+			vs[i] = t.Proto()
+		}
+		return vs
+	}())
 	m.SetDateCreated(timestamppb.New(e.DateCreated))
 
 	return m

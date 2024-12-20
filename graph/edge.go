@@ -213,7 +213,7 @@ func (e *Edge) IsExclusive() bool {
 		return false
 	}
 
-	return !e.IsList() && !e.Opposite().IsList()
+	return !e.IsList()
 }
 
 func (e *Edge) Opposite() *Edge {
