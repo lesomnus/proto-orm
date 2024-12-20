@@ -16,11 +16,17 @@ func (FooVd) Fields() []ent.Field {
 		field.Int64("id").
 			Unique().
 			Immutable(),
-		field.Float("vd_double"),
-		field.Int64("vd_int64"),
-		field.Uint64("vd_uint64"),
-		field.Bool("vd_bool"),
-		field.String("vd_string"),
-		field.Bytes("vd_bytes"),
+		field.Float("vd_double").
+			Default(0),
+		field.Int64("vd_int64").
+			Default(0),
+		field.Uint64("vd_uint64").
+			Default(0),
+		field.Bool("vd_bool").
+			Default(false),
+		field.String("vd_string").
+			Default(""),
+		field.Bytes("vd_bytes").
+			Default([]byte{}),
 	}
 }

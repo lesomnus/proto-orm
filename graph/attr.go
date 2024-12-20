@@ -207,7 +207,7 @@ func (a *Attr) IsBound() bool {
 }
 
 func (a *Attr) HasDefault() bool {
-	return !a.typ.IsPrimitive() && a.Default != nil
+	return a.Default != nil
 }
 
 func (a *Attr) IsJson() bool {

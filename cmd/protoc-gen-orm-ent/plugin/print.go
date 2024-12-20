@@ -118,6 +118,28 @@ func (p *Plugin) NewTemplate(e *graph.Entity, f *protogen.GeneratedFile) *templa
 
 			t := field.Type()
 			switch t {
+			case orm.Type_TYPE_BOOL:
+				return "false"
+			case orm.Type_TYPE_ENUM:
+				return "0"
+			case orm.Type_TYPE_INT32,
+				orm.Type_TYPE_SINT32,
+				orm.Type_TYPE_SFIXED32,
+				orm.Type_TYPE_UINT32,
+				orm.Type_TYPE_FIXED32,
+				orm.Type_TYPE_INT64,
+				orm.Type_TYPE_SINT64,
+				orm.Type_TYPE_SFIXED64,
+				orm.Type_TYPE_UINT64,
+				orm.Type_TYPE_FIXED64,
+				orm.Type_TYPE_FLOAT,
+				orm.Type_TYPE_DOUBLE:
+				return "0"
+			case orm.Type_TYPE_STRING:
+				return `""`
+			case orm.Type_TYPE_BYTES:
+				return "[]byte{}"
+
 			case orm.Type_TYPE_JSON:
 				v := field.GoType(f.QualifiedGoIdent) + "{}"
 				d := field.Source().Desc
@@ -133,7 +155,7 @@ func (p *Plugin) NewTemplate(e *graph.Entity, f *protogen.GeneratedFile) *templa
 			case orm.Type_TYPE_TIME:
 				return f.QualifiedGoIdent(protogen.GoImportPath("time").Ident("Now"))
 			default:
-				panic("TODO: HasDefault() should prevent this")
+				panic(fmt.Sprintf("type not supported for default value: %v", t))
 			}
 		},
 		"def_edge": func(edge *graph.Edge) string {

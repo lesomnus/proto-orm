@@ -22,7 +22,11 @@ message Member {
 			default: ""
 		}
 	];
-	string name = 3;
+	string name = 3 [
+		(orm.field) = {
+			default: ""
+		}
+	];
 	map<string, string> labels = 4;
 
 	Profile profile = 5;
@@ -45,6 +49,16 @@ message Member {
 			default: ""
 		}
 	];
+
+	option (orm.message) = {
+		indexes: [
+			{
+				name: "name"
+				refs: [8, 3]
+				unique: true
+			}
+		]
+	};
 }
 
 message Locker {

@@ -243,12 +243,12 @@ message FooVPatchRequest {
 
 message FooVdAddRequest {
 	int64 id = 1;
-	double vd_double = 11;
-	int64 vd_int64 = 12;
-	uint64 vd_uint64 = 13;
-	bool vd_bool = 14;
-	string vd_string = 15;
-	bytes vd_bytes = 16;
+	optional double vd_double = 11;
+	optional int64 vd_int64 = 12;
+	optional uint64 vd_uint64 = 13;
+	optional bool vd_bool = 14;
+	optional string vd_string = 15;
+	optional bytes vd_bytes = 16;
 }
 
 message FooVdGetRequest {

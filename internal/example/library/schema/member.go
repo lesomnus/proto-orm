@@ -6,6 +6,7 @@ import (
 	ent "entgo.io/ent"
 	edge "entgo.io/ent/schema/edge"
 	field "entgo.io/ent/schema/field"
+	index "entgo.io/ent/schema/index"
 	uuid "github.com/google/uuid"
 	library "github.com/lesomnus/proto-orm/internal/example/library"
 	time "time"
@@ -21,7 +22,8 @@ func (Member) Fields() []ent.Field {
 			Default(uuid.New).
 			Unique().
 			Immutable(),
-		field.String("name"),
+		field.String("name").
+			Default(""),
 		field.JSON("labels", map[string]string{}).
 			Optional(),
 		field.JSON("profile", &library.Profile{}),
@@ -40,5 +42,12 @@ func (Member) Edges() []ent.Edge {
 			Unique().
 			Required(),
 		edge.To("children", Member.Type),
+	}
+}
+
+func (Member) Indexes() []ent.Index {
+	return []ent.Index{
+		index.Fields("name").Edges("parent").
+			Unique(),
 	}
 }

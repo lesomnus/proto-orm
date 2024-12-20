@@ -25,12 +25,24 @@ func NewFooVdServiceServer(db *ent.Client) *FooVdServiceServer {
 func (s *FooVdServiceServer) Add(ctx context.Context, req *library.FooVdAddRequest) (*library.FooVd, error) {
 	q := s.db.FooVd.Create()
 	q.SetID(req.GetId())
-	q.SetVdDouble(req.GetVdDouble())
-	q.SetVdInt64(req.GetVdInt64())
-	q.SetVdUint64(req.GetVdUint64())
-	q.SetVdBool(req.GetVdBool())
-	q.SetVdString(req.GetVdString())
-	q.SetVdBytes(req.GetVdBytes())
+	if req.HasVdDouble() {
+		q.SetVdDouble(req.GetVdDouble())
+	}
+	if req.HasVdInt64() {
+		q.SetVdInt64(req.GetVdInt64())
+	}
+	if req.HasVdUint64() {
+		q.SetVdUint64(req.GetVdUint64())
+	}
+	if req.HasVdBool() {
+		q.SetVdBool(req.GetVdBool())
+	}
+	if req.HasVdString() {
+		q.SetVdString(req.GetVdString())
+	}
+	if req.HasVdBytes() {
+		q.SetVdBytes(req.GetVdBytes())
+	}
 
 	v, err := q.Save(ctx)
 	if err != nil {

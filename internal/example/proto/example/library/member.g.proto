@@ -44,7 +44,7 @@ message LockerPatchRequest {
 
 message MemberAddRequest {
 	optional bytes id = 1;
-	string name = 3;
+	optional string name = 3;
 	map<string,string> labels = 4;
 	Profile profile = 5;
 	Member.Level level = 6;
@@ -56,7 +56,13 @@ message MemberAddRequest {
 message MemberGetRequest {
 	oneof key {
 		bytes id = 1;
+		example.library.MemberGetByName name = 8;
 	}
+}
+
+message MemberGetByName {
+	MemberGetRequest parent = 8;
+	string name = 3;
 }
 
 message MemberPatchRequest {

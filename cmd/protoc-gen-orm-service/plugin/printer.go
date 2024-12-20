@@ -221,7 +221,6 @@ func (w *printWork) msgAddReq(r *graph.Rpc) *generatedMessage {
 
 		case (*graph.Edge):
 			if !(u.IsUnidirectional() || u.IsExclusive()) {
-				fmt.Fprintln(os.Stderr, u.Name(), u.IsUnidirectional(), u.IsExclusive())
 				continue
 			}
 

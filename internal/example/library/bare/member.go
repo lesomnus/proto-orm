@@ -32,7 +32,9 @@ func (s *MemberServiceServer) Add(ctx context.Context, req *library.MemberAddReq
 			q.SetID(v)
 		}
 	}
-	q.SetName(req.GetName())
+	if req.HasName() {
+		q.SetName(req.GetName())
+	}
 	if v := req.GetLabels(); v != nil {
 		q.SetLabels(v)
 	}
@@ -135,6 +137,16 @@ func MemberPick(req *library.MemberGetRequest) (predicate.Member, error) {
 		} else {
 			return member.IDEQ(v), nil
 		}
+	case library.MemberGetRequest_Name_case:
+		ps := make([]predicate.Member, 0, 2)
+		if p, err := MemberPick(req.GetName().GetParent()); err != nil {
+			s, _ := status.FromError(err)
+			return nil, status.Errorf(codes.InvalidArgument, "name.parent: %s", s.Message())
+		} else {
+			ps = append(ps, member.HasParentWith(p))
+		}
+		ps = append(ps, member.NameEQ(req.GetName().GetName()))
+		return member.And(ps...), nil
 	case library.MemberGetRequest_Key_not_set_case:
 		return nil, status.Errorf(codes.InvalidArgument, "key not provided")
 	default:
