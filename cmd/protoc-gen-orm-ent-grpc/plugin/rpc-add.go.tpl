@@ -75,6 +75,14 @@ func (s *{{ $.Name }}ServiceServer) Add(ctx {{ pkg "context" | ident "Context" }
 		}
 		q.Add{{ $n }}IDs(ids...)
 	}
+	{{ else if .IsOptional | or .IsNullable -}}
+	if v := req.Get{{ $n }}(); v != nil {
+		if id, err := {{ $target.Name }}GetId(ctx, s.db, v); err != nil {
+			return nil, err
+		} else {
+			q.Set{{ $n }}ID(id)
+		}
+	}
 	{{ else -}}
 	if id, err := {{ $target.Name }}GetId(ctx, s.db, req.Get{{ $n }}()); err != nil {
 		return nil, err

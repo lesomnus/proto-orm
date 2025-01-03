@@ -261,6 +261,17 @@ func (e *Member) Proto() *library.Member {
 	return m
 }
 
+func (e *Membership) Proto() *library.Membership {
+	m := &library.Membership{}
+	m.SetId(e.ID[:])
+	if v := e.Edges.Member; v != nil {
+		m.SetMember(v.Proto())
+	}
+	m.SetPoint(e.Point)
+
+	return m
+}
+
 func (e *Press) Proto() *library.Press {
 	m := &library.Press{}
 	m.SetId(e.ID[:])

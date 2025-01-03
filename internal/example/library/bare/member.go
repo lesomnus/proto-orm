@@ -40,15 +40,19 @@ func (s *MemberServiceServer) Add(ctx context.Context, req *library.MemberAddReq
 	}
 	q.SetProfile(req.GetProfile())
 	q.SetLevel(int(req.GetLevel()))
-	if id, err := LockerGetId(ctx, s.db, req.GetLocker()); err != nil {
-		return nil, err
-	} else {
-		q.SetLockerID(id)
+	if v := req.GetLocker(); v != nil {
+		if id, err := LockerGetId(ctx, s.db, v); err != nil {
+			return nil, err
+		} else {
+			q.SetLockerID(id)
+		}
 	}
-	if id, err := MemberGetId(ctx, s.db, req.GetParent()); err != nil {
-		return nil, err
-	} else {
-		q.SetParentID(id)
+	if v := req.GetParent(); v != nil {
+		if id, err := MemberGetId(ctx, s.db, v); err != nil {
+			return nil, err
+		} else {
+			q.SetParentID(id)
+		}
 	}
 	if req.HasDateCreated() {
 		q.SetDateCreated(req.GetDateCreated().AsTime())
@@ -104,7 +108,9 @@ func (s *MemberServiceServer) Patch(ctx context.Context, req *library.MemberPatc
 	} else {
 		q.SetLockerID(id)
 	}
-	if id, err := MemberGetId(ctx, s.db, req.GetKey()); err != nil {
+	if req.GetParentNull() {
+		q.ClearParent()
+	} else if id, err := MemberGetId(ctx, s.db, req.GetKey()); err != nil {
 		return nil, err
 	} else {
 		q.SetParentID(id)

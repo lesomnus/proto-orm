@@ -7,24 +7,24 @@ import (
 	uuid "github.com/google/uuid"
 	library "github.com/lesomnus/proto-orm/internal/example/library"
 	ent "github.com/lesomnus/proto-orm/internal/example/library/ent"
-	locker "github.com/lesomnus/proto-orm/internal/example/library/ent/locker"
+	membership "github.com/lesomnus/proto-orm/internal/example/library/ent/membership"
 	predicate "github.com/lesomnus/proto-orm/internal/example/library/ent/predicate"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
-type LockerServiceServer struct {
+type MembershipServiceServer struct {
 	db *ent.Client
-	library.UnimplementedLockerServiceServer
+	library.UnimplementedMembershipServiceServer
 }
 
-func NewLockerServiceServer(db *ent.Client) *LockerServiceServer {
-	return &LockerServiceServer{db: db}
+func NewMembershipServiceServer(db *ent.Client) *MembershipServiceServer {
+	return &MembershipServiceServer{db: db}
 }
 
-func (s *LockerServiceServer) Add(ctx context.Context, req *library.LockerAddRequest) (*library.Locker, error) {
-	q := s.db.Locker.Create()
+func (s *MembershipServiceServer) Add(ctx context.Context, req *library.MembershipAddRequest) (*library.Membership, error) {
+	q := s.db.Membership.Create()
 	if req.HasId() {
 		if v, err := uuid.FromBytes(req.GetId()); err != nil {
 			return nil, status.Errorf(codes.InvalidArgument, "id: %s", err)
@@ -32,13 +32,12 @@ func (s *LockerServiceServer) Add(ctx context.Context, req *library.LockerAddReq
 			q.SetID(v)
 		}
 	}
-	if v := req.GetOwner(); v != nil {
-		if id, err := MemberGetId(ctx, s.db, v); err != nil {
-			return nil, err
-		} else {
-			q.SetOwnerID(id)
-		}
+	if id, err := MemberGetId(ctx, s.db, req.GetMember()); err != nil {
+		return nil, err
+	} else {
+		q.SetMemberID(id)
 	}
+	q.SetPoint(req.GetPoint())
 
 	v, err := q.Save(ctx)
 	if err != nil {
@@ -48,9 +47,9 @@ func (s *LockerServiceServer) Add(ctx context.Context, req *library.LockerAddReq
 	return v.Proto(), nil
 }
 
-func (s *LockerServiceServer) Get(ctx context.Context, req *library.LockerGetRequest) (*library.Locker, error) {
-	q := s.db.Locker.Query()
-	if p, err := LockerPick(req); err != nil {
+func (s *MembershipServiceServer) Get(ctx context.Context, req *library.MembershipGetRequest) (*library.Membership, error) {
+	q := s.db.Membership.Query()
+	if p, err := MembershipPick(req); err != nil {
 		return nil, err
 	} else {
 		q.Where(p)
@@ -64,19 +63,20 @@ func (s *LockerServiceServer) Get(ctx context.Context, req *library.LockerGetReq
 	return v.Proto(), nil
 }
 
-func (s *LockerServiceServer) Patch(ctx context.Context, req *library.LockerPatchRequest) (*emptypb.Empty, error) {
-	id, err := LockerGetId(ctx, s.db, req.GetKey())
+func (s *MembershipServiceServer) Patch(ctx context.Context, req *library.MembershipPatchRequest) (*emptypb.Empty, error) {
+	id, err := MembershipGetId(ctx, s.db, req.GetKey())
 	if err != nil {
 		return nil, err
 	}
 
-	q := s.db.Locker.UpdateOneID(id)
-	if req.GetOwnerNull() {
-		q.ClearOwner()
-	} else if id, err := LockerGetId(ctx, s.db, req.GetKey()); err != nil {
+	q := s.db.Membership.UpdateOneID(id)
+	if id, err := MembershipGetId(ctx, s.db, req.GetKey()); err != nil {
 		return nil, err
 	} else {
-		q.SetOwnerID(id)
+		q.SetMemberID(id)
+	}
+	if req.HasPoint() {
+		q.SetPoint(req.GetPoint())
 	}
 
 	if _, err := q.Save(ctx); err != nil {
@@ -86,34 +86,34 @@ func (s *LockerServiceServer) Patch(ctx context.Context, req *library.LockerPatc
 	return nil, nil
 }
 
-func (s *LockerServiceServer) Erase(ctx context.Context, req *library.LockerGetRequest) (*emptypb.Empty, error) {
-	p, err := LockerPick(req)
+func (s *MembershipServiceServer) Erase(ctx context.Context, req *library.MembershipGetRequest) (*emptypb.Empty, error) {
+	p, err := MembershipPick(req)
 	if err != nil {
 		return nil, err
 	}
-	if _, err := s.db.Locker.Delete().Where(p).Exec(ctx); err != nil {
+	if _, err := s.db.Membership.Delete().Where(p).Exec(ctx); err != nil {
 		return nil, StatusFromEntError(err)
 	}
 
 	return nil, nil
 }
 
-func LockerPick(req *library.LockerGetRequest) (predicate.Locker, error) {
+func MembershipPick(req *library.MembershipGetRequest) (predicate.Membership, error) {
 	switch req.WhichKey() {
-	case library.LockerGetRequest_Id_case:
+	case library.MembershipGetRequest_Id_case:
 		if v, err := uuid.FromBytes(req.GetId()); err != nil {
 			return nil, status.Errorf(codes.InvalidArgument, "id: %s", "err")
 		} else {
-			return locker.IDEQ(v), nil
+			return membership.IDEQ(v), nil
 		}
-	case library.LockerGetRequest_Key_not_set_case:
+	case library.MembershipGetRequest_Key_not_set_case:
 		return nil, status.Errorf(codes.InvalidArgument, "key not provided")
 	default:
 		return nil, status.Errorf(codes.Unimplemented, "unknown type of key")
 	}
 }
 
-func LockerGetId(ctx context.Context, db *ent.Client, req *library.LockerGetRequest) (uuid.UUID, error) {
+func MembershipGetId(ctx context.Context, db *ent.Client, req *library.MembershipGetRequest) (uuid.UUID, error) {
 	var z uuid.UUID
 	if req.HasId() {
 		if v, err := uuid.FromBytes(req.GetId()); err != nil {
@@ -123,12 +123,12 @@ func LockerGetId(ctx context.Context, db *ent.Client, req *library.LockerGetRequ
 		}
 	}
 
-	p, err := LockerPick(req)
+	p, err := MembershipPick(req)
 	if err != nil {
 		return z, err
 	}
 
-	v, err := db.Locker.Query().Where(p).OnlyID(ctx)
+	v, err := db.Membership.Query().Where(p).OnlyID(ctx)
 	if err != nil {
 		return z, status.Errorf(codes.Internal, "query: %s", err)
 	}

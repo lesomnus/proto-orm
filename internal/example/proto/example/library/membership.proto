@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package example.library;
+
+import "example/library/member.proto";
+import "orm.proto";
+
+option go_package = "github.com/lesomnus/proto-orm/internal/example/library";
+option (orm.all) = {
+	messages: {}
+	rpcs: {
+		crud: true
+	}
+};
+
+message Membership {
+	bytes id = 1 [
+		(orm.field) = {
+			type: TYPE_UUID
+			key: true
+			default: ""
+		}
+	];
+	Member member = 2 [
+		(orm.edge) = {
+			// Wait https://github.com/ent/ent/issues/4175
+			// bind: 1
+		}
+	];
+
+	int32 point = 3;
+}

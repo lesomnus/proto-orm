@@ -86,14 +86,11 @@ func (e *Entity) parseEdge(f *protogen.Field, o *orm.EdgeOptions, target *Entity
 			v.Bind = t
 			t.Bound = v
 
-			t_actual := t.typ
+			t_actual := t.Type()
 			t_expect := target.Key.Type()
 			t_to_be := t_expect
-			if t_expect == orm.Type_TYPE_UUID {
-				t_expect = orm.Type_TYPE_BYTES
-			}
 			if t_actual != t_expect {
-				err := fmt.Errorf("expected bound type to be %s but %s", t_expect, t_actual)
+				err := fmt.Errorf("expected bound type to be %s but was %s", t_expect, t_actual)
 				errs = append(errs, err)
 			} else {
 				t.typ = t_to_be

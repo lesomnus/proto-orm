@@ -39,8 +39,7 @@ func (Member) Edges() []ent.Edge {
 		edge.To("locker", Locker.Type).
 			Unique(),
 		edge.From("parent", Member.Type).Ref("children").
-			Unique().
-			Required(),
+			Unique(),
 		edge.To("children", Member.Type),
 	}
 }

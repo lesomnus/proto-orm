@@ -23,14 +23,22 @@ message Loan {
 			default: ""
 		}
 	];
-	bytes subject_id = 2;
+	bytes subject_id = 2 [
+		(orm.field) = {
+			type: TYPE_UUID
+		}
+	];
 	Book subject = 3 [
 		(orm.edge) = {
 			bind: 2
 			immutable: true
 		}
 	];
-	bytes borrower_id = 4;
+	bytes borrower_id = 4 [
+		(orm.field) = {
+			type: TYPE_UUID
+		}
+	];
 	Member borrower = 5 [
 		(orm.edge) = {
 			bind: 4

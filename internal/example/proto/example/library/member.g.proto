@@ -74,4 +74,5 @@ message MemberPatchRequest {
 	LockerGetRequest locker = 13;
 	bool locker_null = 14;
 	MemberGetRequest parent = 15;
+	bool parent_null = 16;
 }
