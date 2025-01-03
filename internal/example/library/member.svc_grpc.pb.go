@@ -4,7 +4,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.5.1
 // - protoc             v5.29.0
-// source: example/library/member.g.proto
+// source: example/library/member.svc.proto
 
 package library
 
@@ -234,7 +234,7 @@ var LockerService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "example/library/member.g.proto",
+	Metadata: "example/library/member.svc.proto",
 }
 
 const (
@@ -450,5 +450,5 @@ var MemberService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "example/library/member.g.proto",
+	Metadata: "example/library/member.svc.proto",
 }

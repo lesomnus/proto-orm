@@ -4,7 +4,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.5.1
 // - protoc             v5.29.0
-// source: example/library/loan.g.proto
+// source: example/library/loan.svc.proto
 
 package library
 
@@ -234,5 +234,5 @@ var LoanService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "example/library/loan.g.proto",
+	Metadata: "example/library/loan.svc.proto",
 }

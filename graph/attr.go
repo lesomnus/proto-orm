@@ -95,6 +95,60 @@ func (a *Attr) Type() orm.Type {
 	return a.typ
 }
 
+func (a *Attr) ProtoGoType(q func(ident protogen.GoIdent) string) string {
+	return a.protoGoType(a.source, q)
+}
+
+func (a *Attr) protoGoType(f *protogen.Field, q func(ident protogen.GoIdent) string) string {
+	d := f.Desc
+	if d.IsMap() {
+		k := f.Message.Fields[0]
+		v := f.Message.Fields[1]
+		return fmt.Sprintf("map[%s]%s", a.protoGoType(k, q), a.protoGoType(v, q))
+	}
+
+	v := ""
+	k := d.Kind()
+	switch k {
+	case protoreflect.BoolKind:
+		v = "bool"
+	case protoreflect.EnumKind:
+		v = q(f.Enum.GoIdent)
+	case protoreflect.Uint32Kind,
+		protoreflect.Fixed32Kind:
+		v = "uint32"
+	case protoreflect.Int32Kind,
+		protoreflect.Sint32Kind,
+		protoreflect.Sfixed32Kind:
+		v = "int32"
+	case protoreflect.Uint64Kind,
+		protoreflect.Fixed64Kind:
+		v = "uint64"
+	case protoreflect.Int64Kind,
+		protoreflect.Sint64Kind,
+		protoreflect.Sfixed64Kind:
+		v = "int64"
+	case protoreflect.FloatKind:
+		v = "float32"
+	case protoreflect.DoubleKind:
+		v = "float64"
+	case protoreflect.StringKind:
+		v = "string"
+	case protoreflect.BytesKind:
+		v = "[]byte"
+	case protoreflect.MessageKind:
+		v = "*" + q(f.Message.GoIdent)
+	case protoreflect.GroupKind:
+	default:
+		panic(fmt.Sprintf("unknown type or type not supported: %s", k.String()))
+	}
+
+	if d.IsList() {
+		return "[]" + v
+	}
+	return v
+}
+
 // `q` is qualifier that returns given `ident` as qualified name like: "Printf" -> "fmt.Printf".
 // You may use `protogen.GeneratedFile.QualifiedGoIdent` in most of cases.
 func (a *Attr) GoType(q func(ident protogen.GoIdent) string) string {
@@ -200,6 +254,19 @@ func (a *Attr) Source() *protogen.Field {
 
 func (a *Attr) Entity() *Entity {
 	return a.entity
+}
+
+func (a *Attr) IsScalar() bool {
+	if a.IsList() || a.IsMap() {
+		return false
+	}
+	switch a.source.Desc.Kind() {
+	case protoreflect.BytesKind,
+		protoreflect.MessageKind:
+		return false
+	}
+
+	return true
 }
 
 func (a *Attr) IsBound() bool {

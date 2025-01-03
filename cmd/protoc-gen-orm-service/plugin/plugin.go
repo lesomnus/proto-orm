@@ -25,8 +25,7 @@ func NewPlugin() *Plugin {
 func (p *Plugin) Run(plugin *protogen.Plugin) error {
 	plugin.SupportedEditionsMinimum = descriptorpb.Edition_EDITION_PROTO3
 	plugin.SupportedEditionsMaximum = descriptorpb.Edition_EDITION_PROTO3
-	plugin.SupportedFeatures = uint64(0 |
-		pluginpb.CodeGeneratorResponse_FEATURE_PROTO3_OPTIONAL)
+	plugin.SupportedFeatures = uint64(pluginpb.CodeGeneratorResponse_FEATURE_PROTO3_OPTIONAL)
 
 	namer, err := template.New("naming").Parse(p.Naming)
 	if err != nil {

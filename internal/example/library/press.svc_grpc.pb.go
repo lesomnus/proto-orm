@@ -4,7 +4,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.5.1
 // - protoc             v5.29.0
-// source: example/library/press.g.proto
+// source: example/library/press.svc.proto
 
 package library
 
@@ -234,5 +234,5 @@ var PressService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "example/library/press.g.proto",
+	Metadata: "example/library/press.svc.proto",
 }
