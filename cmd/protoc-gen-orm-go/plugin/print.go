@@ -17,7 +17,11 @@ var (
 )
 
 func (p *Plugin) Print(e *graph.Entity, f *protogen.GeneratedFile) error {
-	if err := p.NewTemplate(e, f).ExecuteTemplate(f, "getter.go.tpl", e); err != nil {
+	t := p.NewTemplate(e, f)
+	if err := t.ExecuteTemplate(f, "pick.go.tpl", e); err != nil {
+		return err
+	}
+	if err := t.ExecuteTemplate(f, "getter.go.tpl", e); err != nil {
 		return err
 	}
 
