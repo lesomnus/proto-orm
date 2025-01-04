@@ -7,6 +7,7 @@ import (
 	uuid "github.com/google/uuid"
 	library "github.com/lesomnus/proto-orm/internal/example/library"
 	ent "github.com/lesomnus/proto-orm/internal/example/library/ent"
+	locker "github.com/lesomnus/proto-orm/internal/example/library/ent/locker"
 	member "github.com/lesomnus/proto-orm/internal/example/library/ent/member"
 	predicate "github.com/lesomnus/proto-orm/internal/example/library/ent/predicate"
 	codes "google.golang.org/grpc/codes"
@@ -73,6 +74,13 @@ func (s *MemberServiceServer) Get(ctx context.Context, req *library.MemberGetReq
 	} else {
 		q.Where(p)
 	}
+
+	q.WithLocker(func(q *ent.LockerQuery) {
+		q.Select(locker.FieldID)
+	})
+	q.WithParent(func(q *ent.MemberQuery) {
+		q.Select(member.FieldID)
+	})
 
 	v, err := q.Only(ctx)
 	if err != nil {

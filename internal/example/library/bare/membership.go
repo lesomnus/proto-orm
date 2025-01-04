@@ -7,6 +7,7 @@ import (
 	uuid "github.com/google/uuid"
 	library "github.com/lesomnus/proto-orm/internal/example/library"
 	ent "github.com/lesomnus/proto-orm/internal/example/library/ent"
+	member "github.com/lesomnus/proto-orm/internal/example/library/ent/member"
 	membership "github.com/lesomnus/proto-orm/internal/example/library/ent/membership"
 	predicate "github.com/lesomnus/proto-orm/internal/example/library/ent/predicate"
 	codes "google.golang.org/grpc/codes"
@@ -54,6 +55,10 @@ func (s *MembershipServiceServer) Get(ctx context.Context, req *library.Membersh
 	} else {
 		q.Where(p)
 	}
+
+	q.WithMember(func(q *ent.MemberQuery) {
+		q.Select(member.FieldID)
+	})
 
 	v, err := q.Only(ctx)
 	if err != nil {

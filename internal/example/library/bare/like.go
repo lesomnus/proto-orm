@@ -7,7 +7,9 @@ import (
 	uuid "github.com/google/uuid"
 	library "github.com/lesomnus/proto-orm/internal/example/library"
 	ent "github.com/lesomnus/proto-orm/internal/example/library/ent"
+	book "github.com/lesomnus/proto-orm/internal/example/library/ent/book"
 	like "github.com/lesomnus/proto-orm/internal/example/library/ent/like"
+	member "github.com/lesomnus/proto-orm/internal/example/library/ent/member"
 	predicate "github.com/lesomnus/proto-orm/internal/example/library/ent/predicate"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -61,6 +63,13 @@ func (s *LikeServiceServer) Get(ctx context.Context, req *library.LikeGetRequest
 	} else {
 		q.Where(p)
 	}
+
+	q.WithSubject(func(q *ent.BookQuery) {
+		q.Select(book.FieldID)
+	})
+	q.WithActor(func(q *ent.MemberQuery) {
+		q.Select(member.FieldID)
+	})
 
 	v, err := q.Only(ctx)
 	if err != nil {

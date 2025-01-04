@@ -7,6 +7,7 @@ import (
 	uuid "github.com/google/uuid"
 	library "github.com/lesomnus/proto-orm/internal/example/library"
 	ent "github.com/lesomnus/proto-orm/internal/example/library/ent"
+	book "github.com/lesomnus/proto-orm/internal/example/library/ent/book"
 	predicate "github.com/lesomnus/proto-orm/internal/example/library/ent/predicate"
 	press "github.com/lesomnus/proto-orm/internal/example/library/ent/press"
 	codes "google.golang.org/grpc/codes"
@@ -57,6 +58,10 @@ func (s *PressServiceServer) Get(ctx context.Context, req *library.PressGetReque
 	} else {
 		q.Where(p)
 	}
+
+	q.WithBook(func(q *ent.BookQuery) {
+		q.Select(book.FieldID)
+	})
 
 	v, err := q.Only(ctx)
 	if err != nil {

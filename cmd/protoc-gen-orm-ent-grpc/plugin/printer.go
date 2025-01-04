@@ -132,7 +132,7 @@ func (p *Printer) newTemplate(f *protogen.GeneratedFile) *template.Template {
 		"as_attr": func(f graph.Field) *graph.Attr {
 			v, ok := f.(*graph.Attr)
 			if !ok {
-				panic("field must be an attribute")
+				return nil
 			}
 			return v
 		},
@@ -143,7 +143,7 @@ func (p *Printer) newTemplate(f *protogen.GeneratedFile) *template.Template {
 		"as_edge": func(f graph.Field) *graph.Edge {
 			v, ok := f.(*graph.Edge)
 			if !ok {
-				panic("field must be an edge")
+				return nil
 			}
 			return v
 		},
@@ -154,7 +154,7 @@ func (p *Printer) newTemplate(f *protogen.GeneratedFile) *template.Template {
 		"key_as_field": func(k graph.Key) graph.Field {
 			v, ok := k.(graph.Field)
 			if !ok {
-				panic("key must be field")
+				return nil
 			}
 			return v
 		},
@@ -165,7 +165,7 @@ func (p *Printer) newTemplate(f *protogen.GeneratedFile) *template.Template {
 		"key_as_index": func(k graph.Key) *graph.Index {
 			v, ok := k.(*graph.Index)
 			if !ok {
-				panic("key must be index")
+				return nil
 			}
 			return v
 		},
