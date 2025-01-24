@@ -7,7 +7,6 @@ package example.library;
 import "example/library/author.svc.proto";
 import "example/library/loan.proto";
 import "example/library/member.svc.proto";
-import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/lesomnus/proto-orm/internal/example/library";
@@ -15,8 +14,6 @@ option go_package = "github.com/lesomnus/proto-orm/internal/example/library";
 service LoanService {
 	rpc Add(LoanAddRequest) returns (Loan);
 	rpc Get(LoanGetRequest) returns (Loan);
-	rpc Patch(LoanPatchRequest) returns (google.protobuf.Empty);
-	rpc Erase(LoanGetRequest) returns (google.protobuf.Empty);
 }
 
 message LoanAddRequest {
@@ -32,11 +29,4 @@ message LoanGetRequest {
 	oneof key {
 		bytes id = 1;
 	}
-}
-
-message LoanPatchRequest {
-	LoanGetRequest key = 1;
-	optional google.protobuf.Timestamp date_due = 25;
-	optional google.protobuf.Timestamp date_return = 27;
-	bool date_return_null = 28;
 }

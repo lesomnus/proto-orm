@@ -11,7 +11,8 @@ option go_package = "github.com/lesomnus/proto-orm/internal/example/library";
 option (orm.all) = {
 	messages: {}
 	rpcs: {
-		crud: true
+		add: {}
+		get: {}
 	}
 };
 

@@ -13,7 +13,6 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
-	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -22,10 +21,8 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	LoanService_Add_FullMethodName   = "/example.library.LoanService/Add"
-	LoanService_Get_FullMethodName   = "/example.library.LoanService/Get"
-	LoanService_Patch_FullMethodName = "/example.library.LoanService/Patch"
-	LoanService_Erase_FullMethodName = "/example.library.LoanService/Erase"
+	LoanService_Add_FullMethodName = "/example.library.LoanService/Add"
+	LoanService_Get_FullMethodName = "/example.library.LoanService/Get"
 )
 
 // LoanServiceClient is the client API for LoanService service.
@@ -34,8 +31,6 @@ const (
 type LoanServiceClient interface {
 	Add(ctx context.Context, in *LoanAddRequest, opts ...grpc.CallOption) (*Loan, error)
 	Get(ctx context.Context, in *LoanGetRequest, opts ...grpc.CallOption) (*Loan, error)
-	Patch(ctx context.Context, in *LoanPatchRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	Erase(ctx context.Context, in *LoanGetRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type loanServiceClient struct {
@@ -66,34 +61,12 @@ func (c *loanServiceClient) Get(ctx context.Context, in *LoanGetRequest, opts ..
 	return out, nil
 }
 
-func (c *loanServiceClient) Patch(ctx context.Context, in *LoanPatchRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(emptypb.Empty)
-	err := c.cc.Invoke(ctx, LoanService_Patch_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *loanServiceClient) Erase(ctx context.Context, in *LoanGetRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(emptypb.Empty)
-	err := c.cc.Invoke(ctx, LoanService_Erase_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // LoanServiceServer is the server API for LoanService service.
 // All implementations must embed UnimplementedLoanServiceServer
 // for forward compatibility.
 type LoanServiceServer interface {
 	Add(context.Context, *LoanAddRequest) (*Loan, error)
 	Get(context.Context, *LoanGetRequest) (*Loan, error)
-	Patch(context.Context, *LoanPatchRequest) (*emptypb.Empty, error)
-	Erase(context.Context, *LoanGetRequest) (*emptypb.Empty, error)
 	mustEmbedUnimplementedLoanServiceServer()
 }
 
@@ -109,12 +82,6 @@ func (UnimplementedLoanServiceServer) Add(context.Context, *LoanAddRequest) (*Lo
 }
 func (UnimplementedLoanServiceServer) Get(context.Context, *LoanGetRequest) (*Loan, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
-}
-func (UnimplementedLoanServiceServer) Patch(context.Context, *LoanPatchRequest) (*emptypb.Empty, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Patch not implemented")
-}
-func (UnimplementedLoanServiceServer) Erase(context.Context, *LoanGetRequest) (*emptypb.Empty, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Erase not implemented")
 }
 func (UnimplementedLoanServiceServer) mustEmbedUnimplementedLoanServiceServer() {}
 func (UnimplementedLoanServiceServer) testEmbeddedByValue()                     {}
@@ -173,42 +140,6 @@ func _LoanService_Get_Handler(srv interface{}, ctx context.Context, dec func(int
 	return interceptor(ctx, in, info, handler)
 }
 
-func _LoanService_Patch_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(LoanPatchRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(LoanServiceServer).Patch(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: LoanService_Patch_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(LoanServiceServer).Patch(ctx, req.(*LoanPatchRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _LoanService_Erase_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(LoanGetRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(LoanServiceServer).Erase(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: LoanService_Erase_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(LoanServiceServer).Erase(ctx, req.(*LoanGetRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 // LoanService_ServiceDesc is the grpc.ServiceDesc for LoanService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -223,14 +154,6 @@ var LoanService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Get",
 			Handler:    _LoanService_Get_Handler,
-		},
-		{
-			MethodName: "Patch",
-			Handler:    _LoanService_Patch_Handler,
-		},
-		{
-			MethodName: "Erase",
-			Handler:    _LoanService_Erase_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

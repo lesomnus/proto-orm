@@ -13,7 +13,6 @@ import (
 	predicate "github.com/lesomnus/proto-orm/internal/example/library/ent/predicate"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
-	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 type LoanServiceServer struct {
@@ -81,41 +80,6 @@ func (s *LoanServiceServer) Get(ctx context.Context, req *library.LoanGetRequest
 	}
 
 	return v.Proto(), nil
-}
-
-func (s *LoanServiceServer) Patch(ctx context.Context, req *library.LoanPatchRequest) (*emptypb.Empty, error) {
-	id, err := LoanGetId(ctx, s.db, req.GetKey())
-	if err != nil {
-		return nil, err
-	}
-
-	q := s.db.Loan.UpdateOneID(id)
-	if req.HasDateDue() {
-		q.SetDateDue(req.GetDateDue().AsTime())
-	}
-	if req.GetDateReturnNull() {
-		q.ClearDateReturn()
-	} else if req.HasDateReturn() {
-		q.SetDateReturn(req.GetDateReturn().AsTime())
-	}
-
-	if _, err := q.Save(ctx); err != nil {
-		return nil, StatusFromEntError(err)
-	}
-
-	return nil, nil
-}
-
-func (s *LoanServiceServer) Erase(ctx context.Context, req *library.LoanGetRequest) (*emptypb.Empty, error) {
-	p, err := LoanPick(req)
-	if err != nil {
-		return nil, err
-	}
-	if _, err := s.db.Loan.Delete().Where(p).Exec(ctx); err != nil {
-		return nil, StatusFromEntError(err)
-	}
-
-	return nil, nil
 }
 
 func LoanPick(req *library.LoanGetRequest) (predicate.Loan, error) {

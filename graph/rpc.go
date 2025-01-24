@@ -138,15 +138,15 @@ func (w *RpcParser) Parse(e *Entity, o *orm.RpcOptions) map[RpcOp]*Rpc {
 		is_enabled_add = !o.Add.Disabled
 	}
 	is_enabled_get := is_enabled_crud
-	if o.Add != nil {
+	if o.Get != nil {
 		is_enabled_get = !o.Get.Disabled
 	}
 	is_enabled_patch := is_enabled_crud
-	if o.Add != nil {
+	if o.Patch != nil {
 		is_enabled_patch = !o.Patch.Disabled
 	}
 	is_enabled_erase := is_enabled_crud
-	if o.Add != nil {
+	if o.Erase != nil {
 		is_enabled_erase = !o.Erase.Disabled
 	}
 
