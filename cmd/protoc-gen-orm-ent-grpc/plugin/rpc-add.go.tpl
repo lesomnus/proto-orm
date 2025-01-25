@@ -1,5 +1,5 @@
-func (s *{{ $.Name }}ServiceServer) Add(ctx {{ pkg "context" | ident "Context" }}, req *{{ pb (print $.Name "AddRequest") }}) (*{{ pb $.Name }}, error) {
-	q := s.db.{{ $.Name }}.Create()
+func (s {{ $.Name }}ServiceServer) Add(ctx {{ pkg "context" | ident "Context" }}, req *{{ pb (print $.Name "AddRequest") }}) (*{{ pb $.Name }}, error) {
+	q := s.Db.{{ $.Name }}.Create()
 	{{ range .FieldsSortByNumber -}}
 
 	{{/* printing attributes */ -}}
@@ -67,7 +67,7 @@ func (s *{{ $.Name }}ServiceServer) Add(ctx {{ pkg "context" | ident "Context" }
 		ids := []{{ ent_type $k.Type }}{}
 		for _, r := range req.Get{{ $n }}() {
 			{{/* TODO: optimize: get multiple in single query */ -}}
-			if id, err := {{ $target.Name }}GetId(ctx, s.db, r); err != nil {
+			if id, err := {{ $target.Name }}GetId(ctx, s.Db, r); err != nil {
 				return nil, err
 			} else {
 				ids = append(ids, id)
@@ -77,14 +77,14 @@ func (s *{{ $.Name }}ServiceServer) Add(ctx {{ pkg "context" | ident "Context" }
 	}
 	{{ else if .IsOptional | or .IsNullable -}}
 	if v := req.Get{{ $n }}(); v != nil {
-		if id, err := {{ $target.Name }}GetId(ctx, s.db, v); err != nil {
+		if id, err := {{ $target.Name }}GetId(ctx, s.Db, v); err != nil {
 			return nil, err
 		} else {
 			q.Set{{ $n }}ID(id)
 		}
 	}
 	{{ else -}}
-	if id, err := {{ $target.Name }}GetId(ctx, s.db, req.Get{{ $n }}()); err != nil {
+	if id, err := {{ $target.Name }}GetId(ctx, s.Db, req.Get{{ $n }}()); err != nil {
 		return nil, err
 	} else {
 		q.Set{{ $n }}ID(id)

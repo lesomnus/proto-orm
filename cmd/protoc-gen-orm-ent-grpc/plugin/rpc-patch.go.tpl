@@ -1,10 +1,10 @@
-func (s *{{ $.Name }}ServiceServer) Patch(ctx {{ pkg "context" | ident "Context" }}, req *{{ pb (print $.Name "PatchRequest") }}) (*{{ pkg "google.golang.org/protobuf/types/known/emptypb" | ident "Empty" }}, error) {
-	id, err := {{ $.Name }}GetId(ctx, s.db, req.GetKey())
+func (s {{ $.Name }}ServiceServer) Patch(ctx {{ pkg "context" | ident "Context" }}, req *{{ pb (print $.Name "PatchRequest") }}) (*{{ pkg "google.golang.org/protobuf/types/known/emptypb" | ident "Empty" }}, error) {
+	id, err := {{ $.Name }}GetId(ctx, s.Db, req.GetKey())
 	if err != nil {
 		return nil, err
 	}
 
-	q := s.db.{{ $.Name }}.UpdateOneID(id)
+	q := s.Db.{{ $.Name }}.UpdateOneID(id)
 	{{ range .FieldsSortByNumber -}}
 	{{ if .Immutable -}}
 		{{/* skip: field cannot be patched */ -}}
@@ -69,7 +69,7 @@ func (s *{{ $.Name }}ServiceServer) Patch(ctx {{ pkg "context" | ident "Context"
 		q.Clear{{ pascal .Name }}()
 	} else {{ end -}}
 
-	if id, err := {{ $.Name }}GetId(ctx, s.db, req.GetKey()); err != nil {
+	if id, err := {{ $.Name }}GetId(ctx, s.Db, req.GetKey()); err != nil {
 		return nil, err
 	} else {
 		q.Set{{ pascal .Name }}ID(id)

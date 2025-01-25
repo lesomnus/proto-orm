@@ -1,5 +1,5 @@
-func (s *{{ $.Name }}ServiceServer) Get(ctx {{ pkg "context" | ident "Context" }}, req *{{ pb (print $.Name "GetRequest") }}) (*{{ pb $.Name }}, error) {
-	q := s.db.{{ $.Name }}.Query()
+func (s {{ $.Name }}ServiceServer) Get(ctx {{ pkg "context" | ident "Context" }}, req *{{ pb (print $.Name "GetRequest") }}) (*{{ pb $.Name }}, error) {
+	q := s.Db.{{ $.Name }}.Query()
 	if p, err := {{ $.Name }}Pick(req); err != nil {
 		return nil, err
 	} else {
