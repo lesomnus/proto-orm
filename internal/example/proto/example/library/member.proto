@@ -27,7 +27,11 @@ message Member {
 			default: ""
 		}
 	];
-	map<string, string> labels = 4;
+	map<string, string> labels = 4 [
+		(orm.field) = {
+			default: ""
+		}
+	];
 
 	Profile profile = 5;
 	enum Level {
@@ -79,5 +83,6 @@ message Locker {
 			nullable: true
 		}
 	];
+	uint32 number = 3;
 }
 

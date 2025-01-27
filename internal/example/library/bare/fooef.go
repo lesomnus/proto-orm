@@ -14,16 +14,16 @@ import (
 )
 
 type FooEfServiceServer struct {
-	db *ent.Client
+	Db *ent.Client
 	library.UnimplementedFooEfServiceServer
 }
 
-func NewFooEfServiceServer(db *ent.Client) *FooEfServiceServer {
-	return &FooEfServiceServer{db: db}
+func NewFooEfServiceServer(db *ent.Client) FooEfServiceServer {
+	return FooEfServiceServer{Db: db}
 }
 
-func (s *FooEfServiceServer) Add(ctx context.Context, req *library.FooEfAddRequest) (*library.FooEf, error) {
-	q := s.db.FooEf.Create()
+func (s FooEfServiceServer) Add(ctx context.Context, req *library.FooEfAddRequest) (*library.FooEf, error) {
+	q := s.Db.FooEf.Create()
 	q.SetID(req.GetId())
 	q.SetEfVAuthor(req.GetEfVAuthor())
 	if req.HasEfVdAuthor() {
@@ -51,8 +51,13 @@ func (s *FooEfServiceServer) Add(ctx context.Context, req *library.FooEfAddReque
 	return v.Proto(), nil
 }
 
-func (s *FooEfServiceServer) Get(ctx context.Context, req *library.FooEfGetRequest) (*library.FooEf, error) {
-	q := s.db.FooEf.Query()
+func (s FooEfServiceServer) Get(ctx context.Context, req *library.FooEfGetRequest) (*library.FooEf, error) {
+	q := s.Db.FooEf.Query()
+	if req.HasSelect() {
+		FooEfSelect(q, req.GetSelect())
+	} else {
+	}
+
 	if p, err := FooEfPick(req); err != nil {
 		return nil, err
 	} else {
@@ -67,13 +72,13 @@ func (s *FooEfServiceServer) Get(ctx context.Context, req *library.FooEfGetReque
 	return v.Proto(), nil
 }
 
-func (s *FooEfServiceServer) Patch(ctx context.Context, req *library.FooEfPatchRequest) (*emptypb.Empty, error) {
-	id, err := FooEfGetId(ctx, s.db, req.GetKey())
+func (s FooEfServiceServer) Patch(ctx context.Context, req *library.FooEfPatchRequest) (*emptypb.Empty, error) {
+	id, err := FooEfGetId(ctx, s.Db, req.GetKey())
 	if err != nil {
 		return nil, err
 	}
 
-	q := s.db.FooEf.UpdateOneID(id)
+	q := s.Db.FooEf.UpdateOneID(id)
 	if req.HasEfVAuthor() {
 		q.SetEfVAuthor(req.GetEfVAuthor())
 	}
@@ -103,12 +108,12 @@ func (s *FooEfServiceServer) Patch(ctx context.Context, req *library.FooEfPatchR
 	return nil, nil
 }
 
-func (s *FooEfServiceServer) Erase(ctx context.Context, req *library.FooEfGetRequest) (*emptypb.Empty, error) {
+func (s FooEfServiceServer) Erase(ctx context.Context, req *library.FooEfGetRequest) (*emptypb.Empty, error) {
 	p, err := FooEfPick(req)
 	if err != nil {
 		return nil, err
 	}
-	if _, err := s.db.FooEf.Delete().Where(p).Exec(ctx); err != nil {
+	if _, err := s.Db.FooEf.Delete().Where(p).Exec(ctx); err != nil {
 		return nil, StatusFromEntError(err)
 	}
 
@@ -143,4 +148,48 @@ func FooEfGetId(ctx context.Context, db *ent.Client, req *library.FooEfGetReques
 	}
 
 	return v, nil
+}
+
+func FooEfSelectedFields(m *library.FooEfSelect) []string {
+	if !m.HasAll() {
+		return []string{fooef.FieldID}
+	}
+
+	vs := []string{}
+	if m.GetAll() {
+		return fooef.Columns
+	} else {
+		vs = append(vs, fooef.FieldID)
+	}
+
+	if m.GetEfVAuthor() {
+		vs = append(vs, fooef.FieldEfVAuthor)
+	}
+	if m.GetEfVdAuthor() {
+		vs = append(vs, fooef.FieldEfVdAuthor)
+	}
+	if m.GetEfVrAuthor() {
+		vs = append(vs, fooef.FieldEfVrAuthor)
+	}
+	if m.GetEfVoAuthor() {
+		vs = append(vs, fooef.FieldEfVoAuthor)
+	}
+	if m.GetEfMiAuthor() {
+		vs = append(vs, fooef.FieldEfMiAuthor)
+	}
+	if m.GetEfMsAuthor() {
+		vs = append(vs, fooef.FieldEfMsAuthor)
+	}
+	if m.GetEfMsdAuthor() {
+		vs = append(vs, fooef.FieldEfMsdAuthor)
+	}
+
+	return vs
+}
+
+func FooEfSelect(q *ent.FooEfQuery, m *library.FooEfSelect) {
+	if !m.GetAll() {
+		fields := FooEfSelectedFields(m)
+		q.Select(fields...)
+	}
 }

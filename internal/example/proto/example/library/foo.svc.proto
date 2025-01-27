@@ -93,9 +93,21 @@ message FooEfAddRequest {
 }
 
 message FooEfGetRequest {
+	FooEfSelect select = 1;
 	oneof key {
-		int64 id = 1;
+		int64 id = 2;
 	}
+}
+
+message FooEfSelect {
+	optional bool all = 1;
+	bool ef_v_author = 11;
+	bool ef_vd_author = 12;
+	bool ef_vr_author = 13;
+	bool ef_vo_author = 14;
+	bool ef_mi_author = 15;
+	bool ef_ms_author = 16;
+	bool ef_msd_author = 17;
 }
 
 message FooEfPatchRequest {
@@ -121,9 +133,21 @@ message FooKAddRequest {
 }
 
 message FooKGetRequest {
+	FooKSelect select = 1;
 	oneof key {
-		int64 id = 1;
+		int64 id = 2;
 	}
+}
+
+message FooKSelect {
+	optional bool all = 1;
+	bool k_v_time = 11;
+	bool k_vd_time = 12;
+	bool k_vr_time = 13;
+	bool k_vo_time = 14;
+	bool k_mi_time = 15;
+	bool k_ms_time = 16;
+	bool k_msd_time = 17;
 }
 
 message FooKPatchRequest {
@@ -148,9 +172,20 @@ message FooMiAddRequest {
 }
 
 message FooMiGetRequest {
+	FooMiSelect select = 1;
 	oneof key {
-		int64 id = 1;
+		int64 id = 2;
 	}
+}
+
+message FooMiSelect {
+	optional bool all = 1;
+	bool vmi_double = 11;
+	bool vmi_int64 = 12;
+	bool vmi_uint64 = 13;
+	bool vmi_bool = 14;
+	bool vmi_string = 15;
+	bool vmi_bytes = 16;
 }
 
 message FooMiPatchRequest {
@@ -174,9 +209,20 @@ message FooMsAddRequest {
 }
 
 message FooMsGetRequest {
+	FooMsSelect select = 1;
 	oneof key {
-		int64 id = 1;
+		int64 id = 2;
 	}
+}
+
+message FooMsSelect {
+	optional bool all = 1;
+	bool vms_double = 11;
+	bool vms_int64 = 12;
+	bool vms_uint64 = 13;
+	bool vms_bool = 14;
+	bool vms_string = 15;
+	bool vms_bytes = 16;
 }
 
 message FooMsPatchRequest {
@@ -200,9 +246,20 @@ message FooMsdAddRequest {
 }
 
 message FooMsdGetRequest {
+	FooMsdSelect select = 1;
 	oneof key {
-		int64 id = 1;
+		int64 id = 2;
 	}
+}
+
+message FooMsdSelect {
+	optional bool all = 1;
+	bool msd_double = 11;
+	bool msd_int64 = 12;
+	bool msd_uint64 = 13;
+	bool msd_bool = 14;
+	bool msd_string = 15;
+	bool msd_bytes = 16;
 }
 
 message FooMsdPatchRequest {
@@ -226,9 +283,20 @@ message FooVAddRequest {
 }
 
 message FooVGetRequest {
+	FooVSelect select = 1;
 	oneof key {
-		int64 id = 1;
+		int64 id = 2;
 	}
+}
+
+message FooVSelect {
+	optional bool all = 1;
+	bool v_double = 11;
+	bool v_int64 = 12;
+	bool v_uint64 = 13;
+	bool v_bool = 14;
+	bool v_string = 15;
+	bool v_bytes = 16;
 }
 
 message FooVPatchRequest {
@@ -252,9 +320,20 @@ message FooVdAddRequest {
 }
 
 message FooVdGetRequest {
+	FooVdSelect select = 1;
 	oneof key {
-		int64 id = 1;
+		int64 id = 2;
 	}
+}
+
+message FooVdSelect {
+	optional bool all = 1;
+	bool vd_double = 11;
+	bool vd_int64 = 12;
+	bool vd_uint64 = 13;
+	bool vd_bool = 14;
+	bool vd_string = 15;
+	bool vd_bytes = 16;
 }
 
 message FooVdPatchRequest {
@@ -278,9 +357,20 @@ message FooVoAddRequest {
 }
 
 message FooVoGetRequest {
+	FooVoSelect select = 1;
 	oneof key {
-		int64 id = 1;
+		int64 id = 2;
 	}
+}
+
+message FooVoSelect {
+	optional bool all = 1;
+	bool vo_double = 11;
+	bool vo_int64 = 12;
+	bool vo_uint64 = 13;
+	bool vo_bool = 14;
+	bool vo_string = 15;
+	bool vo_bytes = 16;
 }
 
 message FooVoPatchRequest {
@@ -304,9 +394,20 @@ message FooVonAddRequest {
 }
 
 message FooVonGetRequest {
+	FooVonSelect select = 1;
 	oneof key {
-		int64 id = 1;
+		int64 id = 2;
 	}
+}
+
+message FooVonSelect {
+	optional bool all = 1;
+	bool von_double = 11;
+	bool von_int64 = 12;
+	bool von_uint64 = 13;
+	bool von_bool = 14;
+	bool von_string = 15;
+	bool von_bytes = 16;
 }
 
 message FooVonPatchRequest {
@@ -336,9 +437,20 @@ message FooVrAddRequest {
 }
 
 message FooVrGetRequest {
+	FooVrSelect select = 1;
 	oneof key {
-		int64 id = 1;
+		int64 id = 2;
 	}
+}
+
+message FooVrSelect {
+	optional bool all = 1;
+	bool vr_double = 11;
+	bool vr_int64 = 12;
+	bool vr_uint64 = 13;
+	bool vr_bool = 14;
+	bool vr_string = 15;
+	bool vr_bytes = 16;
 }
 
 message FooVrPatchRequest {

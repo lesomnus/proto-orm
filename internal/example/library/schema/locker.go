@@ -19,6 +19,7 @@ func (Locker) Fields() []ent.Field {
 			Default(uuid.New).
 			Unique().
 			Immutable(),
+		field.Uint32("number"),
 	}
 }
 

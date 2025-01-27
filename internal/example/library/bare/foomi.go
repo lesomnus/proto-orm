@@ -14,16 +14,16 @@ import (
 )
 
 type FooMiServiceServer struct {
-	db *ent.Client
+	Db *ent.Client
 	library.UnimplementedFooMiServiceServer
 }
 
-func NewFooMiServiceServer(db *ent.Client) *FooMiServiceServer {
-	return &FooMiServiceServer{db: db}
+func NewFooMiServiceServer(db *ent.Client) FooMiServiceServer {
+	return FooMiServiceServer{Db: db}
 }
 
-func (s *FooMiServiceServer) Add(ctx context.Context, req *library.FooMiAddRequest) (*library.FooMi, error) {
-	q := s.db.FooMi.Create()
+func (s FooMiServiceServer) Add(ctx context.Context, req *library.FooMiAddRequest) (*library.FooMi, error) {
+	q := s.Db.FooMi.Create()
 	q.SetID(req.GetId())
 	if v := req.GetVmiDouble(); v != nil {
 		q.SetVmiDouble(v)
@@ -52,8 +52,13 @@ func (s *FooMiServiceServer) Add(ctx context.Context, req *library.FooMiAddReque
 	return v.Proto(), nil
 }
 
-func (s *FooMiServiceServer) Get(ctx context.Context, req *library.FooMiGetRequest) (*library.FooMi, error) {
-	q := s.db.FooMi.Query()
+func (s FooMiServiceServer) Get(ctx context.Context, req *library.FooMiGetRequest) (*library.FooMi, error) {
+	q := s.Db.FooMi.Query()
+	if req.HasSelect() {
+		FooMiSelect(q, req.GetSelect())
+	} else {
+	}
+
 	if p, err := FooMiPick(req); err != nil {
 		return nil, err
 	} else {
@@ -68,13 +73,13 @@ func (s *FooMiServiceServer) Get(ctx context.Context, req *library.FooMiGetReque
 	return v.Proto(), nil
 }
 
-func (s *FooMiServiceServer) Patch(ctx context.Context, req *library.FooMiPatchRequest) (*emptypb.Empty, error) {
-	id, err := FooMiGetId(ctx, s.db, req.GetKey())
+func (s FooMiServiceServer) Patch(ctx context.Context, req *library.FooMiPatchRequest) (*emptypb.Empty, error) {
+	id, err := FooMiGetId(ctx, s.Db, req.GetKey())
 	if err != nil {
 		return nil, err
 	}
 
-	q := s.db.FooMi.UpdateOneID(id)
+	q := s.Db.FooMi.UpdateOneID(id)
 	if v := req.GetVmiDouble(); v != nil {
 		q.SetVmiDouble(v)
 	}
@@ -101,12 +106,12 @@ func (s *FooMiServiceServer) Patch(ctx context.Context, req *library.FooMiPatchR
 	return nil, nil
 }
 
-func (s *FooMiServiceServer) Erase(ctx context.Context, req *library.FooMiGetRequest) (*emptypb.Empty, error) {
+func (s FooMiServiceServer) Erase(ctx context.Context, req *library.FooMiGetRequest) (*emptypb.Empty, error) {
 	p, err := FooMiPick(req)
 	if err != nil {
 		return nil, err
 	}
-	if _, err := s.db.FooMi.Delete().Where(p).Exec(ctx); err != nil {
+	if _, err := s.Db.FooMi.Delete().Where(p).Exec(ctx); err != nil {
 		return nil, StatusFromEntError(err)
 	}
 
@@ -141,4 +146,45 @@ func FooMiGetId(ctx context.Context, db *ent.Client, req *library.FooMiGetReques
 	}
 
 	return v, nil
+}
+
+func FooMiSelectedFields(m *library.FooMiSelect) []string {
+	if !m.HasAll() {
+		return []string{foomi.FieldID}
+	}
+
+	vs := []string{}
+	if m.GetAll() {
+		return foomi.Columns
+	} else {
+		vs = append(vs, foomi.FieldID)
+	}
+
+	if m.GetVmiDouble() {
+		vs = append(vs, foomi.FieldVmiDouble)
+	}
+	if m.GetVmiInt64() {
+		vs = append(vs, foomi.FieldVmiInt64)
+	}
+	if m.GetVmiUint64() {
+		vs = append(vs, foomi.FieldVmiUint64)
+	}
+	if m.GetVmiBool() {
+		vs = append(vs, foomi.FieldVmiBool)
+	}
+	if m.GetVmiString() {
+		vs = append(vs, foomi.FieldVmiString)
+	}
+	if m.GetVmiBytes() {
+		vs = append(vs, foomi.FieldVmiBytes)
+	}
+
+	return vs
+}
+
+func FooMiSelect(q *ent.FooMiQuery, m *library.FooMiSelect) {
+	if !m.GetAll() {
+		fields := FooMiSelectedFields(m)
+		q.Select(fields...)
+	}
 }

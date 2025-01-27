@@ -16,16 +16,16 @@ import (
 )
 
 type MemberServiceServer struct {
-	db *ent.Client
+	Db *ent.Client
 	library.UnimplementedMemberServiceServer
 }
 
-func NewMemberServiceServer(db *ent.Client) *MemberServiceServer {
-	return &MemberServiceServer{db: db}
+func NewMemberServiceServer(db *ent.Client) MemberServiceServer {
+	return MemberServiceServer{Db: db}
 }
 
-func (s *MemberServiceServer) Add(ctx context.Context, req *library.MemberAddRequest) (*library.Member, error) {
-	q := s.db.Member.Create()
+func (s MemberServiceServer) Add(ctx context.Context, req *library.MemberAddRequest) (*library.Member, error) {
+	q := s.Db.Member.Create()
 	if req.HasId() {
 		if v, err := uuid.FromBytes(req.GetId()); err != nil {
 			return nil, status.Errorf(codes.InvalidArgument, "id: %s", err)
@@ -42,14 +42,14 @@ func (s *MemberServiceServer) Add(ctx context.Context, req *library.MemberAddReq
 	q.SetProfile(req.GetProfile())
 	q.SetLevel(int(req.GetLevel()))
 	if v := req.GetLocker(); v != nil {
-		if id, err := LockerGetId(ctx, s.db, v); err != nil {
+		if id, err := LockerGetId(ctx, s.Db, v); err != nil {
 			return nil, err
 		} else {
 			q.SetLockerID(id)
 		}
 	}
 	if v := req.GetParent(); v != nil {
-		if id, err := MemberGetId(ctx, s.db, v); err != nil {
+		if id, err := MemberGetId(ctx, s.Db, v); err != nil {
 			return nil, err
 		} else {
 			q.SetParentID(id)
@@ -67,20 +67,24 @@ func (s *MemberServiceServer) Add(ctx context.Context, req *library.MemberAddReq
 	return v.Proto(), nil
 }
 
-func (s *MemberServiceServer) Get(ctx context.Context, req *library.MemberGetRequest) (*library.Member, error) {
-	q := s.db.Member.Query()
+func (s MemberServiceServer) Get(ctx context.Context, req *library.MemberGetRequest) (*library.Member, error) {
+	q := s.Db.Member.Query()
+	if req.HasSelect() {
+		MemberSelect(q, req.GetSelect())
+	} else {
+		q.WithLocker(func(q *ent.LockerQuery) {
+			q.Select(locker.FieldID)
+		})
+		q.WithParent(func(q *ent.MemberQuery) {
+			q.Select(member.FieldID)
+		})
+	}
+
 	if p, err := MemberPick(req); err != nil {
 		return nil, err
 	} else {
 		q.Where(p)
 	}
-
-	q.WithLocker(func(q *ent.LockerQuery) {
-		q.Select(locker.FieldID)
-	})
-	q.WithParent(func(q *ent.MemberQuery) {
-		q.Select(member.FieldID)
-	})
 
 	v, err := q.Only(ctx)
 	if err != nil {
@@ -90,13 +94,13 @@ func (s *MemberServiceServer) Get(ctx context.Context, req *library.MemberGetReq
 	return v.Proto(), nil
 }
 
-func (s *MemberServiceServer) Patch(ctx context.Context, req *library.MemberPatchRequest) (*emptypb.Empty, error) {
-	id, err := MemberGetId(ctx, s.db, req.GetKey())
+func (s MemberServiceServer) Patch(ctx context.Context, req *library.MemberPatchRequest) (*emptypb.Empty, error) {
+	id, err := MemberGetId(ctx, s.Db, req.GetKey())
 	if err != nil {
 		return nil, err
 	}
 
-	q := s.db.Member.UpdateOneID(id)
+	q := s.Db.Member.UpdateOneID(id)
 	if req.HasName() {
 		q.SetName(req.GetName())
 	}
@@ -111,14 +115,14 @@ func (s *MemberServiceServer) Patch(ctx context.Context, req *library.MemberPatc
 	}
 	if req.GetLockerNull() {
 		q.ClearLocker()
-	} else if id, err := MemberGetId(ctx, s.db, req.GetKey()); err != nil {
+	} else if id, err := MemberGetId(ctx, s.Db, req.GetKey()); err != nil {
 		return nil, err
 	} else {
 		q.SetLockerID(id)
 	}
 	if req.GetParentNull() {
 		q.ClearParent()
-	} else if id, err := MemberGetId(ctx, s.db, req.GetKey()); err != nil {
+	} else if id, err := MemberGetId(ctx, s.Db, req.GetKey()); err != nil {
 		return nil, err
 	} else {
 		q.SetParentID(id)
@@ -131,12 +135,12 @@ func (s *MemberServiceServer) Patch(ctx context.Context, req *library.MemberPatc
 	return nil, nil
 }
 
-func (s *MemberServiceServer) Erase(ctx context.Context, req *library.MemberGetRequest) (*emptypb.Empty, error) {
+func (s MemberServiceServer) Erase(ctx context.Context, req *library.MemberGetRequest) (*emptypb.Empty, error) {
 	p, err := MemberPick(req)
 	if err != nil {
 		return nil, err
 	}
-	if _, err := s.db.Member.Delete().Where(p).Exec(ctx); err != nil {
+	if _, err := s.Db.Member.Delete().Where(p).Exec(ctx); err != nil {
 		return nil, StatusFromEntError(err)
 	}
 
@@ -189,4 +193,57 @@ func MemberGetId(ctx context.Context, db *ent.Client, req *library.MemberGetRequ
 	}
 
 	return v, nil
+}
+
+func MemberSelectedFields(m *library.MemberSelect) []string {
+	if !m.HasAll() {
+		return []string{member.FieldID}
+	}
+
+	vs := []string{}
+	if m.GetAll() {
+		return member.Columns
+	} else {
+		vs = append(vs, member.FieldID)
+	}
+
+	if m.GetName() {
+		vs = append(vs, member.FieldName)
+	}
+	if m.GetLabels() {
+		vs = append(vs, member.FieldLabels)
+	}
+	if m.GetProfile() {
+		vs = append(vs, member.FieldProfile)
+	}
+	if m.GetLevel() {
+		vs = append(vs, member.FieldLevel)
+	}
+	if m.GetDateCreated() {
+		vs = append(vs, member.FieldDateCreated)
+	}
+
+	return vs
+}
+
+func MemberSelect(q *ent.MemberQuery, m *library.MemberSelect) {
+	if !m.GetAll() {
+		fields := MemberSelectedFields(m)
+		q.Select(fields...)
+	}
+	if m.HasLocker() {
+		q.WithLocker(func(q *ent.LockerQuery) {
+			LockerSelect(q, m.GetLocker())
+		})
+	}
+	if m.HasParent() {
+		q.WithParent(func(q *ent.MemberQuery) {
+			MemberSelect(q, m.GetParent())
+		})
+	}
+	if m.HasChildren() {
+		q.WithChildren(func(q *ent.MemberQuery) {
+			MemberSelect(q, m.GetChildren())
+		})
+	}
 }

@@ -26,7 +26,19 @@ message LoanAddRequest {
 }
 
 message LoanGetRequest {
+	LoanSelect select = 1;
 	oneof key {
-		bytes id = 1;
+		bytes id = 2;
 	}
+}
+
+message LoanSelect {
+	optional bool all = 1;
+	bool subject_id = 2;
+	optional BookSelect subject = 3;
+	bool borrower_id = 4;
+	optional MemberSelect borrower = 5;
+	bool date_due = 13;
+	bool date_return = 14;
+	bool date_created = 15;
 }

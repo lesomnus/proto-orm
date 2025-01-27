@@ -231,6 +231,7 @@ func (e *Locker) Proto() *library.Locker {
 	if v := e.Edges.Owner; v != nil {
 		m.SetOwner(v.Proto())
 	}
+	m.SetNumber(e.Number)
 
 	return m
 }

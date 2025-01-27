@@ -16,16 +16,16 @@ import (
 )
 
 type MembershipServiceServer struct {
-	db *ent.Client
+	Db *ent.Client
 	library.UnimplementedMembershipServiceServer
 }
 
-func NewMembershipServiceServer(db *ent.Client) *MembershipServiceServer {
-	return &MembershipServiceServer{db: db}
+func NewMembershipServiceServer(db *ent.Client) MembershipServiceServer {
+	return MembershipServiceServer{Db: db}
 }
 
-func (s *MembershipServiceServer) Add(ctx context.Context, req *library.MembershipAddRequest) (*library.Membership, error) {
-	q := s.db.Membership.Create()
+func (s MembershipServiceServer) Add(ctx context.Context, req *library.MembershipAddRequest) (*library.Membership, error) {
+	q := s.Db.Membership.Create()
 	if req.HasId() {
 		if v, err := uuid.FromBytes(req.GetId()); err != nil {
 			return nil, status.Errorf(codes.InvalidArgument, "id: %s", err)
@@ -33,7 +33,7 @@ func (s *MembershipServiceServer) Add(ctx context.Context, req *library.Membersh
 			q.SetID(v)
 		}
 	}
-	if id, err := MemberGetId(ctx, s.db, req.GetMember()); err != nil {
+	if id, err := MemberGetId(ctx, s.Db, req.GetMember()); err != nil {
 		return nil, err
 	} else {
 		q.SetMemberID(id)
@@ -48,17 +48,21 @@ func (s *MembershipServiceServer) Add(ctx context.Context, req *library.Membersh
 	return v.Proto(), nil
 }
 
-func (s *MembershipServiceServer) Get(ctx context.Context, req *library.MembershipGetRequest) (*library.Membership, error) {
-	q := s.db.Membership.Query()
+func (s MembershipServiceServer) Get(ctx context.Context, req *library.MembershipGetRequest) (*library.Membership, error) {
+	q := s.Db.Membership.Query()
+	if req.HasSelect() {
+		MembershipSelect(q, req.GetSelect())
+	} else {
+		q.WithMember(func(q *ent.MemberQuery) {
+			q.Select(member.FieldID)
+		})
+	}
+
 	if p, err := MembershipPick(req); err != nil {
 		return nil, err
 	} else {
 		q.Where(p)
 	}
-
-	q.WithMember(func(q *ent.MemberQuery) {
-		q.Select(member.FieldID)
-	})
 
 	v, err := q.Only(ctx)
 	if err != nil {
@@ -68,14 +72,14 @@ func (s *MembershipServiceServer) Get(ctx context.Context, req *library.Membersh
 	return v.Proto(), nil
 }
 
-func (s *MembershipServiceServer) Patch(ctx context.Context, req *library.MembershipPatchRequest) (*emptypb.Empty, error) {
-	id, err := MembershipGetId(ctx, s.db, req.GetKey())
+func (s MembershipServiceServer) Patch(ctx context.Context, req *library.MembershipPatchRequest) (*emptypb.Empty, error) {
+	id, err := MembershipGetId(ctx, s.Db, req.GetKey())
 	if err != nil {
 		return nil, err
 	}
 
-	q := s.db.Membership.UpdateOneID(id)
-	if id, err := MembershipGetId(ctx, s.db, req.GetKey()); err != nil {
+	q := s.Db.Membership.UpdateOneID(id)
+	if id, err := MembershipGetId(ctx, s.Db, req.GetKey()); err != nil {
 		return nil, err
 	} else {
 		q.SetMemberID(id)
@@ -91,12 +95,12 @@ func (s *MembershipServiceServer) Patch(ctx context.Context, req *library.Member
 	return nil, nil
 }
 
-func (s *MembershipServiceServer) Erase(ctx context.Context, req *library.MembershipGetRequest) (*emptypb.Empty, error) {
+func (s MembershipServiceServer) Erase(ctx context.Context, req *library.MembershipGetRequest) (*emptypb.Empty, error) {
 	p, err := MembershipPick(req)
 	if err != nil {
 		return nil, err
 	}
-	if _, err := s.db.Membership.Delete().Where(p).Exec(ctx); err != nil {
+	if _, err := s.Db.Membership.Delete().Where(p).Exec(ctx); err != nil {
 		return nil, StatusFromEntError(err)
 	}
 
@@ -139,4 +143,35 @@ func MembershipGetId(ctx context.Context, db *ent.Client, req *library.Membershi
 	}
 
 	return v, nil
+}
+
+func MembershipSelectedFields(m *library.MembershipSelect) []string {
+	if !m.HasAll() {
+		return []string{membership.FieldID}
+	}
+
+	vs := []string{}
+	if m.GetAll() {
+		return membership.Columns
+	} else {
+		vs = append(vs, membership.FieldID)
+	}
+
+	if m.GetPoint() {
+		vs = append(vs, membership.FieldPoint)
+	}
+
+	return vs
+}
+
+func MembershipSelect(q *ent.MembershipQuery, m *library.MembershipSelect) {
+	if !m.GetAll() {
+		fields := MembershipSelectedFields(m)
+		q.Select(fields...)
+	}
+	if m.HasMember() {
+		q.WithMember(func(q *ent.MemberQuery) {
+			MemberSelect(q, m.GetMember())
+		})
+	}
 }

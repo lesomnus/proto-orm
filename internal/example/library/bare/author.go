@@ -15,16 +15,16 @@ import (
 )
 
 type AuthorServiceServer struct {
-	db *ent.Client
+	Db *ent.Client
 	library.UnimplementedAuthorServiceServer
 }
 
-func NewAuthorServiceServer(db *ent.Client) *AuthorServiceServer {
-	return &AuthorServiceServer{db: db}
+func NewAuthorServiceServer(db *ent.Client) AuthorServiceServer {
+	return AuthorServiceServer{Db: db}
 }
 
-func (s *AuthorServiceServer) Add(ctx context.Context, req *library.AuthorAddRequest) (*library.Author, error) {
-	q := s.db.Author.Create()
+func (s AuthorServiceServer) Add(ctx context.Context, req *library.AuthorAddRequest) (*library.Author, error) {
+	q := s.Db.Author.Create()
 	if req.HasId() {
 		if v, err := uuid.FromBytes(req.GetId()); err != nil {
 			return nil, status.Errorf(codes.InvalidArgument, "id: %s", err)
@@ -52,8 +52,13 @@ func (s *AuthorServiceServer) Add(ctx context.Context, req *library.AuthorAddReq
 	return v.Proto(), nil
 }
 
-func (s *AuthorServiceServer) Get(ctx context.Context, req *library.AuthorGetRequest) (*library.Author, error) {
-	q := s.db.Author.Query()
+func (s AuthorServiceServer) Get(ctx context.Context, req *library.AuthorGetRequest) (*library.Author, error) {
+	q := s.Db.Author.Query()
+	if req.HasSelect() {
+		AuthorSelect(q, req.GetSelect())
+	} else {
+	}
+
 	if p, err := AuthorPick(req); err != nil {
 		return nil, err
 	} else {
@@ -68,13 +73,13 @@ func (s *AuthorServiceServer) Get(ctx context.Context, req *library.AuthorGetReq
 	return v.Proto(), nil
 }
 
-func (s *AuthorServiceServer) Patch(ctx context.Context, req *library.AuthorPatchRequest) (*emptypb.Empty, error) {
-	id, err := AuthorGetId(ctx, s.db, req.GetKey())
+func (s AuthorServiceServer) Patch(ctx context.Context, req *library.AuthorPatchRequest) (*emptypb.Empty, error) {
+	id, err := AuthorGetId(ctx, s.Db, req.GetKey())
 	if err != nil {
 		return nil, err
 	}
 
-	q := s.db.Author.UpdateOneID(id)
+	q := s.Db.Author.UpdateOneID(id)
 	if req.HasAlias() {
 		q.SetAlias(req.GetAlias())
 	}
@@ -95,12 +100,12 @@ func (s *AuthorServiceServer) Patch(ctx context.Context, req *library.AuthorPatc
 	return nil, nil
 }
 
-func (s *AuthorServiceServer) Erase(ctx context.Context, req *library.AuthorGetRequest) (*emptypb.Empty, error) {
+func (s AuthorServiceServer) Erase(ctx context.Context, req *library.AuthorGetRequest) (*emptypb.Empty, error) {
 	p, err := AuthorPick(req)
 	if err != nil {
 		return nil, err
 	}
-	if _, err := s.db.Author.Delete().Where(p).Exec(ctx); err != nil {
+	if _, err := s.Db.Author.Delete().Where(p).Exec(ctx); err != nil {
 		return nil, StatusFromEntError(err)
 	}
 
@@ -145,4 +150,47 @@ func AuthorGetId(ctx context.Context, db *ent.Client, req *library.AuthorGetRequ
 	}
 
 	return v, nil
+}
+
+func AuthorSelectedFields(m *library.AuthorSelect) []string {
+	if !m.HasAll() {
+		return []string{author.FieldID}
+	}
+
+	vs := []string{}
+	if m.GetAll() {
+		return author.Columns
+	} else {
+		vs = append(vs, author.FieldID)
+	}
+
+	if m.GetAlias() {
+		vs = append(vs, author.FieldAlias)
+	}
+	if m.GetName() {
+		vs = append(vs, author.FieldName)
+	}
+	if m.GetLabels() {
+		vs = append(vs, author.FieldLabels)
+	}
+	if m.GetProfile() {
+		vs = append(vs, author.FieldProfile)
+	}
+	if m.GetDateCreated() {
+		vs = append(vs, author.FieldDateCreated)
+	}
+
+	return vs
+}
+
+func AuthorSelect(q *ent.AuthorQuery, m *library.AuthorSelect) {
+	if !m.GetAll() {
+		fields := AuthorSelectedFields(m)
+		q.Select(fields...)
+	}
+	if m.HasBooks() {
+		q.WithBooks(func(q *ent.BookQuery) {
+			BookSelect(q, m.GetBooks())
+		})
+	}
 }

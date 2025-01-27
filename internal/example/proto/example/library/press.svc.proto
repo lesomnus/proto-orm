@@ -26,10 +26,18 @@ message PressAddRequest {
 }
 
 message PressGetRequest {
+	PressSelect select = 1;
 	oneof key {
-		bytes id = 1;
-		example.library.PressGetBySerialNumber serial_number = 2;
+		bytes id = 2;
+		example.library.PressGetBySerialNumber serial_number = 3;
 	}
+}
+
+message PressSelect {
+	optional bool all = 1;
+	optional BookSelect book = 2;
+	bool serial_number = 3;
+	bool date_created = 15;
 }
 
 message PressGetBySerialNumber {

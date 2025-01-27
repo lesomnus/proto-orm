@@ -27,10 +27,19 @@ message LikeAddRequest {
 }
 
 message LikeGetRequest {
+	LikeSelect select = 1;
 	oneof key {
-		bytes id = 1;
-		example.library.LikeGetByHolders holders = 2;
+		bytes id = 2;
+		example.library.LikeGetByHolders holders = 3;
 	}
+}
+
+message LikeSelect {
+	optional bool all = 1;
+	bool subject_id = 2;
+	optional BookSelect subject = 3;
+	optional MemberSelect actor = 5;
+	bool date_created = 15;
 }
 
 message LikeGetByHolders {

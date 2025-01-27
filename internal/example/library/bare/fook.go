@@ -14,16 +14,16 @@ import (
 )
 
 type FooKServiceServer struct {
-	db *ent.Client
+	Db *ent.Client
 	library.UnimplementedFooKServiceServer
 }
 
-func NewFooKServiceServer(db *ent.Client) *FooKServiceServer {
-	return &FooKServiceServer{db: db}
+func NewFooKServiceServer(db *ent.Client) FooKServiceServer {
+	return FooKServiceServer{Db: db}
 }
 
-func (s *FooKServiceServer) Add(ctx context.Context, req *library.FooKAddRequest) (*library.FooK, error) {
-	q := s.db.FooK.Create()
+func (s FooKServiceServer) Add(ctx context.Context, req *library.FooKAddRequest) (*library.FooK, error) {
+	q := s.Db.FooK.Create()
 	q.SetID(req.GetId())
 	q.SetKVTime(req.GetKVTime().AsTime())
 	if req.HasKVdTime() {
@@ -51,8 +51,13 @@ func (s *FooKServiceServer) Add(ctx context.Context, req *library.FooKAddRequest
 	return v.Proto(), nil
 }
 
-func (s *FooKServiceServer) Get(ctx context.Context, req *library.FooKGetRequest) (*library.FooK, error) {
-	q := s.db.FooK.Query()
+func (s FooKServiceServer) Get(ctx context.Context, req *library.FooKGetRequest) (*library.FooK, error) {
+	q := s.Db.FooK.Query()
+	if req.HasSelect() {
+		FooKSelect(q, req.GetSelect())
+	} else {
+	}
+
 	if p, err := FooKPick(req); err != nil {
 		return nil, err
 	} else {
@@ -67,13 +72,13 @@ func (s *FooKServiceServer) Get(ctx context.Context, req *library.FooKGetRequest
 	return v.Proto(), nil
 }
 
-func (s *FooKServiceServer) Patch(ctx context.Context, req *library.FooKPatchRequest) (*emptypb.Empty, error) {
-	id, err := FooKGetId(ctx, s.db, req.GetKey())
+func (s FooKServiceServer) Patch(ctx context.Context, req *library.FooKPatchRequest) (*emptypb.Empty, error) {
+	id, err := FooKGetId(ctx, s.Db, req.GetKey())
 	if err != nil {
 		return nil, err
 	}
 
-	q := s.db.FooK.UpdateOneID(id)
+	q := s.Db.FooK.UpdateOneID(id)
 	if req.HasKVTime() {
 		q.SetKVTime(req.GetKVTime().AsTime())
 	}
@@ -103,12 +108,12 @@ func (s *FooKServiceServer) Patch(ctx context.Context, req *library.FooKPatchReq
 	return nil, nil
 }
 
-func (s *FooKServiceServer) Erase(ctx context.Context, req *library.FooKGetRequest) (*emptypb.Empty, error) {
+func (s FooKServiceServer) Erase(ctx context.Context, req *library.FooKGetRequest) (*emptypb.Empty, error) {
 	p, err := FooKPick(req)
 	if err != nil {
 		return nil, err
 	}
-	if _, err := s.db.FooK.Delete().Where(p).Exec(ctx); err != nil {
+	if _, err := s.Db.FooK.Delete().Where(p).Exec(ctx); err != nil {
 		return nil, StatusFromEntError(err)
 	}
 
@@ -143,4 +148,48 @@ func FooKGetId(ctx context.Context, db *ent.Client, req *library.FooKGetRequest)
 	}
 
 	return v, nil
+}
+
+func FooKSelectedFields(m *library.FooKSelect) []string {
+	if !m.HasAll() {
+		return []string{fook.FieldID}
+	}
+
+	vs := []string{}
+	if m.GetAll() {
+		return fook.Columns
+	} else {
+		vs = append(vs, fook.FieldID)
+	}
+
+	if m.GetKVTime() {
+		vs = append(vs, fook.FieldKVTime)
+	}
+	if m.GetKVdTime() {
+		vs = append(vs, fook.FieldKVdTime)
+	}
+	if m.GetKVrTime() {
+		vs = append(vs, fook.FieldKVrTime)
+	}
+	if m.GetKVoTime() {
+		vs = append(vs, fook.FieldKVoTime)
+	}
+	if m.GetKMiTime() {
+		vs = append(vs, fook.FieldKMiTime)
+	}
+	if m.GetKMsTime() {
+		vs = append(vs, fook.FieldKMsTime)
+	}
+	if m.GetKMsdTime() {
+		vs = append(vs, fook.FieldKMsdTime)
+	}
+
+	return vs
+}
+
+func FooKSelect(q *ent.FooKQuery, m *library.FooKSelect) {
+	if !m.GetAll() {
+		fields := FooKSelectedFields(m)
+		q.Select(fields...)
+	}
 }

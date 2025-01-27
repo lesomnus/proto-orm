@@ -17,16 +17,16 @@ import (
 )
 
 type LikeServiceServer struct {
-	db *ent.Client
+	Db *ent.Client
 	library.UnimplementedLikeServiceServer
 }
 
-func NewLikeServiceServer(db *ent.Client) *LikeServiceServer {
-	return &LikeServiceServer{db: db}
+func NewLikeServiceServer(db *ent.Client) LikeServiceServer {
+	return LikeServiceServer{Db: db}
 }
 
-func (s *LikeServiceServer) Add(ctx context.Context, req *library.LikeAddRequest) (*library.Like, error) {
-	q := s.db.Like.Create()
+func (s LikeServiceServer) Add(ctx context.Context, req *library.LikeAddRequest) (*library.Like, error) {
+	q := s.Db.Like.Create()
 	if req.HasId() {
 		if v, err := uuid.FromBytes(req.GetId()); err != nil {
 			return nil, status.Errorf(codes.InvalidArgument, "id: %s", err)
@@ -34,12 +34,12 @@ func (s *LikeServiceServer) Add(ctx context.Context, req *library.LikeAddRequest
 			q.SetID(v)
 		}
 	}
-	if id, err := BookGetId(ctx, s.db, req.GetSubject()); err != nil {
+	if id, err := BookGetId(ctx, s.Db, req.GetSubject()); err != nil {
 		return nil, err
 	} else {
 		q.SetSubjectID(id)
 	}
-	if id, err := MemberGetId(ctx, s.db, req.GetActor()); err != nil {
+	if id, err := MemberGetId(ctx, s.Db, req.GetActor()); err != nil {
 		return nil, err
 	} else {
 		q.SetActorID(id)
@@ -56,20 +56,24 @@ func (s *LikeServiceServer) Add(ctx context.Context, req *library.LikeAddRequest
 	return v.Proto(), nil
 }
 
-func (s *LikeServiceServer) Get(ctx context.Context, req *library.LikeGetRequest) (*library.Like, error) {
-	q := s.db.Like.Query()
+func (s LikeServiceServer) Get(ctx context.Context, req *library.LikeGetRequest) (*library.Like, error) {
+	q := s.Db.Like.Query()
+	if req.HasSelect() {
+		LikeSelect(q, req.GetSelect())
+	} else {
+		q.WithSubject(func(q *ent.BookQuery) {
+			q.Select(book.FieldID)
+		})
+		q.WithActor(func(q *ent.MemberQuery) {
+			q.Select(member.FieldID)
+		})
+	}
+
 	if p, err := LikePick(req); err != nil {
 		return nil, err
 	} else {
 		q.Where(p)
 	}
-
-	q.WithSubject(func(q *ent.BookQuery) {
-		q.Select(book.FieldID)
-	})
-	q.WithActor(func(q *ent.MemberQuery) {
-		q.Select(member.FieldID)
-	})
 
 	v, err := q.Only(ctx)
 	if err != nil {
@@ -79,13 +83,13 @@ func (s *LikeServiceServer) Get(ctx context.Context, req *library.LikeGetRequest
 	return v.Proto(), nil
 }
 
-func (s *LikeServiceServer) Patch(ctx context.Context, req *library.LikePatchRequest) (*emptypb.Empty, error) {
-	id, err := LikeGetId(ctx, s.db, req.GetKey())
+func (s LikeServiceServer) Patch(ctx context.Context, req *library.LikePatchRequest) (*emptypb.Empty, error) {
+	id, err := LikeGetId(ctx, s.Db, req.GetKey())
 	if err != nil {
 		return nil, err
 	}
 
-	q := s.db.Like.UpdateOneID(id)
+	q := s.Db.Like.UpdateOneID(id)
 
 	if _, err := q.Save(ctx); err != nil {
 		return nil, StatusFromEntError(err)
@@ -94,12 +98,12 @@ func (s *LikeServiceServer) Patch(ctx context.Context, req *library.LikePatchReq
 	return nil, nil
 }
 
-func (s *LikeServiceServer) Erase(ctx context.Context, req *library.LikeGetRequest) (*emptypb.Empty, error) {
+func (s LikeServiceServer) Erase(ctx context.Context, req *library.LikeGetRequest) (*emptypb.Empty, error) {
 	p, err := LikePick(req)
 	if err != nil {
 		return nil, err
 	}
-	if _, err := s.db.Like.Delete().Where(p).Exec(ctx); err != nil {
+	if _, err := s.Db.Like.Delete().Where(p).Exec(ctx); err != nil {
 		return nil, StatusFromEntError(err)
 	}
 
@@ -156,4 +160,43 @@ func LikeGetId(ctx context.Context, db *ent.Client, req *library.LikeGetRequest)
 	}
 
 	return v, nil
+}
+
+func LikeSelectedFields(m *library.LikeSelect) []string {
+	if !m.HasAll() {
+		return []string{like.FieldID}
+	}
+
+	vs := []string{}
+	if m.GetAll() {
+		return like.Columns
+	} else {
+		vs = append(vs, like.FieldID)
+	}
+
+	if m.GetSubjectId() {
+		vs = append(vs, like.FieldSubjectID)
+	}
+	if m.GetDateCreated() {
+		vs = append(vs, like.FieldDateCreated)
+	}
+
+	return vs
+}
+
+func LikeSelect(q *ent.LikeQuery, m *library.LikeSelect) {
+	if !m.GetAll() {
+		fields := LikeSelectedFields(m)
+		q.Select(fields...)
+	}
+	if m.HasSubject() {
+		q.WithSubject(func(q *ent.BookQuery) {
+			BookSelect(q, m.GetSubject())
+		})
+	}
+	if m.HasActor() {
+		q.WithActor(func(q *ent.MemberQuery) {
+			MemberSelect(q, m.GetActor())
+		})
+	}
 }

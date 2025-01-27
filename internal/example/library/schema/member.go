@@ -25,7 +25,7 @@ func (Member) Fields() []ent.Field {
 		field.String("name").
 			Default(""),
 		field.JSON("labels", map[string]string{}).
-			Optional(),
+			Default(map[string]string{}),
 		field.JSON("profile", &library.Profile{}),
 		field.Int("level"),
 		field.Time("date_created").

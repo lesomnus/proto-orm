@@ -16,16 +16,16 @@ import (
 )
 
 type LockerServiceServer struct {
-	db *ent.Client
+	Db *ent.Client
 	library.UnimplementedLockerServiceServer
 }
 
-func NewLockerServiceServer(db *ent.Client) *LockerServiceServer {
-	return &LockerServiceServer{db: db}
+func NewLockerServiceServer(db *ent.Client) LockerServiceServer {
+	return LockerServiceServer{Db: db}
 }
 
-func (s *LockerServiceServer) Add(ctx context.Context, req *library.LockerAddRequest) (*library.Locker, error) {
-	q := s.db.Locker.Create()
+func (s LockerServiceServer) Add(ctx context.Context, req *library.LockerAddRequest) (*library.Locker, error) {
+	q := s.Db.Locker.Create()
 	if req.HasId() {
 		if v, err := uuid.FromBytes(req.GetId()); err != nil {
 			return nil, status.Errorf(codes.InvalidArgument, "id: %s", err)
@@ -34,12 +34,13 @@ func (s *LockerServiceServer) Add(ctx context.Context, req *library.LockerAddReq
 		}
 	}
 	if v := req.GetOwner(); v != nil {
-		if id, err := MemberGetId(ctx, s.db, v); err != nil {
+		if id, err := MemberGetId(ctx, s.Db, v); err != nil {
 			return nil, err
 		} else {
 			q.SetOwnerID(id)
 		}
 	}
+	q.SetNumber(req.GetNumber())
 
 	v, err := q.Save(ctx)
 	if err != nil {
@@ -49,17 +50,21 @@ func (s *LockerServiceServer) Add(ctx context.Context, req *library.LockerAddReq
 	return v.Proto(), nil
 }
 
-func (s *LockerServiceServer) Get(ctx context.Context, req *library.LockerGetRequest) (*library.Locker, error) {
-	q := s.db.Locker.Query()
+func (s LockerServiceServer) Get(ctx context.Context, req *library.LockerGetRequest) (*library.Locker, error) {
+	q := s.Db.Locker.Query()
+	if req.HasSelect() {
+		LockerSelect(q, req.GetSelect())
+	} else {
+		q.WithOwner(func(q *ent.MemberQuery) {
+			q.Select(member.FieldID)
+		})
+	}
+
 	if p, err := LockerPick(req); err != nil {
 		return nil, err
 	} else {
 		q.Where(p)
 	}
-
-	q.WithOwner(func(q *ent.MemberQuery) {
-		q.Select(member.FieldID)
-	})
 
 	v, err := q.Only(ctx)
 	if err != nil {
@@ -69,19 +74,22 @@ func (s *LockerServiceServer) Get(ctx context.Context, req *library.LockerGetReq
 	return v.Proto(), nil
 }
 
-func (s *LockerServiceServer) Patch(ctx context.Context, req *library.LockerPatchRequest) (*emptypb.Empty, error) {
-	id, err := LockerGetId(ctx, s.db, req.GetKey())
+func (s LockerServiceServer) Patch(ctx context.Context, req *library.LockerPatchRequest) (*emptypb.Empty, error) {
+	id, err := LockerGetId(ctx, s.Db, req.GetKey())
 	if err != nil {
 		return nil, err
 	}
 
-	q := s.db.Locker.UpdateOneID(id)
+	q := s.Db.Locker.UpdateOneID(id)
 	if req.GetOwnerNull() {
 		q.ClearOwner()
-	} else if id, err := LockerGetId(ctx, s.db, req.GetKey()); err != nil {
+	} else if id, err := LockerGetId(ctx, s.Db, req.GetKey()); err != nil {
 		return nil, err
 	} else {
 		q.SetOwnerID(id)
+	}
+	if req.HasNumber() {
+		q.SetNumber(req.GetNumber())
 	}
 
 	if _, err := q.Save(ctx); err != nil {
@@ -91,12 +99,12 @@ func (s *LockerServiceServer) Patch(ctx context.Context, req *library.LockerPatc
 	return nil, nil
 }
 
-func (s *LockerServiceServer) Erase(ctx context.Context, req *library.LockerGetRequest) (*emptypb.Empty, error) {
+func (s LockerServiceServer) Erase(ctx context.Context, req *library.LockerGetRequest) (*emptypb.Empty, error) {
 	p, err := LockerPick(req)
 	if err != nil {
 		return nil, err
 	}
-	if _, err := s.db.Locker.Delete().Where(p).Exec(ctx); err != nil {
+	if _, err := s.Db.Locker.Delete().Where(p).Exec(ctx); err != nil {
 		return nil, StatusFromEntError(err)
 	}
 
@@ -139,4 +147,35 @@ func LockerGetId(ctx context.Context, db *ent.Client, req *library.LockerGetRequ
 	}
 
 	return v, nil
+}
+
+func LockerSelectedFields(m *library.LockerSelect) []string {
+	if !m.HasAll() {
+		return []string{locker.FieldID}
+	}
+
+	vs := []string{}
+	if m.GetAll() {
+		return locker.Columns
+	} else {
+		vs = append(vs, locker.FieldID)
+	}
+
+	if m.GetNumber() {
+		vs = append(vs, locker.FieldNumber)
+	}
+
+	return vs
+}
+
+func LockerSelect(q *ent.LockerQuery, m *library.LockerSelect) {
+	if !m.GetAll() {
+		fields := LockerSelectedFields(m)
+		q.Select(fields...)
+	}
+	if m.HasOwner() {
+		q.WithOwner(func(q *ent.MemberQuery) {
+			MemberSelect(q, m.GetOwner())
+		})
+	}
 }

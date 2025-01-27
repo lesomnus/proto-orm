@@ -35,10 +35,21 @@ message AuthorAddRequest {
 }
 
 message AuthorGetRequest {
+	AuthorSelect select = 1;
 	oneof key {
-		bytes id = 1;
-		string alias = 2;
+		bytes id = 2;
+		string alias = 3;
 	}
+}
+
+message AuthorSelect {
+	optional bool all = 1;
+	bool alias = 2;
+	bool name = 3;
+	bool labels = 4;
+	bool profile = 5;
+	optional BookSelect books = 7;
+	bool date_created = 15;
 }
 
 message AuthorPatchRequest {
@@ -58,9 +69,19 @@ message BookAddRequest {
 }
 
 message BookGetRequest {
+	BookSelect select = 1;
 	oneof key {
-		bytes id = 1;
+		bytes id = 2;
 	}
+}
+
+message BookSelect {
+	optional bool all = 1;
+	bool title = 3;
+	optional AuthorSelect authors = 4;
+	bool index = 5;
+	bool genres = 6;
+	bool date_created = 15;
 }
 
 message BookPatchRequest {
