@@ -149,17 +149,11 @@ func FooVrGetId(ctx context.Context, db *ent.Client, req *library.FooVrGetReques
 }
 
 func FooVrSelectedFields(m *library.FooVrSelect) []string {
-	if !m.HasAll() {
-		return []string{foovr.FieldID}
-	}
-
-	vs := []string{}
 	if m.GetAll() {
 		return foovr.Columns
-	} else {
-		vs = append(vs, foovr.FieldID)
 	}
 
+	vs := []string{foovr.FieldID}
 	if m.GetVrDouble() {
 		vs = append(vs, foovr.FieldVrDouble)
 	}

@@ -196,17 +196,11 @@ func MemberGetId(ctx context.Context, db *ent.Client, req *library.MemberGetRequ
 }
 
 func MemberSelectedFields(m *library.MemberSelect) []string {
-	if !m.HasAll() {
-		return []string{member.FieldID}
-	}
-
-	vs := []string{}
 	if m.GetAll() {
 		return member.Columns
-	} else {
-		vs = append(vs, member.FieldID)
 	}
 
+	vs := []string{member.FieldID}
 	if m.GetName() {
 		vs = append(vs, member.FieldName)
 	}

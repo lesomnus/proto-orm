@@ -125,17 +125,11 @@ func LoanGetId(ctx context.Context, db *ent.Client, req *library.LoanGetRequest)
 }
 
 func LoanSelectedFields(m *library.LoanSelect) []string {
-	if !m.HasAll() {
-		return []string{loan.FieldID}
-	}
-
-	vs := []string{}
 	if m.GetAll() {
 		return loan.Columns
-	} else {
-		vs = append(vs, loan.FieldID)
 	}
 
+	vs := []string{loan.FieldID}
 	if m.GetSubjectId() {
 		vs = append(vs, loan.FieldSubjectID)
 	}

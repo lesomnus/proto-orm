@@ -28,7 +28,8 @@ service MemberService {
 message LockerAddRequest {
 	optional bytes id = 1;
 	MemberGetRequest owner = 2;
-	uint32 number = 3;
+	string name = 3;
+	uint32 number = 4;
 }
 
 message LockerGetRequest {
@@ -39,16 +40,18 @@ message LockerGetRequest {
 }
 
 message LockerSelect {
-	optional bool all = 1;
+	bool all = 1;
 	optional MemberSelect owner = 2;
-	bool number = 3;
+	bool name = 3;
+	bool number = 4;
 }
 
 message LockerPatchRequest {
 	LockerGetRequest key = 1;
 	MemberGetRequest owner = 3;
 	bool owner_null = 4;
-	optional uint32 number = 5;
+	optional string name = 5;
+	optional uint32 number = 7;
 }
 
 message MemberAddRequest {
@@ -71,7 +74,7 @@ message MemberGetRequest {
 }
 
 message MemberSelect {
-	optional bool all = 1;
+	bool all = 1;
 	bool name = 3;
 	bool labels = 4;
 	bool profile = 5;

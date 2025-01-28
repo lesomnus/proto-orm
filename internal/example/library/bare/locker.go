@@ -40,6 +40,7 @@ func (s LockerServiceServer) Add(ctx context.Context, req *library.LockerAddRequ
 			q.SetOwnerID(id)
 		}
 	}
+	q.SetName(req.GetName())
 	q.SetNumber(req.GetNumber())
 
 	v, err := q.Save(ctx)
@@ -87,6 +88,9 @@ func (s LockerServiceServer) Patch(ctx context.Context, req *library.LockerPatch
 		return nil, err
 	} else {
 		q.SetOwnerID(id)
+	}
+	if req.HasName() {
+		q.SetName(req.GetName())
 	}
 	if req.HasNumber() {
 		q.SetNumber(req.GetNumber())
@@ -150,17 +154,14 @@ func LockerGetId(ctx context.Context, db *ent.Client, req *library.LockerGetRequ
 }
 
 func LockerSelectedFields(m *library.LockerSelect) []string {
-	if !m.HasAll() {
-		return []string{locker.FieldID}
-	}
-
-	vs := []string{}
 	if m.GetAll() {
 		return locker.Columns
-	} else {
-		vs = append(vs, locker.FieldID)
 	}
 
+	vs := []string{locker.FieldID}
+	if m.GetName() {
+		vs = append(vs, locker.FieldName)
+	}
 	if m.GetNumber() {
 		vs = append(vs, locker.FieldNumber)
 	}

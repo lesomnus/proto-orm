@@ -151,17 +151,11 @@ func FooKGetId(ctx context.Context, db *ent.Client, req *library.FooKGetRequest)
 }
 
 func FooKSelectedFields(m *library.FooKSelect) []string {
-	if !m.HasAll() {
-		return []string{fook.FieldID}
-	}
-
-	vs := []string{}
 	if m.GetAll() {
 		return fook.Columns
-	} else {
-		vs = append(vs, fook.FieldID)
 	}
 
+	vs := []string{fook.FieldID}
 	if m.GetKVTime() {
 		vs = append(vs, fook.FieldKVTime)
 	}

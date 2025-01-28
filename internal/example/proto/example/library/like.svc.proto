@@ -35,7 +35,7 @@ message LikeGetRequest {
 }
 
 message LikeSelect {
-	optional bool all = 1;
+	bool all = 1;
 	bool subject_id = 2;
 	optional BookSelect subject = 3;
 	optional MemberSelect actor = 5;

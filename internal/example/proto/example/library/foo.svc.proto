@@ -100,7 +100,7 @@ message FooEfGetRequest {
 }
 
 message FooEfSelect {
-	optional bool all = 1;
+	bool all = 1;
 	bool ef_v_author = 11;
 	bool ef_vd_author = 12;
 	bool ef_vr_author = 13;
@@ -140,7 +140,7 @@ message FooKGetRequest {
 }
 
 message FooKSelect {
-	optional bool all = 1;
+	bool all = 1;
 	bool k_v_time = 11;
 	bool k_vd_time = 12;
 	bool k_vr_time = 13;
@@ -179,7 +179,7 @@ message FooMiGetRequest {
 }
 
 message FooMiSelect {
-	optional bool all = 1;
+	bool all = 1;
 	bool vmi_double = 11;
 	bool vmi_int64 = 12;
 	bool vmi_uint64 = 13;
@@ -216,7 +216,7 @@ message FooMsGetRequest {
 }
 
 message FooMsSelect {
-	optional bool all = 1;
+	bool all = 1;
 	bool vms_double = 11;
 	bool vms_int64 = 12;
 	bool vms_uint64 = 13;
@@ -253,7 +253,7 @@ message FooMsdGetRequest {
 }
 
 message FooMsdSelect {
-	optional bool all = 1;
+	bool all = 1;
 	bool msd_double = 11;
 	bool msd_int64 = 12;
 	bool msd_uint64 = 13;
@@ -290,7 +290,7 @@ message FooVGetRequest {
 }
 
 message FooVSelect {
-	optional bool all = 1;
+	bool all = 1;
 	bool v_double = 11;
 	bool v_int64 = 12;
 	bool v_uint64 = 13;
@@ -327,7 +327,7 @@ message FooVdGetRequest {
 }
 
 message FooVdSelect {
-	optional bool all = 1;
+	bool all = 1;
 	bool vd_double = 11;
 	bool vd_int64 = 12;
 	bool vd_uint64 = 13;
@@ -364,7 +364,7 @@ message FooVoGetRequest {
 }
 
 message FooVoSelect {
-	optional bool all = 1;
+	bool all = 1;
 	bool vo_double = 11;
 	bool vo_int64 = 12;
 	bool vo_uint64 = 13;
@@ -401,7 +401,7 @@ message FooVonGetRequest {
 }
 
 message FooVonSelect {
-	optional bool all = 1;
+	bool all = 1;
 	bool von_double = 11;
 	bool von_int64 = 12;
 	bool von_uint64 = 13;
@@ -444,7 +444,7 @@ message FooVrGetRequest {
 }
 
 message FooVrSelect {
-	optional bool all = 1;
+	bool all = 1;
 	bool vr_double = 11;
 	bool vr_int64 = 12;
 	bool vr_uint64 = 13;

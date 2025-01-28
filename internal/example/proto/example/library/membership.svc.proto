@@ -31,7 +31,7 @@ message MembershipGetRequest {
 }
 
 message MembershipSelect {
-	optional bool all = 1;
+	bool all = 1;
 	optional MemberSelect member = 2;
 	bool point = 3;
 }

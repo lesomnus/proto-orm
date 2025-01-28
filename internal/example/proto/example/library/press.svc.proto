@@ -34,7 +34,7 @@ message PressGetRequest {
 }
 
 message PressSelect {
-	optional bool all = 1;
+	bool all = 1;
 	optional BookSelect book = 2;
 	bool serial_number = 3;
 	bool date_created = 15;

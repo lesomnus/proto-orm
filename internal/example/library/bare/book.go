@@ -147,17 +147,11 @@ func BookGetId(ctx context.Context, db *ent.Client, req *library.BookGetRequest)
 }
 
 func BookSelectedFields(m *library.BookSelect) []string {
-	if !m.HasAll() {
-		return []string{book.FieldID}
-	}
-
-	vs := []string{}
 	if m.GetAll() {
 		return book.Columns
-	} else {
-		vs = append(vs, book.FieldID)
 	}
 
+	vs := []string{book.FieldID}
 	if m.GetTitle() {
 		vs = append(vs, book.FieldTitle)
 	}

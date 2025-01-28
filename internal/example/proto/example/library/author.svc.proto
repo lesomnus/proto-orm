@@ -43,7 +43,7 @@ message AuthorGetRequest {
 }
 
 message AuthorSelect {
-	optional bool all = 1;
+	bool all = 1;
 	bool alias = 2;
 	bool name = 3;
 	bool labels = 4;
@@ -76,7 +76,7 @@ message BookGetRequest {
 }
 
 message BookSelect {
-	optional bool all = 1;
+	bool all = 1;
 	bool title = 3;
 	optional AuthorSelect authors = 4;
 	bool index = 5;

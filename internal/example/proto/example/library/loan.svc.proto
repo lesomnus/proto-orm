@@ -33,7 +33,7 @@ message LoanGetRequest {
 }
 
 message LoanSelect {
-	optional bool all = 1;
+	bool all = 1;
 	bool subject_id = 2;
 	optional BookSelect subject = 3;
 	bool borrower_id = 4;

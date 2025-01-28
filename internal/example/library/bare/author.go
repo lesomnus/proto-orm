@@ -153,17 +153,11 @@ func AuthorGetId(ctx context.Context, db *ent.Client, req *library.AuthorGetRequ
 }
 
 func AuthorSelectedFields(m *library.AuthorSelect) []string {
-	if !m.HasAll() {
-		return []string{author.FieldID}
-	}
-
-	vs := []string{}
 	if m.GetAll() {
 		return author.Columns
-	} else {
-		vs = append(vs, author.FieldID)
 	}
 
+	vs := []string{author.FieldID}
 	if m.GetAlias() {
 		vs = append(vs, author.FieldAlias)
 	}

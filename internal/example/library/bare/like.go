@@ -163,17 +163,11 @@ func LikeGetId(ctx context.Context, db *ent.Client, req *library.LikeGetRequest)
 }
 
 func LikeSelectedFields(m *library.LikeSelect) []string {
-	if !m.HasAll() {
-		return []string{like.FieldID}
-	}
-
-	vs := []string{}
 	if m.GetAll() {
 		return like.Columns
-	} else {
-		vs = append(vs, like.FieldID)
 	}
 
+	vs := []string{like.FieldID}
 	if m.GetSubjectId() {
 		vs = append(vs, like.FieldSubjectID)
 	}

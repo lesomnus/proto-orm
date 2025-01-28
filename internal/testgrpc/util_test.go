@@ -12,6 +12,8 @@ import (
 	"github.com/lesomnus/proto-orm/internal/example/library"
 	"github.com/lesomnus/proto-orm/internal/example/library/bare"
 	"github.com/lesomnus/proto-orm/internal/example/library/ent"
+	"github.com/lesomnus/proto-orm/internal/example/library/ent/locker"
+	"github.com/lesomnus/proto-orm/internal/example/library/ent/member"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"
@@ -80,20 +82,23 @@ func NewClient(s *Server) *Client {
 	ctx := context.TODO()
 	db := s.Db
 
-	author, err := db.Author.Create().
+	v_author, err := db.Author.Create().
 		SetAlias("dostoevsky").
 		SetName("Fyodor Dostoevsky").
 		Save(ctx)
 	require.NoError(s.t, err)
 
-	book, err := db.Book.Create().
+	v_book, err := db.Book.Create().
 		SetTitle("Crime and Punishment").
-		AddAuthors(author).
+		AddAuthors(v_author).
 		Save(ctx)
 	require.NoError(s.t, err)
 
-	member, err := db.Member.Create().
+	v_member, err := db.Member.Create().
 		SetName("lesomnus").
+		SetLabels(map[string]string{
+			"foo": "bar",
+		}).
 		SetProfile(library.Profile_builder{
 			Email: "lesomnus@gmail.com",
 		}.Build()).
@@ -101,16 +106,26 @@ func NewClient(s *Server) *Client {
 		Save(ctx)
 	require.NoError(s.t, err)
 
-	locker, err := db.Locker.Create().
-		SetOwner(member).
+	v_locker, err := db.Locker.Create().
+		SetOwner(v_member).
+		SetName("Davy Jones's").
 		SetNumber(42).
 		Save(ctx)
 	require.NoError(s.t, err)
 
-	author, err = db.Author.Get(ctx, author.ID)
+	v_locker, err = db.Locker.Query().
+		Where(locker.ID(v_locker.ID)).
+		WithOwner().
+		Only(ctx)
 	require.NoError(s.t, err)
 
-	member, err = db.Member.Get(ctx, member.ID)
+	v_author, err = db.Author.Get(ctx, v_author.ID)
+	require.NoError(s.t, err)
+
+	v_member, err = db.Member.Query().
+		Where(member.ID(v_member.ID)).
+		WithLocker().
+		Only(ctx)
 	require.NoError(s.t, err)
 
 	listener := bufconn.Listen(1 << 20)
@@ -140,10 +155,10 @@ func NewClient(s *Server) *Client {
 		Member: library.NewMemberServiceClient(conn),
 		Locker: library.NewLockerServiceClient(conn),
 
-		v_author: author.Proto(),
-		v_book:   book.Proto(),
-		v_member: member.Proto(),
-		v_locker: locker.Proto(),
+		v_author: v_author.Proto(),
+		v_book:   v_book.Proto(),
+		v_member: v_member.Proto(),
+		v_locker: v_locker.Proto(),
 	}
 
 	v.wg.Add(1)

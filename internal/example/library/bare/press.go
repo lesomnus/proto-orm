@@ -151,17 +151,11 @@ func PressGetId(ctx context.Context, db *ent.Client, req *library.PressGetReques
 }
 
 func PressSelectedFields(m *library.PressSelect) []string {
-	if !m.HasAll() {
-		return []string{press.FieldID}
-	}
-
-	vs := []string{}
 	if m.GetAll() {
 		return press.Columns
-	} else {
-		vs = append(vs, press.FieldID)
 	}
 
+	vs := []string{press.FieldID}
 	if m.GetSerialNumber() {
 		vs = append(vs, press.FieldSerialNumber)
 	}

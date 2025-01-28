@@ -151,17 +151,11 @@ func FooEfGetId(ctx context.Context, db *ent.Client, req *library.FooEfGetReques
 }
 
 func FooEfSelectedFields(m *library.FooEfSelect) []string {
-	if !m.HasAll() {
-		return []string{fooef.FieldID}
-	}
-
-	vs := []string{}
 	if m.GetAll() {
 		return fooef.Columns
-	} else {
-		vs = append(vs, fooef.FieldID)
 	}
 
+	vs := []string{fooef.FieldID}
 	if m.GetEfVAuthor() {
 		vs = append(vs, fooef.FieldEfVAuthor)
 	}

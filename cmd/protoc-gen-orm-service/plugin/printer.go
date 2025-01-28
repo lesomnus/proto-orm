@@ -340,7 +340,6 @@ func (w *printWork) msgSelect(e *graph.Entity) *generatedMessage {
 			Type:   pbgen.TypeBool,
 			Name:   "all",
 			Number: 1,
-			Label:  pbgen.LabelOptional,
 		},
 	}
 	for _, r := range e.FieldsSortByNumber()[1:] {

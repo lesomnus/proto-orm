@@ -112,17 +112,11 @@ func {{ .Name }}GetId(ctx {{ pkg "context" | ident "Context" }}, db *{{ ent "Cli
 }
 
 func {{ .Name }}SelectedFields(m *{{ pb (print $.Name "Select") }}) []string {
-	if !m.HasAll() {
-		return []string{ {{ $entity_pkg | ident "FieldID" }} }
-	}
-
-	vs := []string{}
 	if m.GetAll() {
 		return {{ $entity_pkg | ident "Columns" }}
-	} else {
-		vs = append(vs, {{ $entity_pkg | ident "FieldID" }})
 	}
 
+	vs := []string{ {{ $entity_pkg | ident "FieldID" }} }
 	{{ range (slice .FieldsSortByNumber 1) -}}
 	{{ with as_attr . -}}
 	if m.Get{{ pascal .Name }}() {
