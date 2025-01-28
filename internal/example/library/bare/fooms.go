@@ -14,16 +14,16 @@ import (
 )
 
 type FooMsServiceServer struct {
-	db *ent.Client
+	Db *ent.Client
 	library.UnimplementedFooMsServiceServer
 }
 
-func NewFooMsServiceServer(db *ent.Client) *FooMsServiceServer {
-	return &FooMsServiceServer{db: db}
+func NewFooMsServiceServer(db *ent.Client) FooMsServiceServer {
+	return FooMsServiceServer{Db: db}
 }
 
-func (s *FooMsServiceServer) Add(ctx context.Context, req *library.FooMsAddRequest) (*library.FooMs, error) {
-	q := s.db.FooMs.Create()
+func (s FooMsServiceServer) Add(ctx context.Context, req *library.FooMsAddRequest) (*library.FooMs, error) {
+	q := s.Db.FooMs.Create()
 	q.SetID(req.GetId())
 	if v := req.GetVmsDouble(); v != nil {
 		q.SetVmsDouble(v)
@@ -52,8 +52,13 @@ func (s *FooMsServiceServer) Add(ctx context.Context, req *library.FooMsAddReque
 	return v.Proto(), nil
 }
 
-func (s *FooMsServiceServer) Get(ctx context.Context, req *library.FooMsGetRequest) (*library.FooMs, error) {
-	q := s.db.FooMs.Query()
+func (s FooMsServiceServer) Get(ctx context.Context, req *library.FooMsGetRequest) (*library.FooMs, error) {
+	q := s.Db.FooMs.Query()
+	if req.HasSelect() {
+		FooMsSelect(q, req.GetSelect())
+	} else {
+	}
+
 	if p, err := FooMsPick(req); err != nil {
 		return nil, err
 	} else {
@@ -68,13 +73,13 @@ func (s *FooMsServiceServer) Get(ctx context.Context, req *library.FooMsGetReque
 	return v.Proto(), nil
 }
 
-func (s *FooMsServiceServer) Patch(ctx context.Context, req *library.FooMsPatchRequest) (*emptypb.Empty, error) {
-	id, err := FooMsGetId(ctx, s.db, req.GetKey())
+func (s FooMsServiceServer) Patch(ctx context.Context, req *library.FooMsPatchRequest) (*emptypb.Empty, error) {
+	id, err := FooMsGetId(ctx, s.Db, req.GetKey())
 	if err != nil {
 		return nil, err
 	}
 
-	q := s.db.FooMs.UpdateOneID(id)
+	q := s.Db.FooMs.UpdateOneID(id)
 	if v := req.GetVmsDouble(); v != nil {
 		q.SetVmsDouble(v)
 	}
@@ -101,12 +106,12 @@ func (s *FooMsServiceServer) Patch(ctx context.Context, req *library.FooMsPatchR
 	return nil, nil
 }
 
-func (s *FooMsServiceServer) Erase(ctx context.Context, req *library.FooMsGetRequest) (*emptypb.Empty, error) {
+func (s FooMsServiceServer) Erase(ctx context.Context, req *library.FooMsGetRequest) (*emptypb.Empty, error) {
 	p, err := FooMsPick(req)
 	if err != nil {
 		return nil, err
 	}
-	if _, err := s.db.FooMs.Delete().Where(p).Exec(ctx); err != nil {
+	if _, err := s.Db.FooMs.Delete().Where(p).Exec(ctx); err != nil {
 		return nil, StatusFromEntError(err)
 	}
 
@@ -141,4 +146,39 @@ func FooMsGetId(ctx context.Context, db *ent.Client, req *library.FooMsGetReques
 	}
 
 	return v, nil
+}
+
+func FooMsSelectedFields(m *library.FooMsSelect) []string {
+	if m.GetAll() {
+		return fooms.Columns
+	}
+
+	vs := []string{fooms.FieldID}
+	if m.GetVmsDouble() {
+		vs = append(vs, fooms.FieldVmsDouble)
+	}
+	if m.GetVmsInt64() {
+		vs = append(vs, fooms.FieldVmsInt64)
+	}
+	if m.GetVmsUint64() {
+		vs = append(vs, fooms.FieldVmsUint64)
+	}
+	if m.GetVmsBool() {
+		vs = append(vs, fooms.FieldVmsBool)
+	}
+	if m.GetVmsString() {
+		vs = append(vs, fooms.FieldVmsString)
+	}
+	if m.GetVmsBytes() {
+		vs = append(vs, fooms.FieldVmsBytes)
+	}
+
+	return vs
+}
+
+func FooMsSelect(q *ent.FooMsQuery, m *library.FooMsSelect) {
+	if !m.GetAll() {
+		fields := FooMsSelectedFields(m)
+		q.Select(fields...)
+	}
 }

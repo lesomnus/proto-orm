@@ -5,6 +5,10 @@ package library
 func (x *Author) Pick() *AuthorGetRequest {
 	return AuthorById(x.GetId())
 }
+func (x *AuthorGetRequest) Select(v *AuthorSelect) *AuthorGetRequest {
+	x.SetSelect(v)
+	return x
+}
 
 func AuthorById(v []byte) *AuthorGetRequest {
 	return AuthorGetRequest_builder{Id: v}.Build()
@@ -16,12 +20,20 @@ func AuthorByAlias(v string) *AuthorGetRequest {
 func (x *Book) Pick() *BookGetRequest {
 	return BookById(x.GetId())
 }
+func (x *BookGetRequest) Select(v *BookSelect) *BookGetRequest {
+	x.SetSelect(v)
+	return x
+}
 
 func BookById(v []byte) *BookGetRequest {
 	return BookGetRequest_builder{Id: v}.Build()
 }
 func (x *FooEf) Pick() *FooEfGetRequest {
 	return FooEfById(x.GetId())
+}
+func (x *FooEfGetRequest) Select(v *FooEfSelect) *FooEfGetRequest {
+	x.SetSelect(v)
+	return x
 }
 
 func FooEfById(v int64) *FooEfGetRequest {
@@ -30,12 +42,20 @@ func FooEfById(v int64) *FooEfGetRequest {
 func (x *FooK) Pick() *FooKGetRequest {
 	return FooKById(x.GetId())
 }
+func (x *FooKGetRequest) Select(v *FooKSelect) *FooKGetRequest {
+	x.SetSelect(v)
+	return x
+}
 
 func FooKById(v int64) *FooKGetRequest {
 	return FooKGetRequest_builder{Id: &v}.Build()
 }
 func (x *FooMi) Pick() *FooMiGetRequest {
 	return FooMiById(x.GetId())
+}
+func (x *FooMiGetRequest) Select(v *FooMiSelect) *FooMiGetRequest {
+	x.SetSelect(v)
+	return x
 }
 
 func FooMiById(v int64) *FooMiGetRequest {
@@ -44,12 +64,20 @@ func FooMiById(v int64) *FooMiGetRequest {
 func (x *FooMs) Pick() *FooMsGetRequest {
 	return FooMsById(x.GetId())
 }
+func (x *FooMsGetRequest) Select(v *FooMsSelect) *FooMsGetRequest {
+	x.SetSelect(v)
+	return x
+}
 
 func FooMsById(v int64) *FooMsGetRequest {
 	return FooMsGetRequest_builder{Id: &v}.Build()
 }
 func (x *FooMsd) Pick() *FooMsdGetRequest {
 	return FooMsdById(x.GetId())
+}
+func (x *FooMsdGetRequest) Select(v *FooMsdSelect) *FooMsdGetRequest {
+	x.SetSelect(v)
+	return x
 }
 
 func FooMsdById(v int64) *FooMsdGetRequest {
@@ -58,12 +86,20 @@ func FooMsdById(v int64) *FooMsdGetRequest {
 func (x *FooV) Pick() *FooVGetRequest {
 	return FooVById(x.GetId())
 }
+func (x *FooVGetRequest) Select(v *FooVSelect) *FooVGetRequest {
+	x.SetSelect(v)
+	return x
+}
 
 func FooVById(v int64) *FooVGetRequest {
 	return FooVGetRequest_builder{Id: &v}.Build()
 }
 func (x *FooVd) Pick() *FooVdGetRequest {
 	return FooVdById(x.GetId())
+}
+func (x *FooVdGetRequest) Select(v *FooVdSelect) *FooVdGetRequest {
+	x.SetSelect(v)
+	return x
 }
 
 func FooVdById(v int64) *FooVdGetRequest {
@@ -72,12 +108,20 @@ func FooVdById(v int64) *FooVdGetRequest {
 func (x *FooVo) Pick() *FooVoGetRequest {
 	return FooVoById(x.GetId())
 }
+func (x *FooVoGetRequest) Select(v *FooVoSelect) *FooVoGetRequest {
+	x.SetSelect(v)
+	return x
+}
 
 func FooVoById(v int64) *FooVoGetRequest {
 	return FooVoGetRequest_builder{Id: &v}.Build()
 }
 func (x *FooVon) Pick() *FooVonGetRequest {
 	return FooVonById(x.GetId())
+}
+func (x *FooVonGetRequest) Select(v *FooVonSelect) *FooVonGetRequest {
+	x.SetSelect(v)
+	return x
 }
 
 func FooVonById(v int64) *FooVonGetRequest {
@@ -86,12 +130,20 @@ func FooVonById(v int64) *FooVonGetRequest {
 func (x *FooVr) Pick() *FooVrGetRequest {
 	return FooVrById(x.GetId())
 }
+func (x *FooVrGetRequest) Select(v *FooVrSelect) *FooVrGetRequest {
+	x.SetSelect(v)
+	return x
+}
 
 func FooVrById(v int64) *FooVrGetRequest {
 	return FooVrGetRequest_builder{Id: &v}.Build()
 }
 func (x *Like) Pick() *LikeGetRequest {
 	return LikeById(x.GetId())
+}
+func (x *LikeGetRequest) Select(v *LikeSelect) *LikeGetRequest {
+	x.SetSelect(v)
+	return x
 }
 
 func LikeById(v []byte) *LikeGetRequest {
@@ -107,6 +159,10 @@ func LikeByHolders(subject_id []byte, actor *MemberGetRequest) *LikeGetRequest {
 func (x *Loan) Pick() *LoanGetRequest {
 	return LoanById(x.GetId())
 }
+func (x *LoanGetRequest) Select(v *LoanSelect) *LoanGetRequest {
+	x.SetSelect(v)
+	return x
+}
 
 func LoanById(v []byte) *LoanGetRequest {
 	return LoanGetRequest_builder{Id: v}.Build()
@@ -114,12 +170,20 @@ func LoanById(v []byte) *LoanGetRequest {
 func (x *Locker) Pick() *LockerGetRequest {
 	return LockerById(x.GetId())
 }
+func (x *LockerGetRequest) Select(v *LockerSelect) *LockerGetRequest {
+	x.SetSelect(v)
+	return x
+}
 
 func LockerById(v []byte) *LockerGetRequest {
 	return LockerGetRequest_builder{Id: v}.Build()
 }
 func (x *Member) Pick() *MemberGetRequest {
 	return MemberById(x.GetId())
+}
+func (x *MemberGetRequest) Select(v *MemberSelect) *MemberGetRequest {
+	x.SetSelect(v)
+	return x
 }
 
 func MemberById(v []byte) *MemberGetRequest {
@@ -135,12 +199,20 @@ func MemberByName(parent *MemberGetRequest, name string) *MemberGetRequest {
 func (x *Membership) Pick() *MembershipGetRequest {
 	return MembershipById(x.GetId())
 }
+func (x *MembershipGetRequest) Select(v *MembershipSelect) *MembershipGetRequest {
+	x.SetSelect(v)
+	return x
+}
 
 func MembershipById(v []byte) *MembershipGetRequest {
 	return MembershipGetRequest_builder{Id: v}.Build()
 }
 func (x *Press) Pick() *PressGetRequest {
 	return PressById(x.GetId())
+}
+func (x *PressGetRequest) Select(v *PressSelect) *PressGetRequest {
+	x.SetSelect(v)
+	return x
 }
 
 func PressById(v []byte) *PressGetRequest {

@@ -14,16 +14,16 @@ import (
 )
 
 type FooVdServiceServer struct {
-	db *ent.Client
+	Db *ent.Client
 	library.UnimplementedFooVdServiceServer
 }
 
-func NewFooVdServiceServer(db *ent.Client) *FooVdServiceServer {
-	return &FooVdServiceServer{db: db}
+func NewFooVdServiceServer(db *ent.Client) FooVdServiceServer {
+	return FooVdServiceServer{Db: db}
 }
 
-func (s *FooVdServiceServer) Add(ctx context.Context, req *library.FooVdAddRequest) (*library.FooVd, error) {
-	q := s.db.FooVd.Create()
+func (s FooVdServiceServer) Add(ctx context.Context, req *library.FooVdAddRequest) (*library.FooVd, error) {
+	q := s.Db.FooVd.Create()
 	q.SetID(req.GetId())
 	if req.HasVdDouble() {
 		q.SetVdDouble(req.GetVdDouble())
@@ -52,8 +52,13 @@ func (s *FooVdServiceServer) Add(ctx context.Context, req *library.FooVdAddReque
 	return v.Proto(), nil
 }
 
-func (s *FooVdServiceServer) Get(ctx context.Context, req *library.FooVdGetRequest) (*library.FooVd, error) {
-	q := s.db.FooVd.Query()
+func (s FooVdServiceServer) Get(ctx context.Context, req *library.FooVdGetRequest) (*library.FooVd, error) {
+	q := s.Db.FooVd.Query()
+	if req.HasSelect() {
+		FooVdSelect(q, req.GetSelect())
+	} else {
+	}
+
 	if p, err := FooVdPick(req); err != nil {
 		return nil, err
 	} else {
@@ -68,13 +73,13 @@ func (s *FooVdServiceServer) Get(ctx context.Context, req *library.FooVdGetReque
 	return v.Proto(), nil
 }
 
-func (s *FooVdServiceServer) Patch(ctx context.Context, req *library.FooVdPatchRequest) (*emptypb.Empty, error) {
-	id, err := FooVdGetId(ctx, s.db, req.GetKey())
+func (s FooVdServiceServer) Patch(ctx context.Context, req *library.FooVdPatchRequest) (*emptypb.Empty, error) {
+	id, err := FooVdGetId(ctx, s.Db, req.GetKey())
 	if err != nil {
 		return nil, err
 	}
 
-	q := s.db.FooVd.UpdateOneID(id)
+	q := s.Db.FooVd.UpdateOneID(id)
 	if req.HasVdDouble() {
 		q.SetVdDouble(req.GetVdDouble())
 	}
@@ -101,12 +106,12 @@ func (s *FooVdServiceServer) Patch(ctx context.Context, req *library.FooVdPatchR
 	return nil, nil
 }
 
-func (s *FooVdServiceServer) Erase(ctx context.Context, req *library.FooVdGetRequest) (*emptypb.Empty, error) {
+func (s FooVdServiceServer) Erase(ctx context.Context, req *library.FooVdGetRequest) (*emptypb.Empty, error) {
 	p, err := FooVdPick(req)
 	if err != nil {
 		return nil, err
 	}
-	if _, err := s.db.FooVd.Delete().Where(p).Exec(ctx); err != nil {
+	if _, err := s.Db.FooVd.Delete().Where(p).Exec(ctx); err != nil {
 		return nil, StatusFromEntError(err)
 	}
 
@@ -141,4 +146,39 @@ func FooVdGetId(ctx context.Context, db *ent.Client, req *library.FooVdGetReques
 	}
 
 	return v, nil
+}
+
+func FooVdSelectedFields(m *library.FooVdSelect) []string {
+	if m.GetAll() {
+		return foovd.Columns
+	}
+
+	vs := []string{foovd.FieldID}
+	if m.GetVdDouble() {
+		vs = append(vs, foovd.FieldVdDouble)
+	}
+	if m.GetVdInt64() {
+		vs = append(vs, foovd.FieldVdInt64)
+	}
+	if m.GetVdUint64() {
+		vs = append(vs, foovd.FieldVdUint64)
+	}
+	if m.GetVdBool() {
+		vs = append(vs, foovd.FieldVdBool)
+	}
+	if m.GetVdString() {
+		vs = append(vs, foovd.FieldVdString)
+	}
+	if m.GetVdBytes() {
+		vs = append(vs, foovd.FieldVdBytes)
+	}
+
+	return vs
+}
+
+func FooVdSelect(q *ent.FooVdQuery, m *library.FooVdSelect) {
+	if !m.GetAll() {
+		fields := FooVdSelectedFields(m)
+		q.Select(fields...)
+	}
 }

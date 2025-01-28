@@ -16,16 +16,16 @@ import (
 )
 
 type LoanServiceServer struct {
-	db *ent.Client
+	Db *ent.Client
 	library.UnimplementedLoanServiceServer
 }
 
-func NewLoanServiceServer(db *ent.Client) *LoanServiceServer {
-	return &LoanServiceServer{db: db}
+func NewLoanServiceServer(db *ent.Client) LoanServiceServer {
+	return LoanServiceServer{Db: db}
 }
 
-func (s *LoanServiceServer) Add(ctx context.Context, req *library.LoanAddRequest) (*library.Loan, error) {
-	q := s.db.Loan.Create()
+func (s LoanServiceServer) Add(ctx context.Context, req *library.LoanAddRequest) (*library.Loan, error) {
+	q := s.Db.Loan.Create()
 	if req.HasId() {
 		if v, err := uuid.FromBytes(req.GetId()); err != nil {
 			return nil, status.Errorf(codes.InvalidArgument, "id: %s", err)
@@ -33,12 +33,12 @@ func (s *LoanServiceServer) Add(ctx context.Context, req *library.LoanAddRequest
 			q.SetID(v)
 		}
 	}
-	if id, err := BookGetId(ctx, s.db, req.GetSubject()); err != nil {
+	if id, err := BookGetId(ctx, s.Db, req.GetSubject()); err != nil {
 		return nil, err
 	} else {
 		q.SetSubjectID(id)
 	}
-	if id, err := MemberGetId(ctx, s.db, req.GetBorrower()); err != nil {
+	if id, err := MemberGetId(ctx, s.Db, req.GetBorrower()); err != nil {
 		return nil, err
 	} else {
 		q.SetBorrowerID(id)
@@ -59,20 +59,24 @@ func (s *LoanServiceServer) Add(ctx context.Context, req *library.LoanAddRequest
 	return v.Proto(), nil
 }
 
-func (s *LoanServiceServer) Get(ctx context.Context, req *library.LoanGetRequest) (*library.Loan, error) {
-	q := s.db.Loan.Query()
+func (s LoanServiceServer) Get(ctx context.Context, req *library.LoanGetRequest) (*library.Loan, error) {
+	q := s.Db.Loan.Query()
+	if req.HasSelect() {
+		LoanSelect(q, req.GetSelect())
+	} else {
+		q.WithSubject(func(q *ent.BookQuery) {
+			q.Select(book.FieldID)
+		})
+		q.WithBorrower(func(q *ent.MemberQuery) {
+			q.Select(member.FieldID)
+		})
+	}
+
 	if p, err := LoanPick(req); err != nil {
 		return nil, err
 	} else {
 		q.Where(p)
 	}
-
-	q.WithSubject(func(q *ent.BookQuery) {
-		q.Select(book.FieldID)
-	})
-	q.WithBorrower(func(q *ent.MemberQuery) {
-		q.Select(member.FieldID)
-	})
 
 	v, err := q.Only(ctx)
 	if err != nil {
@@ -118,4 +122,46 @@ func LoanGetId(ctx context.Context, db *ent.Client, req *library.LoanGetRequest)
 	}
 
 	return v, nil
+}
+
+func LoanSelectedFields(m *library.LoanSelect) []string {
+	if m.GetAll() {
+		return loan.Columns
+	}
+
+	vs := []string{loan.FieldID}
+	if m.GetSubjectId() {
+		vs = append(vs, loan.FieldSubjectID)
+	}
+	if m.GetBorrowerId() {
+		vs = append(vs, loan.FieldBorrowerID)
+	}
+	if m.GetDateDue() {
+		vs = append(vs, loan.FieldDateDue)
+	}
+	if m.GetDateReturn() {
+		vs = append(vs, loan.FieldDateReturn)
+	}
+	if m.GetDateCreated() {
+		vs = append(vs, loan.FieldDateCreated)
+	}
+
+	return vs
+}
+
+func LoanSelect(q *ent.LoanQuery, m *library.LoanSelect) {
+	if !m.GetAll() {
+		fields := LoanSelectedFields(m)
+		q.Select(fields...)
+	}
+	if m.HasSubject() {
+		q.WithSubject(func(q *ent.BookQuery) {
+			BookSelect(q, m.GetSubject())
+		})
+	}
+	if m.HasBorrower() {
+		q.WithBorrower(func(q *ent.MemberQuery) {
+			MemberSelect(q, m.GetBorrower())
+		})
+	}
 }

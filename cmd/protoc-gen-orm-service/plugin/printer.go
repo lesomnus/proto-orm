@@ -14,6 +14,16 @@ import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 )
 
+// XxxGetRequest has `select` field before fields from entity starts:
+//
+//	{
+//		XxxSelect select = 1
+//		oneof key {
+//			bytes id = 2 // <- note that it starts from 2.
+//		}
+//	}
+const msgGetEntityFieldOffset = 1
+
 type Printer struct {
 	// `p` should be `/path/to/file.proto` and
 	// it will returns something like `/path/to/file.svc.prot`.
@@ -93,10 +103,22 @@ func (p *Printer) Print(f *File) error {
 				pf.TopLevelDefinitions = append(pf.TopLevelDefinitions, m)
 			}
 
-			// XXXGetRequest may contains XXXGetByXXX.
+			// XxxGetRequest
+			// - contains XxxSelect.
+			// - may contains XxxGetByXxx.
 			if strings.HasSuffix(string(m.FullName), "GetRequest") {
-				o := m.Body[0].(pbgen.MessageOneof)
-				for _, e := range o.Body {
+				msg_select := m.Body[0].(pbgen.MessageField)
+				if _, ok := ms[msg_select.Type]; !ok {
+					ms[msg_select.Type] = true
+					if m, ok := w.messages[protoreflect.FullName(msg_select.Type)]; !ok {
+						panic("XxxSelect not generated")
+					} else {
+						pf.TopLevelDefinitions = append(pf.TopLevelDefinitions, m)
+					}
+				}
+
+				msg_key := m.Body[msgGetEntityFieldOffset].(pbgen.MessageOneof)
+				for _, e := range msg_key.Body {
 					f, ok := e.(pbgen.MessageOneofField)
 					if !ok {
 						continue
@@ -285,8 +307,59 @@ func (w *printWork) indexGet(e *graph.Entity, i *graph.Index) *generatedMessage 
 			m := w.msgGetReq(u.Target.Rpcs[graph.RpcOpGet])
 			v := pbgen.MessageField{
 				Type:   w.typeMessage(m),
-				Name:   protoreflect.Name(d.Name()),
+				Name:   d.Name(),
 				Number: int(d.Number()),
+			}
+			body = append(body, v)
+		}
+	}
+
+	m.Body = body
+	return m
+}
+
+func (w *printWork) nameMsgSelect(e *graph.Entity) protoreflect.FullName {
+	n := fmt.Sprintf("%sSelect", inflect.Camelize(e.Name()))
+	return e.FullName().Parent().Append(protoreflect.Name(n))
+}
+
+func (w *printWork) msgSelect(e *graph.Entity) *generatedMessage {
+	full := w.nameMsgSelect(e)
+	if m, ok := w.messages[full]; ok {
+		return m
+	}
+
+	m := &generatedMessage{
+		Message: &pbgen.Message{FullName: full},
+		p:       w.namer(e.File.Desc.Path()),
+	}
+	w.messages[full] = m
+
+	body := []pbgen.MessageBody{
+		pbgen.MessageField{
+			Type:   pbgen.TypeBool,
+			Name:   "all",
+			Number: 1,
+		},
+	}
+	for _, r := range e.FieldsSortByNumber()[1:] {
+		d := r.Source().Desc
+		switch u := r.(type) {
+		case (*graph.Attr):
+			v := pbgen.MessageField{
+				Type:   pbgen.TypeBool,
+				Name:   d.Name(),
+				Number: int(d.Number()),
+			}
+			body = append(body, v)
+
+		case (*graph.Edge):
+			m := w.msgSelect(u.Target)
+			v := pbgen.MessageField{
+				Type:   w.typeMessage(m),
+				Name:   d.Name(),
+				Number: int(d.Number()),
+				Label:  pbgen.LabelOptional,
 			}
 			body = append(body, v)
 		}
@@ -302,14 +375,21 @@ func (w *printWork) msgGetReq(r *graph.Rpc) *generatedMessage {
 		return m
 	}
 
-	oneof := pbgen.MessageOneof{Name: "key"}
+	msg_select := w.msgSelect(r.Entity)
+	field_select := pbgen.MessageField{
+		Type:   w.typeMessage(msg_select),
+		Name:   "select",
+		Number: 1,
+	}
+
+	field_key := pbgen.MessageOneof{Name: "key"}
 	for _, k := range r.Entity.KeyLikes() {
 		switch v := k.(type) {
 		case *graph.Attr:
-			oneof.Body = append(oneof.Body, pbgen.MessageOneofField{
+			field_key.Body = append(field_key.Body, pbgen.MessageOneofField{
 				Type:   w.typeMessage(v),
 				Name:   protoreflect.Name(v.Name()),
-				Number: int(v.Number()),
+				Number: int(v.Number()) + msgGetEntityFieldOffset,
 			})
 
 		case *graph.Edge:
@@ -318,15 +398,18 @@ func (w *printWork) msgGetReq(r *graph.Rpc) *generatedMessage {
 
 		case *graph.Index:
 			m := w.indexGet(r.Entity, v)
-			oneof.Body = append(oneof.Body, pbgen.MessageOneofField{
+			field_key.Body = append(field_key.Body, pbgen.MessageOneofField{
 				Type:   w.typeMessage(m),
 				Name:   protoreflect.Name(v.Name()),
-				Number: int(v.Refs[0].Number()),
+				Number: int(v.Refs[0].Number()) + msgGetEntityFieldOffset,
 			})
 		}
 	}
 
-	m.Body = []pbgen.MessageBody{oneof}
+	m.Body = []pbgen.MessageBody{
+		field_select,
+		field_key,
+	}
 	return m
 }
 
@@ -342,11 +425,10 @@ func (w *printWork) msgPatchReq(r *graph.Rpc) *generatedMessage {
 	}
 
 	k := w.msgGetReq(r.Entity.Rpcs[graph.RpcOpGet])
-	k_f := k.Body[0].(pbgen.MessageOneof).Body[0].(pbgen.MessageOneofField)
 	body := []pbgen.MessageBody{pbgen.MessageField{
 		Type:   w.typeMessage(k),
 		Name:   "key",
-		Number: k_f.Number*2 - 1,
+		Number: 1,
 	}}
 
 	for _, f := range r.Entity.FieldsSortByNumber() {

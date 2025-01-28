@@ -166,10 +166,11 @@ func (b0 PressAddRequest_builder) Build() *PressAddRequest {
 }
 
 type PressGetRequest struct {
-	state          protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Key isPressGetRequest_Key  `protobuf_oneof:"key"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	state             protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Select *PressSelect           `protobuf:"bytes,1,opt,name=select,proto3" json:"select,omitempty"`
+	xxx_hidden_Key    isPressGetRequest_Key  `protobuf_oneof:"key"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
 }
 
 func (x *PressGetRequest) Reset() {
@@ -197,6 +198,13 @@ func (x *PressGetRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
+func (x *PressGetRequest) GetSelect() *PressSelect {
+	if x != nil {
+		return x.xxx_hidden_Select
+	}
+	return nil
+}
+
 func (x *PressGetRequest) GetId() []byte {
 	if x != nil {
 		if x, ok := x.xxx_hidden_Key.(*pressGetRequest_Id); ok {
@@ -215,6 +223,10 @@ func (x *PressGetRequest) GetSerialNumber() *PressGetBySerialNumber {
 	return nil
 }
 
+func (x *PressGetRequest) SetSelect(v *PressSelect) {
+	x.xxx_hidden_Select = v
+}
+
 func (x *PressGetRequest) SetId(v []byte) {
 	if v == nil {
 		v = []byte{}
@@ -228,6 +240,13 @@ func (x *PressGetRequest) SetSerialNumber(v *PressGetBySerialNumber) {
 		return
 	}
 	x.xxx_hidden_Key = &pressGetRequest_SerialNumber{v}
+}
+
+func (x *PressGetRequest) HasSelect() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Select != nil
 }
 
 func (x *PressGetRequest) HasKey() bool {
@@ -253,6 +272,10 @@ func (x *PressGetRequest) HasSerialNumber() bool {
 	return ok
 }
 
+func (x *PressGetRequest) ClearSelect() {
+	x.xxx_hidden_Select = nil
+}
+
 func (x *PressGetRequest) ClearKey() {
 	x.xxx_hidden_Key = nil
 }
@@ -270,8 +293,8 @@ func (x *PressGetRequest) ClearSerialNumber() {
 }
 
 const PressGetRequest_Key_not_set_case case_PressGetRequest_Key = 0
-const PressGetRequest_Id_case case_PressGetRequest_Key = 1
-const PressGetRequest_SerialNumber_case case_PressGetRequest_Key = 2
+const PressGetRequest_Id_case case_PressGetRequest_Key = 2
+const PressGetRequest_SerialNumber_case case_PressGetRequest_Key = 3
 
 func (x *PressGetRequest) WhichKey() case_PressGetRequest_Key {
 	if x == nil {
@@ -290,6 +313,7 @@ func (x *PressGetRequest) WhichKey() case_PressGetRequest_Key {
 type PressGetRequest_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
+	Select *PressSelect
 	// Fields of oneof xxx_hidden_Key:
 	Id           []byte
 	SerialNumber *PressGetBySerialNumber
@@ -300,6 +324,7 @@ func (b0 PressGetRequest_builder) Build() *PressGetRequest {
 	m0 := &PressGetRequest{}
 	b, x := &b0, m0
 	_, _ = b, x
+	x.xxx_hidden_Select = b.Select
 	if b.Id != nil {
 		x.xxx_hidden_Key = &pressGetRequest_Id{b.Id}
 	}
@@ -324,16 +349,126 @@ type isPressGetRequest_Key interface {
 }
 
 type pressGetRequest_Id struct {
-	Id []byte `protobuf:"bytes,1,opt,name=id,proto3,oneof"`
+	Id []byte `protobuf:"bytes,2,opt,name=id,proto3,oneof"`
 }
 
 type pressGetRequest_SerialNumber struct {
-	SerialNumber *PressGetBySerialNumber `protobuf:"bytes,2,opt,name=serial_number,json=serialNumber,proto3,oneof"`
+	SerialNumber *PressGetBySerialNumber `protobuf:"bytes,3,opt,name=serial_number,json=serialNumber,proto3,oneof"`
 }
 
 func (*pressGetRequest_Id) isPressGetRequest_Key() {}
 
 func (*pressGetRequest_SerialNumber) isPressGetRequest_Key() {}
+
+type PressSelect struct {
+	state                   protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_All          bool                   `protobuf:"varint,1,opt,name=all,proto3" json:"all,omitempty"`
+	xxx_hidden_Book         *BookSelect            `protobuf:"bytes,2,opt,name=book,proto3,oneof" json:"book,omitempty"`
+	xxx_hidden_SerialNumber bool                   `protobuf:"varint,3,opt,name=serial_number,json=serialNumber,proto3" json:"serial_number,omitempty"`
+	xxx_hidden_DateCreated  bool                   `protobuf:"varint,15,opt,name=date_created,json=dateCreated,proto3" json:"date_created,omitempty"`
+	unknownFields           protoimpl.UnknownFields
+	sizeCache               protoimpl.SizeCache
+}
+
+func (x *PressSelect) Reset() {
+	*x = PressSelect{}
+	mi := &file_example_library_press_svc_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PressSelect) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PressSelect) ProtoMessage() {}
+
+func (x *PressSelect) ProtoReflect() protoreflect.Message {
+	mi := &file_example_library_press_svc_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *PressSelect) GetAll() bool {
+	if x != nil {
+		return x.xxx_hidden_All
+	}
+	return false
+}
+
+func (x *PressSelect) GetBook() *BookSelect {
+	if x != nil {
+		return x.xxx_hidden_Book
+	}
+	return nil
+}
+
+func (x *PressSelect) GetSerialNumber() bool {
+	if x != nil {
+		return x.xxx_hidden_SerialNumber
+	}
+	return false
+}
+
+func (x *PressSelect) GetDateCreated() bool {
+	if x != nil {
+		return x.xxx_hidden_DateCreated
+	}
+	return false
+}
+
+func (x *PressSelect) SetAll(v bool) {
+	x.xxx_hidden_All = v
+}
+
+func (x *PressSelect) SetBook(v *BookSelect) {
+	x.xxx_hidden_Book = v
+}
+
+func (x *PressSelect) SetSerialNumber(v bool) {
+	x.xxx_hidden_SerialNumber = v
+}
+
+func (x *PressSelect) SetDateCreated(v bool) {
+	x.xxx_hidden_DateCreated = v
+}
+
+func (x *PressSelect) HasBook() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Book != nil
+}
+
+func (x *PressSelect) ClearBook() {
+	x.xxx_hidden_Book = nil
+}
+
+type PressSelect_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	All          bool
+	Book         *BookSelect
+	SerialNumber bool
+	DateCreated  bool
+}
+
+func (b0 PressSelect_builder) Build() *PressSelect {
+	m0 := &PressSelect{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_All = b.All
+	x.xxx_hidden_Book = b.Book
+	x.xxx_hidden_SerialNumber = b.SerialNumber
+	x.xxx_hidden_DateCreated = b.DateCreated
+	return m0
+}
 
 type PressGetBySerialNumber struct {
 	state                   protoimpl.MessageState `protogen:"opaque.v1"`
@@ -345,7 +480,7 @@ type PressGetBySerialNumber struct {
 
 func (x *PressGetBySerialNumber) Reset() {
 	*x = PressGetBySerialNumber{}
-	mi := &file_example_library_press_svc_proto_msgTypes[2]
+	mi := &file_example_library_press_svc_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -357,7 +492,7 @@ func (x *PressGetBySerialNumber) String() string {
 func (*PressGetBySerialNumber) ProtoMessage() {}
 
 func (x *PressGetBySerialNumber) ProtoReflect() protoreflect.Message {
-	mi := &file_example_library_press_svc_proto_msgTypes[2]
+	mi := &file_example_library_press_svc_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -426,7 +561,7 @@ type PressPatchRequest struct {
 
 func (x *PressPatchRequest) Reset() {
 	*x = PressPatchRequest{}
-	mi := &file_example_library_press_svc_proto_msgTypes[3]
+	mi := &file_example_library_press_svc_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -438,7 +573,7 @@ func (x *PressPatchRequest) String() string {
 func (*PressPatchRequest) ProtoMessage() {}
 
 func (x *PressPatchRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_example_library_press_svc_proto_msgTypes[3]
+	mi := &file_example_library_press_svc_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -512,15 +647,29 @@ var file_example_library_press_svc_proto_rawDesc = []byte{
 	0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73,
 	0x74, 0x61, 0x6d, 0x70, 0x48, 0x01, 0x52, 0x0b, 0x64, 0x61, 0x74, 0x65, 0x43, 0x72, 0x65, 0x61,
 	0x74, 0x65, 0x64, 0x88, 0x01, 0x01, 0x42, 0x05, 0x0a, 0x03, 0x5f, 0x69, 0x64, 0x42, 0x0f, 0x0a,
-	0x0d, 0x5f, 0x64, 0x61, 0x74, 0x65, 0x5f, 0x63, 0x72, 0x65, 0x61, 0x74, 0x65, 0x64, 0x22, 0x7a,
-	0x0a, 0x0f, 0x50, 0x72, 0x65, 0x73, 0x73, 0x47, 0x65, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
-	0x74, 0x12, 0x10, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0c, 0x48, 0x00, 0x52,
-	0x02, 0x69, 0x64, 0x12, 0x4e, 0x0a, 0x0d, 0x73, 0x65, 0x72, 0x69, 0x61, 0x6c, 0x5f, 0x6e, 0x75,
-	0x6d, 0x62, 0x65, 0x72, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x27, 0x2e, 0x65, 0x78, 0x61,
-	0x6d, 0x70, 0x6c, 0x65, 0x2e, 0x6c, 0x69, 0x62, 0x72, 0x61, 0x72, 0x79, 0x2e, 0x50, 0x72, 0x65,
-	0x73, 0x73, 0x47, 0x65, 0x74, 0x42, 0x79, 0x53, 0x65, 0x72, 0x69, 0x61, 0x6c, 0x4e, 0x75, 0x6d,
-	0x62, 0x65, 0x72, 0x48, 0x00, 0x52, 0x0c, 0x73, 0x65, 0x72, 0x69, 0x61, 0x6c, 0x4e, 0x75, 0x6d,
-	0x62, 0x65, 0x72, 0x42, 0x05, 0x0a, 0x03, 0x6b, 0x65, 0x79, 0x22, 0x72, 0x0a, 0x16, 0x50, 0x72,
+	0x0d, 0x5f, 0x64, 0x61, 0x74, 0x65, 0x5f, 0x63, 0x72, 0x65, 0x61, 0x74, 0x65, 0x64, 0x22, 0xb0,
+	0x01, 0x0a, 0x0f, 0x50, 0x72, 0x65, 0x73, 0x73, 0x47, 0x65, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65,
+	0x73, 0x74, 0x12, 0x34, 0x0a, 0x06, 0x73, 0x65, 0x6c, 0x65, 0x63, 0x74, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x0b, 0x32, 0x1c, 0x2e, 0x65, 0x78, 0x61, 0x6d, 0x70, 0x6c, 0x65, 0x2e, 0x6c, 0x69, 0x62,
+	0x72, 0x61, 0x72, 0x79, 0x2e, 0x50, 0x72, 0x65, 0x73, 0x73, 0x53, 0x65, 0x6c, 0x65, 0x63, 0x74,
+	0x52, 0x06, 0x73, 0x65, 0x6c, 0x65, 0x63, 0x74, 0x12, 0x10, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x02,
+	0x20, 0x01, 0x28, 0x0c, 0x48, 0x00, 0x52, 0x02, 0x69, 0x64, 0x12, 0x4e, 0x0a, 0x0d, 0x73, 0x65,
+	0x72, 0x69, 0x61, 0x6c, 0x5f, 0x6e, 0x75, 0x6d, 0x62, 0x65, 0x72, 0x18, 0x03, 0x20, 0x01, 0x28,
+	0x0b, 0x32, 0x27, 0x2e, 0x65, 0x78, 0x61, 0x6d, 0x70, 0x6c, 0x65, 0x2e, 0x6c, 0x69, 0x62, 0x72,
+	0x61, 0x72, 0x79, 0x2e, 0x50, 0x72, 0x65, 0x73, 0x73, 0x47, 0x65, 0x74, 0x42, 0x79, 0x53, 0x65,
+	0x72, 0x69, 0x61, 0x6c, 0x4e, 0x75, 0x6d, 0x62, 0x65, 0x72, 0x48, 0x00, 0x52, 0x0c, 0x73, 0x65,
+	0x72, 0x69, 0x61, 0x6c, 0x4e, 0x75, 0x6d, 0x62, 0x65, 0x72, 0x42, 0x05, 0x0a, 0x03, 0x6b, 0x65,
+	0x79, 0x22, 0xa6, 0x01, 0x0a, 0x0b, 0x50, 0x72, 0x65, 0x73, 0x73, 0x53, 0x65, 0x6c, 0x65, 0x63,
+	0x74, 0x12, 0x10, 0x0a, 0x03, 0x61, 0x6c, 0x6c, 0x18, 0x01, 0x20, 0x01, 0x28, 0x08, 0x52, 0x03,
+	0x61, 0x6c, 0x6c, 0x12, 0x34, 0x0a, 0x04, 0x62, 0x6f, 0x6f, 0x6b, 0x18, 0x02, 0x20, 0x01, 0x28,
+	0x0b, 0x32, 0x1b, 0x2e, 0x65, 0x78, 0x61, 0x6d, 0x70, 0x6c, 0x65, 0x2e, 0x6c, 0x69, 0x62, 0x72,
+	0x61, 0x72, 0x79, 0x2e, 0x42, 0x6f, 0x6f, 0x6b, 0x53, 0x65, 0x6c, 0x65, 0x63, 0x74, 0x48, 0x00,
+	0x52, 0x04, 0x62, 0x6f, 0x6f, 0x6b, 0x88, 0x01, 0x01, 0x12, 0x23, 0x0a, 0x0d, 0x73, 0x65, 0x72,
+	0x69, 0x61, 0x6c, 0x5f, 0x6e, 0x75, 0x6d, 0x62, 0x65, 0x72, 0x18, 0x03, 0x20, 0x01, 0x28, 0x08,
+	0x52, 0x0c, 0x73, 0x65, 0x72, 0x69, 0x61, 0x6c, 0x4e, 0x75, 0x6d, 0x62, 0x65, 0x72, 0x12, 0x21,
+	0x0a, 0x0c, 0x64, 0x61, 0x74, 0x65, 0x5f, 0x63, 0x72, 0x65, 0x61, 0x74, 0x65, 0x64, 0x18, 0x0f,
+	0x20, 0x01, 0x28, 0x08, 0x52, 0x0b, 0x64, 0x61, 0x74, 0x65, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65,
+	0x64, 0x42, 0x07, 0x0a, 0x05, 0x5f, 0x62, 0x6f, 0x6f, 0x6b, 0x22, 0x72, 0x0a, 0x16, 0x50, 0x72,
 	0x65, 0x73, 0x73, 0x47, 0x65, 0x74, 0x42, 0x79, 0x53, 0x65, 0x72, 0x69, 0x61, 0x6c, 0x4e, 0x75,
 	0x6d, 0x62, 0x65, 0x72, 0x12, 0x33, 0x0a, 0x04, 0x62, 0x6f, 0x6f, 0x6b, 0x18, 0x02, 0x20, 0x01,
 	0x28, 0x0b, 0x32, 0x1f, 0x2e, 0x65, 0x78, 0x61, 0x6d, 0x70, 0x6c, 0x65, 0x2e, 0x6c, 0x69, 0x62,
@@ -557,36 +706,40 @@ var file_example_library_press_svc_proto_rawDesc = []byte{
 	0x6f, 0x74, 0x6f, 0x33,
 }
 
-var file_example_library_press_svc_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_example_library_press_svc_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_example_library_press_svc_proto_goTypes = []any{
 	(*PressAddRequest)(nil),        // 0: example.library.PressAddRequest
 	(*PressGetRequest)(nil),        // 1: example.library.PressGetRequest
-	(*PressGetBySerialNumber)(nil), // 2: example.library.PressGetBySerialNumber
-	(*PressPatchRequest)(nil),      // 3: example.library.PressPatchRequest
-	(*BookGetRequest)(nil),         // 4: example.library.BookGetRequest
-	(*timestamppb.Timestamp)(nil),  // 5: google.protobuf.Timestamp
-	(*Press)(nil),                  // 6: example.library.Press
-	(*emptypb.Empty)(nil),          // 7: google.protobuf.Empty
+	(*PressSelect)(nil),            // 2: example.library.PressSelect
+	(*PressGetBySerialNumber)(nil), // 3: example.library.PressGetBySerialNumber
+	(*PressPatchRequest)(nil),      // 4: example.library.PressPatchRequest
+	(*BookGetRequest)(nil),         // 5: example.library.BookGetRequest
+	(*timestamppb.Timestamp)(nil),  // 6: google.protobuf.Timestamp
+	(*BookSelect)(nil),             // 7: example.library.BookSelect
+	(*Press)(nil),                  // 8: example.library.Press
+	(*emptypb.Empty)(nil),          // 9: google.protobuf.Empty
 }
 var file_example_library_press_svc_proto_depIdxs = []int32{
-	4, // 0: example.library.PressAddRequest.book:type_name -> example.library.BookGetRequest
-	5, // 1: example.library.PressAddRequest.date_created:type_name -> google.protobuf.Timestamp
-	2, // 2: example.library.PressGetRequest.serial_number:type_name -> example.library.PressGetBySerialNumber
-	4, // 3: example.library.PressGetBySerialNumber.book:type_name -> example.library.BookGetRequest
-	1, // 4: example.library.PressPatchRequest.key:type_name -> example.library.PressGetRequest
-	0, // 5: example.library.PressService.Add:input_type -> example.library.PressAddRequest
-	1, // 6: example.library.PressService.Get:input_type -> example.library.PressGetRequest
-	3, // 7: example.library.PressService.Patch:input_type -> example.library.PressPatchRequest
-	1, // 8: example.library.PressService.Erase:input_type -> example.library.PressGetRequest
-	6, // 9: example.library.PressService.Add:output_type -> example.library.Press
-	6, // 10: example.library.PressService.Get:output_type -> example.library.Press
-	7, // 11: example.library.PressService.Patch:output_type -> google.protobuf.Empty
-	7, // 12: example.library.PressService.Erase:output_type -> google.protobuf.Empty
-	9, // [9:13] is the sub-list for method output_type
-	5, // [5:9] is the sub-list for method input_type
-	5, // [5:5] is the sub-list for extension type_name
-	5, // [5:5] is the sub-list for extension extendee
-	0, // [0:5] is the sub-list for field type_name
+	5,  // 0: example.library.PressAddRequest.book:type_name -> example.library.BookGetRequest
+	6,  // 1: example.library.PressAddRequest.date_created:type_name -> google.protobuf.Timestamp
+	2,  // 2: example.library.PressGetRequest.select:type_name -> example.library.PressSelect
+	3,  // 3: example.library.PressGetRequest.serial_number:type_name -> example.library.PressGetBySerialNumber
+	7,  // 4: example.library.PressSelect.book:type_name -> example.library.BookSelect
+	5,  // 5: example.library.PressGetBySerialNumber.book:type_name -> example.library.BookGetRequest
+	1,  // 6: example.library.PressPatchRequest.key:type_name -> example.library.PressGetRequest
+	0,  // 7: example.library.PressService.Add:input_type -> example.library.PressAddRequest
+	1,  // 8: example.library.PressService.Get:input_type -> example.library.PressGetRequest
+	4,  // 9: example.library.PressService.Patch:input_type -> example.library.PressPatchRequest
+	1,  // 10: example.library.PressService.Erase:input_type -> example.library.PressGetRequest
+	8,  // 11: example.library.PressService.Add:output_type -> example.library.Press
+	8,  // 12: example.library.PressService.Get:output_type -> example.library.Press
+	9,  // 13: example.library.PressService.Patch:output_type -> google.protobuf.Empty
+	9,  // 14: example.library.PressService.Erase:output_type -> google.protobuf.Empty
+	11, // [11:15] is the sub-list for method output_type
+	7,  // [7:11] is the sub-list for method input_type
+	7,  // [7:7] is the sub-list for extension type_name
+	7,  // [7:7] is the sub-list for extension extendee
+	0,  // [0:7] is the sub-list for field type_name
 }
 
 func init() { file_example_library_press_svc_proto_init() }
@@ -601,13 +754,14 @@ func file_example_library_press_svc_proto_init() {
 		(*pressGetRequest_Id)(nil),
 		(*pressGetRequest_SerialNumber)(nil),
 	}
+	file_example_library_press_svc_proto_msgTypes[2].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_example_library_press_svc_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   4,
+			NumMessages:   5,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

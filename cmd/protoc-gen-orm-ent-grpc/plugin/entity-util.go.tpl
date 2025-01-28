@@ -1,3 +1,4 @@
+{{ $entity_pkg := entity $ }}
 {{ $pred_ent := predicate $.Name -}}
 {{ $req_name := pb (print $.Name "GetRequest") -}}
 func {{ $.Name }}Pick(req *{{ $req_name }}) ({{ $pred_ent }}, error) {
@@ -15,7 +16,7 @@ func {{ $.Name }}Pick(req *{{ $req_name }}) ({{ $pred_ent }}, error) {
 
 		{{ with as_attr . -}}
 		{{ $t := .Type -}}
-		{{ $p := entity $ | ident (print (ent_pascal .Name) "EQ") -}}
+		{{ $p := $entity_pkg | ident (print (ent_pascal .Name) "EQ") -}}
 
 		{{ if is_symmetric $t -}}
 		{{/*   key is symmetric field */ -}}
@@ -108,4 +109,37 @@ func {{ .Name }}GetId(ctx {{ pkg "context" | ident "Context" }}, db *{{ ent "Cli
 	}
 
 	return v, nil
+}
+
+func {{ .Name }}SelectedFields(m *{{ pb (print $.Name "Select") }}) []string {
+	if m.GetAll() {
+		return {{ $entity_pkg | ident "Columns" }}
+	}
+
+	vs := []string{ {{ $entity_pkg | ident "FieldID" }} }
+	{{ range (slice .FieldsSortByNumber 1) -}}
+	{{ with as_attr . -}}
+	if m.Get{{ pascal .Name }}() {
+		vs = append(vs, {{ $entity_pkg | ident (print "Field" (ent_pascal .Name)) }})
+	}
+	{{ end -}}
+	{{ end }}
+	return vs
+}
+
+func {{ .Name }}Select(q *{{ ent (print .Name "Query") }}, m *{{ pb (print $.Name "Select") }}) {
+	if !m.GetAll() {
+		fields := {{ .Name }}SelectedFields(m)
+		q.Select(fields...)
+	}
+	{{ range (slice .FieldsSortByNumber 1) -}}
+	{{ with as_edge . -}}
+	{{ $n := pascal .Name -}}
+	if m.Has{{ $n }}() {
+		q.With{{ $n }}(func(q *{{ ent (print .Target.Name "Query") }}) {
+			{{ print .Target.Name }}Select(q, m.Get{{ $n }}())
+		})
+	}
+	{{ end -}}
+	{{ end -}}
 }

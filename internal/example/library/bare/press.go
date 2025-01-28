@@ -16,16 +16,16 @@ import (
 )
 
 type PressServiceServer struct {
-	db *ent.Client
+	Db *ent.Client
 	library.UnimplementedPressServiceServer
 }
 
-func NewPressServiceServer(db *ent.Client) *PressServiceServer {
-	return &PressServiceServer{db: db}
+func NewPressServiceServer(db *ent.Client) PressServiceServer {
+	return PressServiceServer{Db: db}
 }
 
-func (s *PressServiceServer) Add(ctx context.Context, req *library.PressAddRequest) (*library.Press, error) {
-	q := s.db.Press.Create()
+func (s PressServiceServer) Add(ctx context.Context, req *library.PressAddRequest) (*library.Press, error) {
+	q := s.Db.Press.Create()
 	if req.HasId() {
 		if v, err := uuid.FromBytes(req.GetId()); err != nil {
 			return nil, status.Errorf(codes.InvalidArgument, "id: %s", err)
@@ -33,7 +33,7 @@ func (s *PressServiceServer) Add(ctx context.Context, req *library.PressAddReque
 			q.SetID(v)
 		}
 	}
-	if id, err := BookGetId(ctx, s.db, req.GetBook()); err != nil {
+	if id, err := BookGetId(ctx, s.Db, req.GetBook()); err != nil {
 		return nil, err
 	} else {
 		q.SetBookID(id)
@@ -51,17 +51,21 @@ func (s *PressServiceServer) Add(ctx context.Context, req *library.PressAddReque
 	return v.Proto(), nil
 }
 
-func (s *PressServiceServer) Get(ctx context.Context, req *library.PressGetRequest) (*library.Press, error) {
-	q := s.db.Press.Query()
+func (s PressServiceServer) Get(ctx context.Context, req *library.PressGetRequest) (*library.Press, error) {
+	q := s.Db.Press.Query()
+	if req.HasSelect() {
+		PressSelect(q, req.GetSelect())
+	} else {
+		q.WithBook(func(q *ent.BookQuery) {
+			q.Select(book.FieldID)
+		})
+	}
+
 	if p, err := PressPick(req); err != nil {
 		return nil, err
 	} else {
 		q.Where(p)
 	}
-
-	q.WithBook(func(q *ent.BookQuery) {
-		q.Select(book.FieldID)
-	})
 
 	v, err := q.Only(ctx)
 	if err != nil {
@@ -71,13 +75,13 @@ func (s *PressServiceServer) Get(ctx context.Context, req *library.PressGetReque
 	return v.Proto(), nil
 }
 
-func (s *PressServiceServer) Patch(ctx context.Context, req *library.PressPatchRequest) (*emptypb.Empty, error) {
-	id, err := PressGetId(ctx, s.db, req.GetKey())
+func (s PressServiceServer) Patch(ctx context.Context, req *library.PressPatchRequest) (*emptypb.Empty, error) {
+	id, err := PressGetId(ctx, s.Db, req.GetKey())
 	if err != nil {
 		return nil, err
 	}
 
-	q := s.db.Press.UpdateOneID(id)
+	q := s.Db.Press.UpdateOneID(id)
 
 	if _, err := q.Save(ctx); err != nil {
 		return nil, StatusFromEntError(err)
@@ -86,12 +90,12 @@ func (s *PressServiceServer) Patch(ctx context.Context, req *library.PressPatchR
 	return nil, nil
 }
 
-func (s *PressServiceServer) Erase(ctx context.Context, req *library.PressGetRequest) (*emptypb.Empty, error) {
+func (s PressServiceServer) Erase(ctx context.Context, req *library.PressGetRequest) (*emptypb.Empty, error) {
 	p, err := PressPick(req)
 	if err != nil {
 		return nil, err
 	}
-	if _, err := s.db.Press.Delete().Where(p).Exec(ctx); err != nil {
+	if _, err := s.Db.Press.Delete().Where(p).Exec(ctx); err != nil {
 		return nil, StatusFromEntError(err)
 	}
 
@@ -144,4 +148,32 @@ func PressGetId(ctx context.Context, db *ent.Client, req *library.PressGetReques
 	}
 
 	return v, nil
+}
+
+func PressSelectedFields(m *library.PressSelect) []string {
+	if m.GetAll() {
+		return press.Columns
+	}
+
+	vs := []string{press.FieldID}
+	if m.GetSerialNumber() {
+		vs = append(vs, press.FieldSerialNumber)
+	}
+	if m.GetDateCreated() {
+		vs = append(vs, press.FieldDateCreated)
+	}
+
+	return vs
+}
+
+func PressSelect(q *ent.PressQuery, m *library.PressSelect) {
+	if !m.GetAll() {
+		fields := PressSelectedFields(m)
+		q.Select(fields...)
+	}
+	if m.HasBook() {
+		q.WithBook(func(q *ent.BookQuery) {
+			BookSelect(q, m.GetBook())
+		})
+	}
 }

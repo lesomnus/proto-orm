@@ -28,18 +28,30 @@ service MemberService {
 message LockerAddRequest {
 	optional bytes id = 1;
 	MemberGetRequest owner = 2;
+	string name = 3;
+	uint32 number = 4;
 }
 
 message LockerGetRequest {
+	LockerSelect select = 1;
 	oneof key {
-		bytes id = 1;
+		bytes id = 2;
 	}
+}
+
+message LockerSelect {
+	bool all = 1;
+	optional MemberSelect owner = 2;
+	bool name = 3;
+	bool number = 4;
 }
 
 message LockerPatchRequest {
 	LockerGetRequest key = 1;
 	MemberGetRequest owner = 3;
 	bool owner_null = 4;
+	optional string name = 5;
+	optional uint32 number = 7;
 }
 
 message MemberAddRequest {
@@ -54,10 +66,23 @@ message MemberAddRequest {
 }
 
 message MemberGetRequest {
+	MemberSelect select = 1;
 	oneof key {
-		bytes id = 1;
-		example.library.MemberGetByName name = 8;
+		bytes id = 2;
+		example.library.MemberGetByName name = 9;
 	}
+}
+
+message MemberSelect {
+	bool all = 1;
+	bool name = 3;
+	bool labels = 4;
+	bool profile = 5;
+	bool level = 6;
+	optional LockerSelect locker = 7;
+	optional MemberSelect parent = 8;
+	optional MemberSelect children = 9;
+	bool date_created = 15;
 }
 
 message MemberGetByName {

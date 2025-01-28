@@ -24,9 +24,16 @@ message MembershipAddRequest {
 }
 
 message MembershipGetRequest {
+	MembershipSelect select = 1;
 	oneof key {
-		bytes id = 1;
+		bytes id = 2;
 	}
+}
+
+message MembershipSelect {
+	bool all = 1;
+	optional MemberSelect member = 2;
+	bool point = 3;
 }
 
 message MembershipPatchRequest {

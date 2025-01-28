@@ -27,13 +27,18 @@ message Member {
 			default: ""
 		}
 	];
-	map<string, string> labels = 4;
+	map<string, string> labels = 4 [
+		(orm.field) = {
+			default: ""
+		}
+	];
 
 	Profile profile = 5;
 	enum Level {
-		LEVEL_BRONZE = 0;
-		LEVEL_SILVER = 1;
-		LEVEL_GOLD = 2;
+		LEVEL_UNSPECIFIED = 0;
+		LEVEL_BRONZE = 1;
+		LEVEL_SILVER = 2;
+		LEVEL_GOLD = 3;
 	}
 	Level level = 6;
 	Locker locker = 7 [(orm.edge) = {
@@ -79,5 +84,7 @@ message Locker {
 			nullable: true
 		}
 	];
+	string name = 3;
+	uint32 number = 4;
 }
 

@@ -21,6 +21,9 @@ func (p *Plugin) Print(e *graph.Entity, f *protogen.GeneratedFile) error {
 	if err := t.ExecuteTemplate(f, "pick.go.tpl", e); err != nil {
 		return err
 	}
+	if err := t.ExecuteTemplate(f, "select.go.tpl", e); err != nil {
+		return err
+	}
 	if err := t.ExecuteTemplate(f, "getter.go.tpl", e); err != nil {
 		return err
 	}

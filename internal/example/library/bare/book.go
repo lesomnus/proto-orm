@@ -15,16 +15,16 @@ import (
 )
 
 type BookServiceServer struct {
-	db *ent.Client
+	Db *ent.Client
 	library.UnimplementedBookServiceServer
 }
 
-func NewBookServiceServer(db *ent.Client) *BookServiceServer {
-	return &BookServiceServer{db: db}
+func NewBookServiceServer(db *ent.Client) BookServiceServer {
+	return BookServiceServer{Db: db}
 }
 
-func (s *BookServiceServer) Add(ctx context.Context, req *library.BookAddRequest) (*library.Book, error) {
-	q := s.db.Book.Create()
+func (s BookServiceServer) Add(ctx context.Context, req *library.BookAddRequest) (*library.Book, error) {
+	q := s.Db.Book.Create()
 	if req.HasId() {
 		if v, err := uuid.FromBytes(req.GetId()); err != nil {
 			return nil, status.Errorf(codes.InvalidArgument, "id: %s", err)
@@ -51,8 +51,13 @@ func (s *BookServiceServer) Add(ctx context.Context, req *library.BookAddRequest
 	return v.Proto(), nil
 }
 
-func (s *BookServiceServer) Get(ctx context.Context, req *library.BookGetRequest) (*library.Book, error) {
-	q := s.db.Book.Query()
+func (s BookServiceServer) Get(ctx context.Context, req *library.BookGetRequest) (*library.Book, error) {
+	q := s.Db.Book.Query()
+	if req.HasSelect() {
+		BookSelect(q, req.GetSelect())
+	} else {
+	}
+
 	if p, err := BookPick(req); err != nil {
 		return nil, err
 	} else {
@@ -67,13 +72,13 @@ func (s *BookServiceServer) Get(ctx context.Context, req *library.BookGetRequest
 	return v.Proto(), nil
 }
 
-func (s *BookServiceServer) Patch(ctx context.Context, req *library.BookPatchRequest) (*emptypb.Empty, error) {
-	id, err := BookGetId(ctx, s.db, req.GetKey())
+func (s BookServiceServer) Patch(ctx context.Context, req *library.BookPatchRequest) (*emptypb.Empty, error) {
+	id, err := BookGetId(ctx, s.Db, req.GetKey())
 	if err != nil {
 		return nil, err
 	}
 
-	q := s.db.Book.UpdateOneID(id)
+	q := s.Db.Book.UpdateOneID(id)
 	if req.HasTitle() {
 		q.SetTitle(req.GetTitle())
 	}
@@ -91,12 +96,12 @@ func (s *BookServiceServer) Patch(ctx context.Context, req *library.BookPatchReq
 	return nil, nil
 }
 
-func (s *BookServiceServer) Erase(ctx context.Context, req *library.BookGetRequest) (*emptypb.Empty, error) {
+func (s BookServiceServer) Erase(ctx context.Context, req *library.BookGetRequest) (*emptypb.Empty, error) {
 	p, err := BookPick(req)
 	if err != nil {
 		return nil, err
 	}
-	if _, err := s.db.Book.Delete().Where(p).Exec(ctx); err != nil {
+	if _, err := s.Db.Book.Delete().Where(p).Exec(ctx); err != nil {
 		return nil, StatusFromEntError(err)
 	}
 
@@ -139,4 +144,38 @@ func BookGetId(ctx context.Context, db *ent.Client, req *library.BookGetRequest)
 	}
 
 	return v, nil
+}
+
+func BookSelectedFields(m *library.BookSelect) []string {
+	if m.GetAll() {
+		return book.Columns
+	}
+
+	vs := []string{book.FieldID}
+	if m.GetTitle() {
+		vs = append(vs, book.FieldTitle)
+	}
+	if m.GetIndex() {
+		vs = append(vs, book.FieldIndex)
+	}
+	if m.GetGenres() {
+		vs = append(vs, book.FieldGenres)
+	}
+	if m.GetDateCreated() {
+		vs = append(vs, book.FieldDateCreated)
+	}
+
+	return vs
+}
+
+func BookSelect(q *ent.BookQuery, m *library.BookSelect) {
+	if !m.GetAll() {
+		fields := BookSelectedFields(m)
+		q.Select(fields...)
+	}
+	if m.HasAuthors() {
+		q.WithAuthors(func(q *ent.AuthorQuery) {
+			AuthorSelect(q, m.GetAuthors())
+		})
+	}
 }
