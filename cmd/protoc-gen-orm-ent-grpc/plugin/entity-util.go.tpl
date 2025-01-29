@@ -64,7 +64,7 @@ func {{ $.Name }}Pick(req *{{ $req_name }}) ({{ $pred_ent }}, error) {
 		{{ with as_edge . -}}
 		{{/* ref is edge */ -}}
 		if p, err := {{ .Target.Name }}Pick({{ $n }}.Get{{ pascal .Name }}()); err != nil {
-			s, _ := {{ grpc_status "FromError" }}(err)
+			s := {{ grpc_status "Convert" }}(err)
 			return nil, {{ grpc_errf "InvalidArgument" (print $v.Name "." .Name ": %s" | quote) "s.Message()" }}
 		} else {
 			ps = append(ps, {{ entity $ | ident (print "Has" (ent_pascal .Name) "With") }}(p))

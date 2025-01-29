@@ -85,7 +85,9 @@ func (s {{ $.Name }}ServiceServer) Add(ctx {{ pkg "context" | ident "Context" }}
 	}
 	{{ else -}}
 	if id, err := {{ $target.Name }}GetId(ctx, s.Db, req.Get{{ $n }}()); err != nil {
-		return nil, err
+		s := {{ grpc_status "Convert" }}(err)
+		s = {{ grpc_status "Newf" }}(s.Code(), "%s: %s", "{{ .Name }}", s.Message())
+		return nil, s.Err()
 	} else {
 		q.Set{{ $n }}ID(id)
 	}
