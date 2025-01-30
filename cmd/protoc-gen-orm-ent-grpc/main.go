@@ -12,6 +12,7 @@ func main() {
 
 	var flags flag.FlagSet
 	flags.StringVar((*string)(&p.EntPkg), "ent", "", "full package name of generate code by Ent")
+	flags.StringVar(&p.Naming, "naming", "{{ .Name }}.g.go", "golang text template for output filename")
 
 	opt := protogen.Options{ParamFunc: flags.Set}
 	opt.Run(p.Run)

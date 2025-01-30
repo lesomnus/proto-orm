@@ -1,9 +1,11 @@
 package plugin
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"path/filepath"
+	"text/template"
 
 	"github.com/lesomnus/proto-orm/graph"
 	"google.golang.org/protobuf/compiler/protogen"
@@ -14,6 +16,7 @@ import (
 type Plugin struct {
 	Graph  graph.Graph
 	EntPkg protogen.GoImportPath
+	Naming string
 }
 
 func NewPlugin() *Plugin {
@@ -30,6 +33,13 @@ func (p *Plugin) Run(plugin *protogen.Plugin) error {
 	if p.EntPkg == "" {
 		return errors.New(`"ent" option must be given`)
 	}
+
+	namer, err := template.New("naming").Parse(p.Naming)
+	if err != nil {
+		return fmt.Errorf(`invalid option value "naming=%s": %w`, p.Naming, err)
+	}
+
+	_ = namer
 
 	g, err := graph.NewGraph(plugin.Files)
 	if err != nil {
@@ -51,8 +61,14 @@ func (p *Plugin) Run(plugin *protogen.Plugin) error {
 			continue
 		}
 
-		pd := filepath.Join(filepath.Dir(e.File.GeneratedFilenamePrefix), "bare")
-		pf := filepath.Join(pd, e.Filename())
+		d, n := filepath.Split(e.File.GeneratedFilenamePrefix)
+		b := &bytes.Buffer{}
+		if err := namer.Execute(b, struct{ Name string }{Name: n}); err != nil {
+			return fmt.Errorf("%s: name a generated file: %w", e.File.GoPackageName, err)
+		}
+
+		pd := filepath.Join(d, "bare")
+		pf := filepath.Join(pd, b.String())
 		pi := e.File.GoImportPath + "/bare"
 		pkgs[pd] = pkg{
 			d:  pd,
@@ -72,9 +88,15 @@ func (p *Plugin) Run(plugin *protogen.Plugin) error {
 			errs = append(errs, err)
 		}
 	}
+
 	// Generate common codes for entity package.
 	for _, pkg := range pkgs {
-		pf := filepath.Join(pkg.d, "misc.go")
+		b := &bytes.Buffer{}
+		if err := namer.Execute(b, struct{ Name string }{Name: "misc"}); err != nil {
+			return fmt.Errorf("name a file for common code: %w", err)
+		}
+
+		pf := filepath.Join(pkg.d, b.String())
 		f := plugin.NewGeneratedFile(pf, pkg.i)
 		p.printPrelude(f)
 
@@ -84,7 +106,7 @@ func (p *Plugin) Run(plugin *protogen.Plugin) error {
 		}
 		t := printer.newTemplate(f)
 		if err := t.ExecuteTemplate(f, "misc.go.tpl", nil); err != nil {
-			err = fmt.Errorf(`print "misc.go": %w`, err)
+			err = fmt.Errorf(`print common code: %w`, err)
 			errs = append(errs, err)
 			continue
 		}
