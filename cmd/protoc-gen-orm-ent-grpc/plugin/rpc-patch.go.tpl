@@ -61,18 +61,19 @@ func (s {{ $.Name }}ServiceServer) Patch(ctx {{ pkg "context" | ident "Context" 
 	{{ $target := .Target -}}
 	{{ $k := $target.Key -}}
 	{{ $t := $k.Type -}}
-	{{ $v := print "req." (pascal .Name) -}}
-	{{ $n := ent_pascal $target.Name -}}
+	{{ $n := pascal .Name -}}
+	{{ $v := print "req." $n -}}
 
 	{{ if .IsNullable -}}
-	if {{ print "req.Get" (pascal .Name) "Null()" }} {
-		q.Clear{{ pascal .Name }}()
+	if req.Get{{ $n }}Null() {
+		q.Clear{{ $n }}()
 	} else {{ end -}}
-
-	if id, err := {{ $.Name }}GetId(ctx, s.Db, req.GetKey()); err != nil {
-		return nil, err
-	} else {
-		q.Set{{ pascal .Name }}ID(id)
+	if req.Has{{ $n }}() {
+		if id, err := {{ $target.Name  }}GetId(ctx, s.Db, req.Get{{ $n }}()); err != nil {
+			return nil, err
+		} else {
+			q.Set{{ $n }}ID(id)
+		}
 	}
 	{{ continue -}}
 	{{ end }}{{/* edge field is printed */ -}}
