@@ -84,10 +84,12 @@ func (s LockerServiceServer) Patch(ctx context.Context, req *library.LockerPatch
 	q := s.Db.Locker.UpdateOneID(id)
 	if req.GetOwnerNull() {
 		q.ClearOwner()
-	} else if id, err := LockerGetId(ctx, s.Db, req.GetKey()); err != nil {
-		return nil, err
-	} else {
-		q.SetOwnerID(id)
+	} else if req.HasOwner() {
+		if id, err := MemberGetId(ctx, s.Db, req.GetOwner()); err != nil {
+			return nil, err
+		} else {
+			q.SetOwnerID(id)
+		}
 	}
 	if req.HasName() {
 		q.SetName(req.GetName())

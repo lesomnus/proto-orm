@@ -35,12 +35,16 @@ func (s LikeServiceServer) Add(ctx context.Context, req *library.LikeAddRequest)
 		}
 	}
 	if id, err := BookGetId(ctx, s.Db, req.GetSubject()); err != nil {
-		return nil, err
+		s := status.Convert(err)
+		s = status.Newf(s.Code(), "%s: %s", "subject", s.Message())
+		return nil, s.Err()
 	} else {
 		q.SetSubjectID(id)
 	}
 	if id, err := MemberGetId(ctx, s.Db, req.GetActor()); err != nil {
-		return nil, err
+		s := status.Convert(err)
+		s = status.Newf(s.Code(), "%s: %s", "actor", s.Message())
+		return nil, s.Err()
 	} else {
 		q.SetActorID(id)
 	}
@@ -126,7 +130,7 @@ func LikePick(req *library.LikeGetRequest) (predicate.Like, error) {
 			ps = append(ps, like.SubjectIDEQ(v))
 		}
 		if p, err := MemberPick(req.GetHolders().GetActor()); err != nil {
-			s, _ := status.FromError(err)
+			s := status.Convert(err)
 			return nil, status.Errorf(codes.InvalidArgument, "holders.actor: %s", s.Message())
 		} else {
 			ps = append(ps, like.HasActorWith(p))

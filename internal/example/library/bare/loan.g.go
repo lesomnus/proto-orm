@@ -34,12 +34,16 @@ func (s LoanServiceServer) Add(ctx context.Context, req *library.LoanAddRequest)
 		}
 	}
 	if id, err := BookGetId(ctx, s.Db, req.GetSubject()); err != nil {
-		return nil, err
+		s := status.Convert(err)
+		s = status.Newf(s.Code(), "%s: %s", "subject", s.Message())
+		return nil, s.Err()
 	} else {
 		q.SetSubjectID(id)
 	}
 	if id, err := MemberGetId(ctx, s.Db, req.GetBorrower()); err != nil {
-		return nil, err
+		s := status.Convert(err)
+		s = status.Newf(s.Code(), "%s: %s", "borrower", s.Message())
+		return nil, s.Err()
 	} else {
 		q.SetBorrowerID(id)
 	}

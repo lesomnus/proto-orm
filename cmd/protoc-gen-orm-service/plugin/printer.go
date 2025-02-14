@@ -232,12 +232,11 @@ func (w *printWork) msgAddReq(r *graph.Rpc) *generatedMessage {
 
 			v.Type = w.typeMessage(u)
 
-			d := u.Source().Desc
-			if d.IsMap() {
+			if u.IsMap() {
 				// Map cannot have label.
-			} else if d.IsList() {
+			} else if u.IsList() {
 				v.Label = pbgen.LabelRepeated
-			} else if d.HasOptionalKeyword() || u.HasDefault() {
+			} else if u.HasOptionalKeyword() || u.HasDefault() {
 				v.Label = pbgen.LabelOptional
 			}
 
@@ -256,8 +255,7 @@ func (w *printWork) msgAddReq(r *graph.Rpc) *generatedMessage {
 			m := w.msgGetReq(r)
 			v.Type = w.typeMessage(m)
 
-			d := u.Source().Desc
-			if d.IsList() {
+			if u.IsList() {
 				v.Label = pbgen.LabelRepeated
 			}
 		}
@@ -293,13 +291,12 @@ func (w *printWork) indexGet(e *graph.Entity, i *graph.Index) *generatedMessage 
 
 	body := []pbgen.MessageBody{}
 	for _, r := range i.Refs {
-		d := r.Source().Desc
 		switch u := r.(type) {
 		case (*graph.Attr):
 			v := pbgen.MessageField{
 				Type:   w.typeMessage(r),
-				Name:   d.Name(),
-				Number: int(d.Number()),
+				Name:   protoreflect.Name(r.Name()),
+				Number: int(r.Number()),
 			}
 			body = append(body, v)
 
@@ -307,8 +304,8 @@ func (w *printWork) indexGet(e *graph.Entity, i *graph.Index) *generatedMessage 
 			m := w.msgGetReq(u.Target.Rpcs[graph.RpcOpGet])
 			v := pbgen.MessageField{
 				Type:   w.typeMessage(m),
-				Name:   d.Name(),
-				Number: int(d.Number()),
+				Name:   protoreflect.Name(r.Name()),
+				Number: int(r.Number()),
 			}
 			body = append(body, v)
 		}
@@ -343,13 +340,12 @@ func (w *printWork) msgSelect(e *graph.Entity) *generatedMessage {
 		},
 	}
 	for _, r := range e.FieldsSortByNumber()[1:] {
-		d := r.Source().Desc
 		switch u := r.(type) {
 		case (*graph.Attr):
 			v := pbgen.MessageField{
 				Type:   pbgen.TypeBool,
-				Name:   d.Name(),
-				Number: int(d.Number()),
+				Name:   protoreflect.Name(u.Name()),
+				Number: int(u.Number()),
 			}
 			body = append(body, v)
 
@@ -357,8 +353,8 @@ func (w *printWork) msgSelect(e *graph.Entity) *generatedMessage {
 			m := w.msgSelect(u.Target)
 			v := pbgen.MessageField{
 				Type:   w.typeMessage(m),
-				Name:   d.Name(),
-				Number: int(d.Number()),
+				Name:   protoreflect.Name(u.Name()),
+				Number: int(u.Number()),
 				Label:  pbgen.LabelOptional,
 			}
 			body = append(body, v)
@@ -451,12 +447,11 @@ func (w *printWork) msgPatchReq(r *graph.Rpc) *generatedMessage {
 
 			v.Type = w.typeMessage(u)
 
-			d := u.Source().Desc
-			if d.IsMap() {
+			if u.IsMap() {
 				// Map cannot have label.
-			} else if d.IsList() {
+			} else if u.IsList() {
 				v.Label = pbgen.LabelRepeated
-			} else if !f.Source().Desc.IsMap() {
+			} else if !f.IsMap() {
 				v.Label = pbgen.LabelOptional
 			}
 
@@ -475,8 +470,7 @@ func (w *printWork) msgPatchReq(r *graph.Rpc) *generatedMessage {
 			m := w.msgGetReq(r)
 			v.Type = w.typeMessage(m)
 
-			d := u.Source().Desc
-			if d.IsList() {
+			if u.IsList() {
 				v.Label = pbgen.LabelRepeated
 			}
 		}

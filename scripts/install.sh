@@ -11,10 +11,7 @@ __root="$(cd "$(dirname "${__dir}")" && pwd)"         # Root directory of projec
 
 cd "$__root"
 
-./scripts/example-clean.sh
-./scripts/example-gen-service.sh
-./scripts/example-gen-go.sh
-./scripts/example-gen-ent.sh
-./scripts/example-gen-ent-grpc.sh
-
-go generate ./internal/example/library
+go install ./cmd/protoc-gen-orm-service
+go install ./cmd/protoc-gen-orm-go
+go install ./cmd/protoc-gen-orm-ent
+go install ./cmd/protoc-gen-orm-ent-grpc

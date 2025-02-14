@@ -115,17 +115,21 @@ func (s MemberServiceServer) Patch(ctx context.Context, req *library.MemberPatch
 	}
 	if req.GetLockerNull() {
 		q.ClearLocker()
-	} else if id, err := MemberGetId(ctx, s.Db, req.GetKey()); err != nil {
-		return nil, err
-	} else {
-		q.SetLockerID(id)
+	} else if req.HasLocker() {
+		if id, err := LockerGetId(ctx, s.Db, req.GetLocker()); err != nil {
+			return nil, err
+		} else {
+			q.SetLockerID(id)
+		}
 	}
 	if req.GetParentNull() {
 		q.ClearParent()
-	} else if id, err := MemberGetId(ctx, s.Db, req.GetKey()); err != nil {
-		return nil, err
-	} else {
-		q.SetParentID(id)
+	} else if req.HasParent() {
+		if id, err := MemberGetId(ctx, s.Db, req.GetParent()); err != nil {
+			return nil, err
+		} else {
+			q.SetParentID(id)
+		}
 	}
 
 	if _, err := q.Save(ctx); err != nil {
@@ -158,7 +162,7 @@ func MemberPick(req *library.MemberGetRequest) (predicate.Member, error) {
 	case library.MemberGetRequest_Name_case:
 		ps := make([]predicate.Member, 0, 2)
 		if p, err := MemberPick(req.GetName().GetParent()); err != nil {
-			s, _ := status.FromError(err)
+			s := status.Convert(err)
 			return nil, status.Errorf(codes.InvalidArgument, "name.parent: %s", s.Message())
 		} else {
 			ps = append(ps, member.HasParentWith(p))

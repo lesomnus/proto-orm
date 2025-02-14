@@ -34,7 +34,9 @@ func (s PressServiceServer) Add(ctx context.Context, req *library.PressAddReques
 		}
 	}
 	if id, err := BookGetId(ctx, s.Db, req.GetBook()); err != nil {
-		return nil, err
+		s := status.Convert(err)
+		s = status.Newf(s.Code(), "%s: %s", "book", s.Message())
+		return nil, s.Err()
 	} else {
 		q.SetBookID(id)
 	}
@@ -113,7 +115,7 @@ func PressPick(req *library.PressGetRequest) (predicate.Press, error) {
 	case library.PressGetRequest_SerialNumber_case:
 		ps := make([]predicate.Press, 0, 2)
 		if p, err := BookPick(req.GetSerialNumber().GetBook()); err != nil {
-			s, _ := status.FromError(err)
+			s := status.Convert(err)
 			return nil, status.Errorf(codes.InvalidArgument, "serial_number.book: %s", s.Message())
 		} else {
 			ps = append(ps, press.HasBookWith(p))

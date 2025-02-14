@@ -52,7 +52,20 @@ message EdgeOptions {
 	int32 from = 2;
 	int32 bind = 3;
 
-	SelectOptions select = 4;
+	// Creates inverse edge.
+	// It generates virtual proto field.
+	// Default to exclusive.
+	OwnershipOptions ownership = 4;
+
+	bool nullable = 7;
+	bool immutable = 8;
+}
+
+message OwnershipOptions {
+	// Default to entity name.
+	string name = 1;
+	int32 number = 2;
+	bool shared = 3;
 
 	bool nullable = 7;
 	bool immutable = 8;

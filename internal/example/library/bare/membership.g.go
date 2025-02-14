@@ -34,7 +34,9 @@ func (s MembershipServiceServer) Add(ctx context.Context, req *library.Membershi
 		}
 	}
 	if id, err := MemberGetId(ctx, s.Db, req.GetMember()); err != nil {
-		return nil, err
+		s := status.Convert(err)
+		s = status.Newf(s.Code(), "%s: %s", "member", s.Message())
+		return nil, s.Err()
 	} else {
 		q.SetMemberID(id)
 	}
@@ -79,10 +81,12 @@ func (s MembershipServiceServer) Patch(ctx context.Context, req *library.Members
 	}
 
 	q := s.Db.Membership.UpdateOneID(id)
-	if id, err := MembershipGetId(ctx, s.Db, req.GetKey()); err != nil {
-		return nil, err
-	} else {
-		q.SetMemberID(id)
+	if req.HasMember() {
+		if id, err := MemberGetId(ctx, s.Db, req.GetMember()); err != nil {
+			return nil, err
+		} else {
+			q.SetMemberID(id)
+		}
 	}
 	if req.HasPoint() {
 		q.SetPoint(req.GetPoint())

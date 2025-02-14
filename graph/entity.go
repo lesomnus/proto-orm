@@ -14,28 +14,6 @@ import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 )
 
-type Field interface {
-	ProtoTyped
-
-	FullName() protoreflect.FullName
-	Name() string
-	Number() protowire.Number
-	GoName() string
-
-	Source() *protogen.Field
-	Entity() *Entity
-
-	IsIgnored() bool
-	IsOptional() bool
-	IsList() bool
-	IsUnique() bool
-	IsImmutable() bool
-	IsNullable() bool
-
-	setImmutable()
-	setNullable()
-}
-
 type Entity struct {
 	File   *protogen.File // Proto file where the message defines this entity is.
 	Source *protogen.Message

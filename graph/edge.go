@@ -11,16 +11,20 @@ import (
 )
 
 type Edge struct {
-	source *protogen.Field
+	*FieldMeta
+	// source *protogen.Field
 	entity *Entity // Message that defines this edge.
 
+	// Reverse is assigned in User-to-Pet edge.
+	// Inverse is assigned in Pet-from-User edge.
+	// -> Reverse always exists if Inverse is exists since "from" edge requires "to" edge.
 	//
 	//              +User[pet].Target
-	//              |   +User[pet].Reverse
+	//              |   +User[pet].Reverse -> User to Pet
 	//              |   |
 	// User.pet --> Pet.owner --> User.pet
 	//                            |     |
-	//                            |     +Pet[owner].Inverse.
+	//                            |     +Pet[owner].Inverse. -> Pet from User
 	//                            +Pet[owner].Target
 	//
 	Target  *Entity
@@ -43,8 +47,8 @@ func (e *Entity) parseEdge(f *protogen.Field, o *orm.EdgeOptions, target *Entity
 	v, ok := e.Edges[n]
 	if !ok {
 		v = &Edge{
-			source: f,
-			entity: e,
+			FieldMeta: NewFieldMeta(f),
+			entity:    e,
 
 			Target: target,
 
@@ -64,9 +68,9 @@ func (e *Entity) parseEdge(f *protogen.Field, o *orm.EdgeOptions, target *Entity
 			err := fmt.Errorf("back-reference field not found: %d", o.From)
 			errs = append(errs, err)
 		} else if t, ok := f.(*Edge); !ok {
-			err := fmt.Errorf("back-reference field must be edge")
+			err := fmt.Errorf("back-reference field must be an edge")
 			errs = append(errs, err)
-		} else if t.source.Message.Desc.FullName() != e.FullName() {
+		} else if t.Target.FullName() != e.FullName() {
 			err := fmt.Errorf("back-reference edge does not reference this entity")
 			errs = append(errs, err)
 		} else {
@@ -97,6 +101,41 @@ func (e *Entity) parseEdge(f *protogen.Field, o *orm.EdgeOptions, target *Entity
 			}
 		}
 	}
+
+	if opt := o.Ownership; opt != nil {
+		n := opt.Name
+		if n == "" {
+			n = e.Name()
+		}
+		if _, ok := target.Fields[n]; ok {
+			err := fmt.Errorf(`make inverse edge: name "%s" already exist`, n)
+			errs = append(errs, err)
+		} else {
+			v.Reverse = &Edge{
+				FieldMeta: &FieldMeta{
+					kind:     protoreflect.MessageKind,
+					fullName: target.FullName().Append(protoreflect.Name(opt.Name)),
+
+					number: protowire.Number(opt.Number),
+					goName: opt.Name,
+
+					isList: opt.Shared,
+					isMap:  false,
+				},
+				entity: target,
+
+				Target:  e,
+				Inverse: v,
+
+				Nullable:  opt.Nullable,
+				Immutable: opt.Immutable,
+			}
+
+			target.Fields[n] = v.Reverse
+			target.Edges[n] = v.Reverse
+		}
+	}
+
 	if o.Immutable {
 		v.setImmutable()
 	}
@@ -124,32 +163,12 @@ func (e *Edge) setNullable() {
 	}
 }
 
-func (e *Edge) FullName() protoreflect.FullName {
-	return e.source.Desc.FullName()
-}
-
-func (e *Edge) Name() string {
-	return string(e.source.Desc.Name())
-}
-
-func (e *Edge) Number() protowire.Number {
-	return e.source.Desc.Number()
-}
-
 func (e *Edge) ProtoType() string {
-	return string(e.source.Message.Desc.FullName())
+	return string(e.Target.Source.Desc.FullName())
 }
 
-func (a *Edge) ImportPath() string {
-	return a.source.Message.Desc.ParentFile().Path()
-}
-
-func (e *Edge) GoName() string {
-	return e.source.GoName
-}
-
-func (e *Edge) Source() *protogen.Field {
-	return e.source
+func (e *Edge) ImportPath() string {
+	return e.Target.Source.Desc.ParentFile().Path()
 }
 
 func (e *Edge) Entity() *Entity {
@@ -170,10 +189,6 @@ func (e *Edge) IsRequired() bool {
 
 func (e *Edge) IsOptional() bool {
 	return !e.IsRequired()
-}
-
-func (e *Edge) IsList() bool {
-	return e.source.Desc.IsList()
 }
 
 func (e *Edge) IsUnique() bool {

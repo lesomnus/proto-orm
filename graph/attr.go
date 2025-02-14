@@ -79,6 +79,10 @@ func (e *Entity) parseAttr(f *protogen.Field, o *orm.FieldOptions) (*Attr, error
 	return v, nil
 }
 
+func (a *Attr) Kind() protoreflect.Kind {
+	return a.source.Desc.Kind()
+}
+
 func (a *Attr) FullName() protoreflect.FullName {
 	return a.source.Desc.FullName()
 }
@@ -169,7 +173,11 @@ func (a *Attr) goType(f *protogen.Field, q func(ident protogen.GoIdent) string) 
 	if d.IsMap() {
 		k := f.Message.Fields[0]
 		v := f.Message.Fields[1]
-		return fmt.Sprintf("map[%s]%s", a.goType(k, q), a.goType(v, q))
+		p := ""
+		if v.Desc.Kind() == protoreflect.MessageKind {
+			p = "*"
+		}
+		return fmt.Sprintf("map[%s]%s%s", a.goType(k, q), p, a.goType(v, q))
 	}
 
 	v := ""
@@ -202,14 +210,18 @@ func (a *Attr) goType(f *protogen.Field, q func(ident protogen.GoIdent) string) 
 	case protoreflect.BytesKind:
 		v = "[]byte"
 	case protoreflect.MessageKind:
-		v = "*" + q(f.Message.GoIdent)
+		v = q(f.Message.GoIdent)
 	case protoreflect.GroupKind:
 	default:
 		panic(fmt.Sprintf("unknown type or type not supported: %s", k.String()))
 	}
 
 	if d.IsList() {
-		return "[]" + v
+		if k == protoreflect.MessageKind {
+			return "[]*" + v
+		} else {
+			return "[]" + v
+		}
 	}
 	return v
 }
@@ -248,10 +260,6 @@ func (a *Attr) GoName() string {
 	return a.source.GoName
 }
 
-func (a *Attr) Source() *protogen.Field {
-	return a.source
-}
-
 func (a *Attr) Entity() *Entity {
 	return a.entity
 }
@@ -275,6 +283,10 @@ func (a *Attr) IsBound() bool {
 
 func (a *Attr) HasDefault() bool {
 	return a.Default != nil
+}
+
+func (a *Attr) HasOptionalKeyword() bool {
+	return a.source.Desc.HasOptionalKeyword()
 }
 
 func (a *Attr) IsJson() bool {

@@ -40,9 +40,7 @@ message Author {
 	];
 
 	repeated Book books = 7 [
-		(orm.edge) = {
-			select: {}
-		}
+		(orm.edge) = {}
 	];
 
 	google.protobuf.Timestamp date_created = 15 [
@@ -65,7 +63,6 @@ message Book {
 	repeated Author authors = 4 [
 		(orm.edge) = {
 			from: 7 // books
-			select: {}
 		}
 	];
 
