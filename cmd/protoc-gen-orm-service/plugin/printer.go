@@ -170,11 +170,14 @@ func (w *printWork) newMessage(m *graph.RpcMessage) (*generatedMessage, bool) {
 	return v, true
 }
 
-func (w *printWork) typeMessage(t graph.ProtoTyped) pbgen.Type {
+func (w *printWork) importType(t graph.ProtoTyped) {
 	if p := t.ImportPath(); p != "" {
 		w.file.AddImport(pbgen.Import{Name: p})
 	}
+}
 
+func (w *printWork) typeMessage(t graph.ProtoTyped) pbgen.Type {
+	w.importType(t)
 	return pbgen.Type(t.ProtoType())
 }
 
@@ -241,6 +244,9 @@ func (w *printWork) msgAddReq(r *graph.Rpc) *generatedMessage {
 			}
 
 		case (*graph.Edge):
+			if u.IsVirtual() {
+				continue
+			}
 			if !(u.IsUnidirectional() || u.IsExclusive()) {
 				continue
 			}
@@ -323,6 +329,7 @@ func (w *printWork) nameMsgSelect(e *graph.Entity) protoreflect.FullName {
 func (w *printWork) msgSelect(e *graph.Entity) *generatedMessage {
 	full := w.nameMsgSelect(e)
 	if m, ok := w.messages[full]; ok {
+		w.importType(m)
 		return m
 	}
 
@@ -340,6 +347,10 @@ func (w *printWork) msgSelect(e *graph.Entity) *generatedMessage {
 		},
 	}
 	for _, r := range e.FieldsSortByNumber()[1:] {
+		if r.IsIgnored() || r.IsVirtual() {
+			continue
+		}
+
 		switch u := r.(type) {
 		case (*graph.Attr):
 			v := pbgen.MessageField{
@@ -456,6 +467,9 @@ func (w *printWork) msgPatchReq(r *graph.Rpc) *generatedMessage {
 			}
 
 		case (*graph.Edge):
+			if u.IsVirtual() {
+				continue
+			}
 			if !(u.IsUnidirectional() || u.IsExclusive()) {
 				continue
 			}

@@ -12,17 +12,17 @@ extend google.protobuf.FileOptions {
 
 extend google.protobuf.MessageOptions {
 	MessageOptions message = 45001;
-	RpcOptions rpcs = 45002;
+	RpcOptions     rpcs    = 45002;
 }
 
 extend google.protobuf.FieldOptions {
 	FieldOptions field = 45003;
-	EdgeOptions edge = 45004;
+	EdgeOptions  edge  = 45004;
 }
 
 message FileOptions {
 	FileMessageOptions messages = 1;
-	FileRpcOptions rpcs = 2;
+	FileRpcOptions     rpcs     = 2;
 }
 
 message FileMessageOptions {
@@ -30,17 +30,17 @@ message FileMessageOptions {
 }
 
 message MessageOptions {
-	optional bool enabled = 1;
+	optional bool  enabled = 1;
 	repeated Index indexes = 2;
 }
 
 message FieldOptions {
 	bool ignored = 1;
-	Type type = 2;
+	Type type    = 2;
 
-	bool key = 5;
-	bool unique = 6;
-	bool nullable = 7;
+	bool key       = 5;
+	bool unique    = 6;
+	bool nullable  = 7;
 	bool immutable = 8;
 
 	optional string default = 9;
@@ -49,25 +49,28 @@ message FieldOptions {
 message EdgeOptions {
 	bool ignored = 1;
 
-	int32 from = 2;
-	int32 bind = 3;
+	int32 bind = 2;
 
-	// Creates inverse edge.
-	// It generates virtual proto field.
-	// Default to exclusive.
-	OwnershipOptions ownership = 4;
+	BackRefOptions from = 3;
 
-	bool nullable = 7;
+	bool nullable  = 7;
 	bool immutable = 8;
 }
 
-message OwnershipOptions {
-	// Default to entity name.
-	string name = 1;
-	int32 number = 2;
-	bool shared = 3;
+message BackRefOptions {
+	int32 number = 1;
 
-	bool nullable = 7;
+	// Create virtual edge to this entity.
+	// It is error if the edge already exist and this value is set.
+	VirtualBackRefOptions virtual = 2;
+}
+
+message VirtualBackRefOptions {
+	// Default to entity name.
+	string name   = 1;
+	bool   shared = 2;
+
+	bool nullable  = 7;
 	bool immutable = 8;
 }
 
@@ -81,25 +84,25 @@ enum Type {
 
 	TYPE_UNSPECIFIED = 0;
 
-	TYPE_BOOL      = 8;
-	TYPE_ENUM      = 14;
-	TYPE_INT32     = 5;
-	TYPE_SINT32    = 17;
-	TYPE_UINT32    = 13;
-	TYPE_INT64     = 3;
-	TYPE_SINT64    = 18;
-	TYPE_UINT64    = 4;
-	TYPE_SFIXED32  = 15;
-	TYPE_FIXED32   = 7;
-	TYPE_FLOAT     = 2;
-	TYPE_SFIXED64  = 16;
-	TYPE_FIXED64   = 6;
-	TYPE_DOUBLE    = 1;
-	TYPE_STRING    = 9;
-	TYPE_BYTES     = 12;
-	TYPE_MESSAGE   = 11;
-	TYPE_GROUP     = 10;
-	
+	TYPE_BOOL     = 8;
+	TYPE_ENUM     = 14;
+	TYPE_INT32    = 5;
+	TYPE_SINT32   = 17;
+	TYPE_UINT32   = 13;
+	TYPE_INT64    = 3;
+	TYPE_SINT64   = 18;
+	TYPE_UINT64   = 4;
+	TYPE_SFIXED32 = 15;
+	TYPE_FIXED32  = 7;
+	TYPE_FLOAT    = 2;
+	TYPE_SFIXED64 = 16;
+	TYPE_FIXED64  = 6;
+	TYPE_DOUBLE   = 1;
+	TYPE_STRING   = 9;
+	TYPE_BYTES    = 12;
+	TYPE_MESSAGE  = 11;
+	TYPE_GROUP    = 10;
+
 	TYPE_INT  = 3; // int decay.
 	TYPE_UINT = 4; // unsigned int decay.
 
@@ -114,9 +117,9 @@ message FileRpcOptions {
 	// Enables add, get, patch, and erase.
 	bool crud = 2;
 
-	optional RpcAdd add = 16;
-	optional RpcGet get = 17;
-	optional RpcList list = 18;
+	optional RpcAdd   add   = 16;
+	optional RpcGet   get   = 17;
+	optional RpcList  list  = 18;
 	optional RpcPatch patch = 19;
 	optional RpcErase erase = 20;
 }
@@ -127,9 +130,9 @@ message RpcOptions {
 	// Enables add, get, patch, and erase.
 	optional bool crud = 2;
 
-	optional RpcAdd add = 16;
-	optional RpcGet get = 17;
-	optional RpcList list = 18;
+	optional RpcAdd   add   = 16;
+	optional RpcGet   get   = 17;
+	optional RpcList  list  = 18;
 	optional RpcPatch patch = 19;
 	optional RpcErase erase = 20;
 }
@@ -151,10 +154,10 @@ message RpcErase {
 }
 
 message Index {
-	bool disabled = 1;
-	string name = 2;
-	repeated uint32 refs = 3;
+	bool            disabled = 1;
+	string          name     = 2;
+	repeated uint32 refs     = 3;
 
-	bool unique = 6;
+	bool unique    = 6;
 	bool immutable = 8;
 }

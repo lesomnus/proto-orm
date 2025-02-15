@@ -1,6 +1,9 @@
 func (s {{ $.Name }}ServiceServer) Add(ctx {{ pkg "context" | ident "Context" }}, req *{{ pb (print $.Name "AddRequest") }}) (*{{ pb $.Name }}, error) {
 	q := s.Db.{{ $.Name }}.Create()
 	{{ range .FieldsSortByNumber -}}
+	{{ if .IsVirtual -}}
+		{{ continue -}}
+	{{ end -}}
 
 	{{/* printing attributes */ -}}
 

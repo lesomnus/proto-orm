@@ -1,0 +1,29 @@
+---
+lint:
+  rules:
+    all_default: true
+
+    remove:
+      - MAX_LINE_LENGTH
+      - FILE_HAS_COMMENT
+      - MESSAGES_HAVE_COMMENT
+      - FIELDS_HAVE_COMMENT
+      - FILE_NAMES_LOWER_SNAKE_CASE
+
+  rules_option:
+    max_line_length:
+      # max_chars: inf
+      tab_chars: 4
+
+    indent:
+      style: tab
+      not_insert_newline: true
+
+    quote_consistent:
+      quote: double
+
+    enum_field_names_zero_value_end_with:
+      suffix: UNSPECIFIED
+
+    service_names_end_with:
+      text: Service

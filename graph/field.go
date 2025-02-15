@@ -17,6 +17,7 @@ type Field interface {
 
 	Entity() *Entity
 
+	IsVirtual() bool
 	IsIgnored() bool
 	IsOptional() bool
 	IsList() bool
@@ -38,8 +39,9 @@ type FieldMeta struct {
 	number protowire.Number
 	goName string
 
-	isList bool
-	isMap  bool
+	isVirtual bool
+	isList    bool
+	isMap     bool
 }
 
 func NewFieldMeta(f *protogen.Field) *FieldMeta {
@@ -72,6 +74,10 @@ func (m *FieldMeta) Number() protowire.Number {
 
 func (m *FieldMeta) GoName() string {
 	return m.goName
+}
+
+func (m *FieldMeta) IsVirtual() bool {
+	return m.isVirtual
 }
 
 func (m *FieldMeta) IsList() bool {

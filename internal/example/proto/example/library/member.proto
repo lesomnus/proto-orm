@@ -2,16 +2,17 @@ syntax = "proto3";
 
 package example.library;
 
-import "example/library/profile.proto";
 import "google/protobuf/timestamp.proto";
 import "orm.proto";
 
+import "example/library/profile.proto";
+
 option go_package = "github.com/lesomnus/proto-orm/internal/example/library";
-option (orm.all) = {
-	messages: {}
-	rpcs: {
-		crud: true
-	}
+option (orm.all)  = {
+    messages: {}
+    rpcs: {
+        crud: true
+    }
 };
 
 message Member {
@@ -36,19 +37,19 @@ message Member {
 	Profile profile = 5;
 	enum Level {
 		LEVEL_UNSPECIFIED = 0;
-		LEVEL_BRONZE = 1;
-		LEVEL_SILVER = 2;
-		LEVEL_GOLD = 3;
+		LEVEL_BRONZE      = 1;
+		LEVEL_SILVER      = 2;
+		LEVEL_GOLD        = 3;
 	}
 	Level level = 6;
-	Locker locker = 7 [(orm.edge) = {
-		nullable: true
-	}];
+	// Locker locker = 7 [(orm.edge) = {
+	// 	nullable: true
+	// }];
 
-	optional Member parent = 8 [(orm.edge) = {
-		from: 9
-		nullable: true
-	}];
+	optional Member parent   = 8 [(orm.edge) = {
+        from: {number: 9}
+        nullable: true
+    }];
 	repeated Member children = 9 [(orm.edge) = {}];
 
 	google.protobuf.Timestamp date_created = 15 [
@@ -68,23 +69,3 @@ message Member {
 		]
 	};
 }
-
-message Locker {
-	bytes id = 1 [
-		(orm.field) = {
-			type: TYPE_UUID
-			key: true
-			default: ""
-		}
-	];
-
-	Member owner = 2 [
-		(orm.edge) = {
-			from: 7
-			nullable: true
-		}
-	];
-	string name = 3;
-	uint32 number = 4;
-}
-

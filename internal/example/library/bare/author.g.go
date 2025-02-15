@@ -182,9 +182,4 @@ func AuthorSelect(q *ent.AuthorQuery, m *library.AuthorSelect) {
 		fields := AuthorSelectedFields(m)
 		q.Select(fields...)
 	}
-	if m.HasBooks() {
-		q.WithBooks(func(q *ent.BookQuery) {
-			BookSelect(q, m.GetBooks())
-		})
-	}
 }

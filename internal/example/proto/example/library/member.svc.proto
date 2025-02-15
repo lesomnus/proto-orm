@@ -11,47 +11,11 @@ import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/lesomnus/proto-orm/internal/example/library";
 
-service LockerService {
-	rpc Add(LockerAddRequest) returns (Locker);
-	rpc Get(LockerGetRequest) returns (Locker);
-	rpc Patch(LockerPatchRequest) returns (google.protobuf.Empty);
-	rpc Erase(LockerGetRequest) returns (google.protobuf.Empty);
-}
-
 service MemberService {
 	rpc Add(MemberAddRequest) returns (Member);
 	rpc Get(MemberGetRequest) returns (Member);
 	rpc Patch(MemberPatchRequest) returns (google.protobuf.Empty);
 	rpc Erase(MemberGetRequest) returns (google.protobuf.Empty);
-}
-
-message LockerAddRequest {
-	optional bytes id = 1;
-	MemberGetRequest owner = 2;
-	string name = 3;
-	uint32 number = 4;
-}
-
-message LockerGetRequest {
-	LockerSelect select = 1;
-	oneof key {
-		bytes id = 2;
-	}
-}
-
-message LockerSelect {
-	bool all = 1;
-	optional MemberSelect owner = 2;
-	bool name = 3;
-	bool number = 4;
-}
-
-message LockerPatchRequest {
-	LockerGetRequest key = 1;
-	MemberGetRequest owner = 3;
-	bool owner_null = 4;
-	optional string name = 5;
-	optional uint32 number = 7;
 }
 
 message MemberAddRequest {
@@ -60,7 +24,6 @@ message MemberAddRequest {
 	map<string,string> labels = 4;
 	Profile profile = 5;
 	Member.Level level = 6;
-	LockerGetRequest locker = 7;
 	MemberGetRequest parent = 8;
 	optional google.protobuf.Timestamp date_created = 15;
 }
@@ -79,7 +42,6 @@ message MemberSelect {
 	bool labels = 4;
 	bool profile = 5;
 	bool level = 6;
-	optional LockerSelect locker = 7;
 	optional MemberSelect parent = 8;
 	optional MemberSelect children = 9;
 	bool date_created = 15;
@@ -96,8 +58,6 @@ message MemberPatchRequest {
 	map<string,string> labels = 7;
 	optional Profile profile = 9;
 	optional Member.Level level = 11;
-	LockerGetRequest locker = 13;
-	bool locker_null = 14;
 	MemberGetRequest parent = 15;
 	bool parent_null = 16;
 }

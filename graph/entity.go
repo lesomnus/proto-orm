@@ -75,8 +75,8 @@ func (e *Entity) prase(g Graph, o *orm.MessageOptions) error {
 				errs = append(errs, err)
 				continue
 			}
-			if oe != nil && oe.From > 0 {
-				n := protowire.Number(oe.From)
+			if oe != nil && oe.From != nil && oe.From.Number > 0 {
+				n := protowire.Number(oe.From.Number)
 				f := target.FieldByNumber(n)
 				if f == nil {
 					// Reference may not be parsed yet so parse it first.
@@ -84,8 +84,8 @@ func (e *Entity) prase(g Graph, o *orm.MessageOptions) error {
 						return v.Desc.Number() == n
 					})
 					if i < 0 {
-						// Back-reference not found.
-						// This error will be reported by `e.parseEdge`.
+						// Back-reference not found or virtual edge will be created.
+						// Any error by this condition will be reported by `e.parseEdge`.
 					} else if r := target.Source.Fields[i]; r.Message.Desc.FullName() != e.FullName() {
 						// Back-reference does not references this entity.
 						// This error will be reported by `e.parseEdge`.

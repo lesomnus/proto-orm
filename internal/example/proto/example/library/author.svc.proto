@@ -18,13 +18,6 @@ service AuthorService {
 	rpc Erase(AuthorGetRequest) returns (google.protobuf.Empty);
 }
 
-service BookService {
-	rpc Add(BookAddRequest) returns (Book);
-	rpc Get(BookGetRequest) returns (Book);
-	rpc Patch(BookPatchRequest) returns (google.protobuf.Empty);
-	rpc Erase(BookGetRequest) returns (google.protobuf.Empty);
-}
-
 message AuthorAddRequest {
 	optional bytes id = 1;
 	string alias = 2;
@@ -48,7 +41,6 @@ message AuthorSelect {
 	bool name = 3;
 	bool labels = 4;
 	bool profile = 5;
-	optional BookSelect books = 7;
 	bool date_created = 15;
 }
 
@@ -58,35 +50,4 @@ message AuthorPatchRequest {
 	optional string name = 5;
 	map<string,string> labels = 7;
 	optional Profile profile = 9;
-}
-
-message BookAddRequest {
-	optional bytes id = 1;
-	string title = 3;
-	repeated Book.Index index = 5;
-	repeated string genres = 6;
-	optional google.protobuf.Timestamp date_created = 15;
-}
-
-message BookGetRequest {
-	BookSelect select = 1;
-	oneof key {
-		bytes id = 2;
-	}
-}
-
-message BookSelect {
-	bool all = 1;
-	bool title = 3;
-	optional AuthorSelect authors = 4;
-	bool index = 5;
-	bool genres = 6;
-	bool date_created = 15;
-}
-
-message BookPatchRequest {
-	BookGetRequest key = 1;
-	optional string title = 5;
-	repeated Book.Index index = 9;
-	repeated string genres = 11;
 }

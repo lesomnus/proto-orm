@@ -133,6 +133,9 @@ func {{ .Name }}Select(q *{{ ent (print .Name "Query") }}, m *{{ pb (print $.Nam
 		q.Select(fields...)
 	}
 	{{ range (slice .FieldsSortByNumber 1) -}}
+	{{ if .IsVirtual -}}
+		{{ continue -}}
+	{{ end -}}
 	{{ with as_edge . -}}
 	{{ $n := pascal .Name -}}
 	if m.Has{{ $n }}() {

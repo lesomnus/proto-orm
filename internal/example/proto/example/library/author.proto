@@ -2,16 +2,17 @@ syntax = "proto3";
 
 package example.library;
 
-import "example/library/profile.proto";
 import "google/protobuf/timestamp.proto";
 import "orm.proto";
 
+import "example/library/profile.proto";
+
 option go_package = "github.com/lesomnus/proto-orm/internal/example/library";
-option (orm.all) = {
-	messages: {}
-	rpcs: {
-		crud: true
-	}
+option (orm.all)  = {
+    messages: {}
+    rpcs: {
+        crud: true
+    }
 };
 
 message Author {
@@ -28,6 +29,7 @@ message Author {
 		}
 	];
 	string name = 3;
+
 	map<string, string> labels = 4 [
 		(orm.field) = {
 			default: ""
@@ -39,45 +41,9 @@ message Author {
 		}
 	];
 
-	repeated Book books = 7 [
-		(orm.edge) = {}
-	];
-
-	google.protobuf.Timestamp date_created = 15 [
-		(orm.field) = {
-			immutable: true
-			default: ""
-		}
-	];
-}
-
-message Book {
-	bytes id = 1 [
-		(orm.field) = {
-			type: TYPE_UUID
-			key: true
-			default: ""
-		}
-	];
-	string title = 3;
-	repeated Author authors = 4 [
-		(orm.edge) = {
-			from: 7 // books
-		}
-	];
-
-	message Index {
-		int32 chapter = 1;
-		string title = 2;
-
-		message Range {
-			int32 begin = 1;
-			int32 end = 2;
-		}
-		Range range = 3;
-	}
-	repeated Index index = 5;
-	repeated string genres = 6;
+	// repeated Book books = 7 [
+	// 	(orm.edge) = {}
+	// ];
 
 	google.protobuf.Timestamp date_created = 15 [
 		(orm.field) = {

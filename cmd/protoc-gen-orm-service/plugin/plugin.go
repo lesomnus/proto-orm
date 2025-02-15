@@ -61,19 +61,32 @@ func (p *Plugin) Run(plugin *protogen.Plugin) error {
 			continue
 		}
 
-		n := printer.namer(e.File.GeneratedFilenamePrefix)
-		if f, ok := fs[n]; ok {
+		k := e.File.GeneratedFilenamePrefix
+		if f, ok := fs[k]; ok {
 			f.Entities = append(f.Entities, e)
 			continue
 		}
 
-		fs[n] = &File{
+		n := printer.namer(k)
+		fs[k] = &File{
 			Path:          printer.namer(e.File.Desc.Path()),
 			GeneratedFile: plugin.NewGeneratedFile(n, e.File.GoImportPath),
 			Entities:      []*graph.Entity{e},
 		}
 	}
-	for _, f := range fs {
+
+	for _, raw := range plugin.Files {
+		if !raw.Generate {
+			continue
+		}
+
+		k := raw.GeneratedFilenamePrefix
+		f, ok := fs[k]
+		if !ok {
+			// Does not includes ORM message.
+			continue
+		}
+
 		printer.Print(f)
 	}
 

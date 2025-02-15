@@ -6,6 +6,9 @@ func (s {{ $.Name }}ServiceServer) Patch(ctx {{ pkg "context" | ident "Context" 
 
 	q := s.Db.{{ $.Name }}.UpdateOneID(id)
 	{{ range .FieldsSortByNumber -}}
+	{{ if .IsVirtual -}}
+		{{ continue -}}
+	{{ end -}}
 	{{ if .Immutable -}}
 		{{/* skip: field cannot be patched */ -}}
 		{{ continue -}}

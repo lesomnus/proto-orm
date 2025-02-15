@@ -1,6 +1,9 @@
 func (e *{{ $.Name }}) Proto() *{{ pb $.Name }} {
 	m := &{{ pb $.Name }}{}
 	{{ range .FieldsSortByNumber -}}
+	{{ if .IsVirtual -}}
+		{{ continue -}}
+	{{ end -}}
 
 	{{ if is_attr . }}{{ with as_attr . -}}
 	{{ if .Nullable -}}

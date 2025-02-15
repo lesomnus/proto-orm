@@ -62,11 +62,19 @@ func (e *Entity) parseEdge(f *protogen.Field, o *orm.EdgeOptions, target *Entity
 	e.Edges[n] = v
 
 	errs := []error{}
-	if o.From > 0 {
-		f := target.FieldByNumber(protowire.Number(o.From))
+	if opt := o.From; opt != nil && opt.Number > 0 {
+		f := target.FieldByNumber(protowire.Number(opt.Number))
 		if f == nil {
-			err := fmt.Errorf("back-reference field not found: %d", o.From)
-			errs = append(errs, err)
+			if opt.Virtual == nil {
+				err := fmt.Errorf("back-reference field not found: %d", opt.Number)
+				errs = append(errs, err)
+			} else if rvs, err := v.createVirtualEdge(target, protowire.Number(opt.Number), opt.Virtual); err != nil {
+				errs = append(errs, fmt.Errorf("create virtual edge: %w", err))
+			} else {
+				v.Reverse = rvs
+				target.Fields[n] = rvs
+				target.Edges[n] = rvs
+			}
 		} else if t, ok := f.(*Edge); !ok {
 			err := fmt.Errorf("back-reference field must be an edge")
 			errs = append(errs, err)
@@ -102,40 +110,6 @@ func (e *Entity) parseEdge(f *protogen.Field, o *orm.EdgeOptions, target *Entity
 		}
 	}
 
-	if opt := o.Ownership; opt != nil {
-		n := opt.Name
-		if n == "" {
-			n = e.Name()
-		}
-		if _, ok := target.Fields[n]; ok {
-			err := fmt.Errorf(`make inverse edge: name "%s" already exist`, n)
-			errs = append(errs, err)
-		} else {
-			v.Reverse = &Edge{
-				FieldMeta: &FieldMeta{
-					kind:     protoreflect.MessageKind,
-					fullName: target.FullName().Append(protoreflect.Name(opt.Name)),
-
-					number: protowire.Number(opt.Number),
-					goName: opt.Name,
-
-					isList: opt.Shared,
-					isMap:  false,
-				},
-				entity: target,
-
-				Target:  e,
-				Inverse: v,
-
-				Nullable:  opt.Nullable,
-				Immutable: opt.Immutable,
-			}
-
-			target.Fields[n] = v.Reverse
-			target.Edges[n] = v.Reverse
-		}
-	}
-
 	if o.Immutable {
 		v.setImmutable()
 	}
@@ -147,6 +121,37 @@ func (e *Entity) parseEdge(f *protogen.Field, o *orm.EdgeOptions, target *Entity
 		return nil, errors.Join(errs...)
 	}
 	return v, nil
+}
+
+func (e *Edge) createVirtualEdge(target *Entity, num protowire.Number, opt *orm.VirtualBackRefOptions) (*Edge, error) {
+	n := opt.Name
+	if n == "" {
+		n = e.Name()
+	}
+	if _, ok := target.Fields[n]; ok {
+		return nil, fmt.Errorf(`name "%s" already exist`, n)
+	}
+
+	return &Edge{
+		FieldMeta: &FieldMeta{
+			kind:     protoreflect.MessageKind,
+			fullName: target.FullName().Append(protoreflect.Name(opt.Name)),
+
+			number: num,
+			goName: opt.Name,
+
+			isVirtual: true,
+			isList:    opt.Shared,
+			isMap:     false,
+		},
+		entity: target,
+
+		Target:  e.entity,
+		Reverse: e,
+
+		Nullable:  opt.Nullable,
+		Immutable: opt.Immutable,
+	}, nil
 }
 
 func (e *Edge) setImmutable() {

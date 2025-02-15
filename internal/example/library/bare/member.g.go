@@ -41,13 +41,6 @@ func (s MemberServiceServer) Add(ctx context.Context, req *library.MemberAddRequ
 	}
 	q.SetProfile(req.GetProfile())
 	q.SetLevel(int(req.GetLevel()))
-	if v := req.GetLocker(); v != nil {
-		if id, err := LockerGetId(ctx, s.Db, v); err != nil {
-			return nil, err
-		} else {
-			q.SetLockerID(id)
-		}
-	}
 	if v := req.GetParent(); v != nil {
 		if id, err := MemberGetId(ctx, s.Db, v); err != nil {
 			return nil, err
@@ -112,15 +105,6 @@ func (s MemberServiceServer) Patch(ctx context.Context, req *library.MemberPatch
 	}
 	if req.HasLevel() {
 		q.SetLevel(int(req.GetLevel()))
-	}
-	if req.GetLockerNull() {
-		q.ClearLocker()
-	} else if req.HasLocker() {
-		if id, err := LockerGetId(ctx, s.Db, req.GetLocker()); err != nil {
-			return nil, err
-		} else {
-			q.SetLockerID(id)
-		}
 	}
 	if req.GetParentNull() {
 		q.ClearParent()
@@ -228,11 +212,6 @@ func MemberSelect(q *ent.MemberQuery, m *library.MemberSelect) {
 	if !m.GetAll() {
 		fields := MemberSelectedFields(m)
 		q.Select(fields...)
-	}
-	if m.HasLocker() {
-		q.WithLocker(func(q *ent.LockerQuery) {
-			LockerSelect(q, m.GetLocker())
-		})
 	}
 	if m.HasParent() {
 		q.WithParent(func(q *ent.MemberQuery) {

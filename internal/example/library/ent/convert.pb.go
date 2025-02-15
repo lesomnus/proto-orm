@@ -14,14 +14,6 @@ func (e *Author) Proto() *library.Author {
 	m.SetName(e.Name)
 	m.SetLabels(e.Labels)
 	m.SetProfile(e.Profile)
-	m.SetBooks(func() []*library.Book {
-		ts := e.Edges.Books
-		vs := make([]*library.Book, len(ts))
-		for i, t := range ts {
-			vs[i] = t.Proto()
-		}
-		return vs
-	}())
 	m.SetDateCreated(timestamppb.New(e.DateCreated))
 
 	return m
@@ -244,9 +236,6 @@ func (e *Member) Proto() *library.Member {
 	m.SetLabels(e.Labels)
 	m.SetProfile(e.Profile)
 	m.SetLevel(library.Member_Level(e.Level))
-	if v := e.Edges.Locker; v != nil {
-		m.SetLocker(v.Proto())
-	}
 	if v := e.Edges.Parent; v != nil {
 		m.SetParent(v.Proto())
 	}

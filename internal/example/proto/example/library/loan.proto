@@ -2,18 +2,18 @@ syntax = "proto3";
 
 package example.library;
 
-import "example/library/author.proto";
+import "example/library/book.proto";
 import "example/library/member.proto";
 import "google/protobuf/timestamp.proto";
 import "orm.proto";
 
 option go_package = "github.com/lesomnus/proto-orm/internal/example/library";
-option (orm.all) = {
-	messages: {}
-	rpcs: {
-		add: {}
-		get: {}
-	}
+option (orm.all)  = {
+    messages: {}
+    rpcs: {
+        add: {}
+        get: {}
+    }
 };
 
 message Loan {
@@ -47,7 +47,7 @@ message Loan {
 		}
 	];
 
-	google.protobuf.Timestamp date_due = 13;
+	google.protobuf.Timestamp date_due             = 13;
 	optional google.protobuf.Timestamp date_return = 14 [
 		(orm.field) = {
 			nullable: true

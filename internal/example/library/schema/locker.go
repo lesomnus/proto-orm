@@ -26,7 +26,7 @@ func (Locker) Fields() []ent.Field {
 
 func (Locker) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.From("owner", Member.Type).Ref("locker").
+		edge.To("owner", Member.Type).
 			Unique(),
 	}
 }

@@ -264,6 +264,10 @@ func (a *Attr) Entity() *Entity {
 	return a.entity
 }
 
+func (a *Attr) IsVirtual() bool {
+	return false
+}
+
 func (a *Attr) IsScalar() bool {
 	if a.IsList() || a.IsMap() {
 		return false

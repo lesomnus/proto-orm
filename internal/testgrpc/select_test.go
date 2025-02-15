@@ -93,7 +93,6 @@ func TestSelect(t *testing.T) {
 		x.Equal(timestamppb.New(time.Time{}), w.GetDateCreated())
 
 		// Edges are not loaded.
-		x.False(w.HasLocker())
 		x.False(w.HasParent())
 	}))
 	t.Run("all fields from edge", T(func(ctx context.Context, x *require.Assertions, c *Client) {
@@ -117,7 +116,6 @@ func TestSelect(t *testing.T) {
 		x.Equal(c.v_member.GetDateCreated(), w.GetDateCreated())
 
 		// Edges are not loaded.
-		x.False(w.HasLocker())
 		x.False(w.HasParent())
 	}))
 }
