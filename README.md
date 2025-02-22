@@ -4,6 +4,11 @@ ORM support for [*protobuf*](https://protobuf.dev/).
 
 Designed with inspiration from [*Ent*](https://entgo.io/), it supports [*gRPC*](https://grpc.io/) auto-generation based on *Ent*. I look forward to supporting more backends beyond *Ent*.
 
+
+> [!WARNING]
+> ### Use at Your Own Risk
+> This project is in a highly experimental state, and breaking API changes may occur without prior notice.
+
 ## Peek
 
 ```protobuf
@@ -65,4 +70,4 @@ message Pet {
 ## Limitations
 
 - Does not support composite key.
-- Only opaque API is supported for Go generated code.
+- Only [opaque API](https://go.dev/blog/protobuf-opaque) is supported for Go generated code.
