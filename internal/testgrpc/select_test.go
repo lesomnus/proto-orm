@@ -11,6 +11,8 @@ import (
 )
 
 func TestSelect(t *testing.T) {
+	v_t := true
+
 	t.Run("default to all fields with edge IDs", T(func(ctx context.Context, x *require.Assertions, c *Client) {
 		v, err := c.Locker.Get(ctx, c.v_locker.Pick())
 		x.NoError(err)
@@ -29,7 +31,7 @@ func TestSelect(t *testing.T) {
 	}))
 	t.Run("all fields with edge ID", T(func(ctx context.Context, x *require.Assertions, c *Client) {
 		v, err := c.Locker.Get(ctx, c.v_locker.Pick().Select(library.LockerSelect_builder{
-			All:   true,
+			All:   &v_t,
 			Owner: library.MemberSelect_builder{}.Build(),
 		}.Build()))
 		x.NoError(err)
@@ -45,11 +47,10 @@ func TestSelect(t *testing.T) {
 
 		// Transient edges are not loaded.
 		x.False(w.HasParent())
-
 	}))
 	t.Run("all fields without edge IDs", T(func(ctx context.Context, x *require.Assertions, c *Client) {
 		v, err := c.Locker.Get(ctx, c.v_locker.Pick().Select(library.LockerSelect_builder{
-			All: true,
+			All: &v_t,
 		}.Build()))
 		x.NoError(err)
 		x.Equal(c.v_locker.GetId(), v.GetId())
@@ -61,7 +62,7 @@ func TestSelect(t *testing.T) {
 	}))
 	t.Run("specific fields", T(func(ctx context.Context, x *require.Assertions, c *Client) {
 		v, err := c.Locker.Get(ctx, c.v_locker.Pick().Select(library.LockerSelect_builder{
-			Name: true,
+			Name: &v_t,
 		}.Build()))
 		x.NoError(err)
 		x.Equal(c.v_locker.GetName(), v.GetName())
@@ -73,7 +74,7 @@ func TestSelect(t *testing.T) {
 	}))
 	t.Run("specific field from edge", T(func(ctx context.Context, x *require.Assertions, c *Client) {
 		v, err := c.Locker.Get(ctx, c.v_locker.Pick().Select(library.LockerSelect_builder{
-			Owner: library.MemberSelect_builder{Name: true}.Build(),
+			Owner: library.MemberSelect_builder{Name: &v_t}.Build(),
 		}.Build()))
 		x.NoError(err)
 		x.True(v.HasOwner())
@@ -97,7 +98,7 @@ func TestSelect(t *testing.T) {
 	}))
 	t.Run("all fields from edge", T(func(ctx context.Context, x *require.Assertions, c *Client) {
 		v, err := c.Locker.Get(ctx, c.v_locker.Pick().Select(library.LockerSelect_builder{
-			Owner: library.MemberSelect_builder{All: true}.Build(),
+			Owner: library.MemberSelect_builder{All: &v_t}.Build(),
 		}.Build()))
 		x.NoError(err)
 		x.True(v.HasOwner())
