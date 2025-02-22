@@ -60,7 +60,9 @@ message Pet {
 	];
 	User owner = 2 [
 		(orm.edge) = {
-			from: 2 // pets
+			from: {
+				number: 2 // pets
+			}
 		}
 	];
 }
