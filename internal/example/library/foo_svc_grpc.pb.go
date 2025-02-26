@@ -4,7 +4,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.5.1
 // - protoc             v5.29.0
-// source: example/library/foo.svc.proto
+// source: example/library/foo_svc.proto
 
 package library
 
@@ -234,7 +234,7 @@ var FooEfService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "example/library/foo.svc.proto",
+	Metadata: "example/library/foo_svc.proto",
 }
 
 const (
@@ -450,7 +450,7 @@ var FooKService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "example/library/foo.svc.proto",
+	Metadata: "example/library/foo_svc.proto",
 }
 
 const (
@@ -666,7 +666,7 @@ var FooMiService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "example/library/foo.svc.proto",
+	Metadata: "example/library/foo_svc.proto",
 }
 
 const (
@@ -882,7 +882,7 @@ var FooMsService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "example/library/foo.svc.proto",
+	Metadata: "example/library/foo_svc.proto",
 }
 
 const (
@@ -1098,7 +1098,7 @@ var FooMsdService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "example/library/foo.svc.proto",
+	Metadata: "example/library/foo_svc.proto",
 }
 
 const (
@@ -1314,7 +1314,7 @@ var FooVService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "example/library/foo.svc.proto",
+	Metadata: "example/library/foo_svc.proto",
 }
 
 const (
@@ -1530,7 +1530,7 @@ var FooVdService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "example/library/foo.svc.proto",
+	Metadata: "example/library/foo_svc.proto",
 }
 
 const (
@@ -1746,7 +1746,7 @@ var FooVoService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "example/library/foo.svc.proto",
+	Metadata: "example/library/foo_svc.proto",
 }
 
 const (
@@ -1962,7 +1962,7 @@ var FooVonService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "example/library/foo.svc.proto",
+	Metadata: "example/library/foo_svc.proto",
 }
 
 const (
@@ -2178,5 +2178,5 @@ var FooVrService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "example/library/foo.svc.proto",
+	Metadata: "example/library/foo_svc.proto",
 }

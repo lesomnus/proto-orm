@@ -4,7 +4,7 @@ syntax = "proto3";
 
 package example.library;
 
-import "example/library/author.svc.proto";
+import "example/library/author_svc.proto";
 import "example/library/book.proto";
 import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";

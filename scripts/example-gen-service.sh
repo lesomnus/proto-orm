@@ -22,7 +22,7 @@ PROTO_ROOT="${__root}/internal/example/proto"
 OUTPUT_DIR="${__root}/internal/example/proto/example"
 cd "${PROTO_ROOT}"
 
-rm -rf "$OUTPUT_DIR"/**/*.svc.proto
+rm -rf "$OUTPUT_DIR"/**/*_svc.proto
 
 protoc \
 	--"plugin=protoc-gen-$NAME"="/tmp/$APP" \
@@ -31,6 +31,5 @@ protoc \
 	\
 	--"$NAME"_out="$OUTPUT_DIR" \
 	--"$NAME"_opt=module="$MODULE_NAME" \
-	--"$NAME"_opt=naming="{{ .Name }}.svc.proto" \
 	\
 	"$PROTO_ROOT"/**/*.proto

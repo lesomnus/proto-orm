@@ -4,7 +4,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.5.1
 // - protoc             v5.29.0
-// source: example/library/locker.svc.proto
+// source: example/library/locker_svc.proto
 
 package library
 
@@ -234,5 +234,5 @@ var LockerService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "example/library/locker.svc.proto",
+	Metadata: "example/library/locker_svc.proto",
 }

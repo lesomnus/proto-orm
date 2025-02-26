@@ -26,7 +26,7 @@ const msgGetEntityFieldOffset = 1
 
 type Printer struct {
 	// `p` should be `/path/to/file.proto` and
-	// it will returns something like `/path/to/file.svc.prot`.
+	// it will returns something like `/path/to/file_svc.prot`.
 	namer func(p string) string
 
 	messages map[protoreflect.FullName]*generatedMessage

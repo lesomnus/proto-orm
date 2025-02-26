@@ -1,2 +1,2 @@
-thor/odin/*.svc.proto
-thor/odin/*.svc.*.proto
+thor/odin/*_svc.proto
+thor/odin/*_svc_*.proto

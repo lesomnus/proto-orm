@@ -11,7 +11,7 @@ func main() {
 	p := plugin.NewPlugin()
 
 	var flags flag.FlagSet
-	flags.StringVar(&p.Naming, "naming", "{{ .Name }}.svc.proto", "golang text template for output filename")
+	flags.StringVar(&p.Naming, "naming", "{{ .Name }}.g.go", "golang text template for output filename")
 
 	opt := protogen.Options{ParamFunc: flags.Set}
 	opt.Run(p.Run)

@@ -18,4 +18,4 @@ rm -rf \
 	"$__root/internal/example/library/schema" \
 	"$__root/internal/example/library/"*.pb.go \
 	"$__root/internal/example/library/"*.g.go \
-	"$__root/internal/example/proto/example/library/"*.svc.proto
+	"$__root/internal/example/proto/example/library/"*_svc.proto

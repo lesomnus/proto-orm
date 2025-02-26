@@ -4,7 +4,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.5.1
 // - protoc             v5.29.0
-// source: example/library/member.svc.proto
+// source: example/library/member_svc.proto
 
 package library
 
@@ -234,5 +234,5 @@ var MemberService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "example/library/member.svc.proto",
+	Metadata: "example/library/member_svc.proto",
 }
