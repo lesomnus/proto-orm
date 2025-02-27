@@ -149,7 +149,8 @@ func (p *Plugin) NewTemplate(e *graph.Entity, f *protogen.GeneratedFile) *templa
 			case orm.Type_TYPE_UUID:
 				return f.QualifiedGoIdent(import_uuid.Ident("New"))
 			case orm.Type_TYPE_TIME:
-				return f.QualifiedGoIdent(protogen.GoImportPath("time").Ident("Now"))
+				ident := f.QualifiedGoIdent(protogen.GoImportPath("time").Ident("Now"))
+				return fmt.Sprintf("func() time.Time { return %s().UTC() }", ident)
 			default:
 				panic(fmt.Sprintf("type not supported for default value: %v", t))
 			}

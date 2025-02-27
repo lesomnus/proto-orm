@@ -24,7 +24,7 @@ func (Press) Fields() []ent.Field {
 		field.String("serial_number").
 			Immutable(),
 		field.Time("date_created").
-			Default(time.Now).
+			Default(func() time.Time { return time.Now().UTC() }).
 			Immutable(),
 	}
 }

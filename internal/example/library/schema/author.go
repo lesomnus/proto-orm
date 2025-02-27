@@ -29,7 +29,7 @@ func (Author) Fields() []ent.Field {
 		field.JSON("profile", &library.Profile{}).
 			Default(&library.Profile{}),
 		field.Time("date_created").
-			Default(time.Now).
+			Default(func() time.Time { return time.Now().UTC() }).
 			Immutable(),
 	}
 }

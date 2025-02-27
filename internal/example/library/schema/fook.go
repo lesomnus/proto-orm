@@ -20,7 +20,7 @@ func (FooK) Fields() []ent.Field {
 			Immutable(),
 		field.Time("k_v_time"),
 		field.Time("k_vd_time").
-			Default(time.Now),
+			Default(func() time.Time { return time.Now().UTC() }),
 		field.JSON("k_vr_time", []*timestamppb.Timestamp{}).
 			Optional(),
 		field.Time("k_vo_time").

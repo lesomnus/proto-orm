@@ -29,7 +29,7 @@ func (Loan) Fields() []ent.Field {
 			Optional().
 			Nillable(),
 		field.Time("date_created").
-			Default(time.Now).
+			Default(func() time.Time { return time.Now().UTC() }).
 			Immutable(),
 	}
 }
