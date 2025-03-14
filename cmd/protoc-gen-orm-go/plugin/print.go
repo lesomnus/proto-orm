@@ -7,6 +7,7 @@ import (
 	"text/template"
 
 	"github.com/go-openapi/inflect"
+	orm "github.com/lesomnus/proto-orm"
 	"github.com/lesomnus/proto-orm/graph"
 	"google.golang.org/protobuf/compiler/protogen"
 )
@@ -105,6 +106,42 @@ func (p *Plugin) NewTemplate(e *graph.Entity, f *protogen.GeneratedFile) *templa
 				return nil
 			}
 			return v
+		},
+
+		"def_attr_eq": func(attr *graph.Attr, a, b string) string {
+			t := attr.Type()
+			switch t {
+			case orm.Type_TYPE_BOOL,
+				orm.Type_TYPE_ENUM,
+				orm.Type_TYPE_INT32,
+				orm.Type_TYPE_SINT32,
+				orm.Type_TYPE_SFIXED32,
+				orm.Type_TYPE_UINT32,
+				orm.Type_TYPE_FIXED32,
+				orm.Type_TYPE_INT64,
+				orm.Type_TYPE_SINT64,
+				orm.Type_TYPE_SFIXED64,
+				orm.Type_TYPE_UINT64,
+				orm.Type_TYPE_FIXED64,
+				orm.Type_TYPE_FLOAT,
+				orm.Type_TYPE_DOUBLE,
+				orm.Type_TYPE_STRING:
+				return fmt.Sprintf("%s == %s", a, b)
+
+			case orm.Type_TYPE_BYTES,
+				orm.Type_TYPE_UUID:
+				ident := f.QualifiedGoIdent(protogen.GoImportPath("bytes").Ident("Equal"))
+				return fmt.Sprintf("%s(%s, %s)", ident, a, b)
+
+			case orm.Type_TYPE_JSON:
+				panic("JSON equal not implement")
+
+			case orm.Type_TYPE_TIME:
+				return fmt.Sprintf("%s.Equal(%s)", a, b)
+
+			default:
+				panic(fmt.Sprintf("type not supported for default value: %v", t))
+			}
 		},
 	})
 
