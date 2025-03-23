@@ -46,6 +46,7 @@ message Loan {
 			immutable: true
 		}
 	];
+	string policy = 6;
 
 	google.protobuf.Timestamp date_due             = 13;
 	optional google.protobuf.Timestamp date_return = 14 [
@@ -59,4 +60,15 @@ message Loan {
 			default: ""
 		}
 	];
+
+	option (orm.message) = {
+		indexes: [	
+			{
+				name: "policy"
+				refs: [5, 6]
+				unique: true
+				hidden: true
+			}
+		]
+	};
 }

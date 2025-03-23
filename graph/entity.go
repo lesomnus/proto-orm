@@ -130,6 +130,7 @@ func (e *Entity) prase(g Graph, o *orm.MessageOptions) error {
 
 			Unique:    i.Unique,
 			Immutable: i.Immutable,
+			Hidden:    i.Hidden,
 		}
 
 		e.Indexes = append(e.Indexes, w)
@@ -165,6 +166,9 @@ func (e *Entity) KeyLikes() []Key {
 	}
 	for _, v := range e.Indexes {
 		if !v.IsUnique() {
+			continue
+		}
+		if v.IsHidden() {
 			continue
 		}
 

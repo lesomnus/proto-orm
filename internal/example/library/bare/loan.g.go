@@ -47,6 +47,7 @@ func (s LoanServiceServer) Add(ctx context.Context, req *library.LoanAddRequest)
 	} else {
 		q.SetBorrowerID(id)
 	}
+	q.SetPolicy(req.GetPolicy())
 	q.SetDateDue(req.GetDateDue().AsTime())
 	if req.HasDateReturn() {
 		q.SetDateReturn(req.GetDateReturn().AsTime())
@@ -139,6 +140,9 @@ func LoanSelectedFields(m *library.LoanSelect) []string {
 	}
 	if m.GetBorrowerId() {
 		vs = append(vs, loan.FieldBorrowerID)
+	}
+	if m.GetPolicy() {
+		vs = append(vs, loan.FieldPolicy)
 	}
 	if m.GetDateDue() {
 		vs = append(vs, loan.FieldDateDue)

@@ -208,6 +208,7 @@ func (e *Loan) Proto() *library.Loan {
 	if v := e.Edges.Borrower; v != nil {
 		m.SetBorrower(v.Proto())
 	}
+	m.SetPolicy(e.Policy)
 	m.SetDateDue(timestamppb.New(e.DateDue))
 	if v := e.DateReturn; v != nil {
 		m.SetDateReturn(timestamppb.New(*e.DateReturn))

@@ -7,6 +7,7 @@ type Index struct {
 
 	Unique    bool
 	Immutable bool
+	Hidden    bool
 }
 
 func (i *Index) Name() string {
@@ -35,4 +36,8 @@ func (i *Index) IsUnique() bool {
 
 func (i *Index) IsImmutable() bool {
 	return i.Immutable
+}
+
+func (i *Index) IsHidden() bool {
+	return i.Hidden
 }

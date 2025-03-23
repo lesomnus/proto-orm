@@ -20,6 +20,7 @@ message LoanAddRequest {
 	optional bytes id = 1;
 	BookGetRequest subject = 3;
 	MemberGetRequest borrower = 5;
+	string policy = 6;
 	google.protobuf.Timestamp date_due = 13;
 	optional google.protobuf.Timestamp date_return = 14;
 	optional google.protobuf.Timestamp date_created = 15;
@@ -38,6 +39,7 @@ message LoanSelect {
 	optional BookSelect subject = 3;
 	optional bool borrower_id = 4;
 	optional MemberSelect borrower = 5;
+	optional bool policy = 6;
 	optional bool date_due = 13;
 	optional bool date_return = 14;
 	optional bool date_created = 15;

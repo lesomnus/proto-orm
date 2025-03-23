@@ -160,4 +160,11 @@ message Index {
 
 	bool unique    = 6;
 	bool immutable = 8;
+
+	// If the index is unique and this field is true,
+	// the schema will be written as a unique index,
+	// but it will not be treated as a key in the graph.
+	// In other words, this index will be excluded
+	// from messages like GetRequest.
+	bool hidden = 9;
 }

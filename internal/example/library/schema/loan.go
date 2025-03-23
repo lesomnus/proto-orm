@@ -6,6 +6,7 @@ import (
 	ent "entgo.io/ent"
 	edge "entgo.io/ent/schema/edge"
 	field "entgo.io/ent/schema/field"
+	index "entgo.io/ent/schema/index"
 	uuid "github.com/google/uuid"
 	time "time"
 )
@@ -24,6 +25,7 @@ func (Loan) Fields() []ent.Field {
 			Immutable(),
 		field.UUID("borrower_id", uuid.UUID{}).
 			Immutable(),
+		field.String("policy"),
 		field.Time("date_due"),
 		field.Time("date_return").
 			Optional().
@@ -46,5 +48,12 @@ func (Loan) Edges() []ent.Edge {
 			Unique().
 			Required().
 			Immutable(),
+	}
+}
+
+func (Loan) Indexes() []ent.Index {
+	return []ent.Index{
+		index.Fields("policy").Edges("borrower").
+			Unique(),
 	}
 }
