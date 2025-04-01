@@ -11,7 +11,15 @@
 
 {{ with as_attr . }}
 
-func {{ $.Name }}By{{ pascal .Name }}(v {{ proto_go_type . }}) *{{ $r }} {
+{{ $t := proto_go_type . -}}
+func {{ $.Name }}By{{ pascal .Name }}(v {{ $t }}) *{{ $r }} {
+	{{ if  eq "*" (slice $t 0 1) | or (eq "[" (slice $t 0 1)) -}}
+	{{/* In the case of the type is pointer or slice */ -}}
+	if v == nil {
+		return nil
+	}
+	
+	{{ end -}}
 	return {{ $b }}{ {{ pascal .Name }}: {{ if .IsScalar }}&{{ end }}v }.Build()
 }
 {{ end -}}
