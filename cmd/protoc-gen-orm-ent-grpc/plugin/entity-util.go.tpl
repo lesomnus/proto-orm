@@ -111,7 +111,7 @@ func {{ .Name }}GetId(ctx {{ pkg "context" | ident "Context" }}, db *{{ ent "Cli
 	return v, nil
 }
 
-func {{ .Name }}SelectedFields(m *{{ pb (print $.Name "Select") }}) []string {
+func {{ $.Name }}SelectedFields(m *{{ pb (print $.Name "Select") }}) []string {
 	if m.GetAll() {
 		return {{ $entity_pkg | ident "Columns" }}
 	}
@@ -127,12 +127,26 @@ func {{ .Name }}SelectedFields(m *{{ pb (print $.Name "Select") }}) []string {
 	return vs
 }
 
-func {{ .Name }}Select(q *{{ ent (print .Name "Query") }}, m *{{ pb (print $.Name "Select") }}) {
+func {{ $.Name }}SelectEdges(q *{{ ent (print $.Name "Query") }}) {
+	{{ range .FieldsSortByNumber -}}
+	{{ with as_edge . -}}
+	{{ if not (.IsUnidirectional | or .IsExclusive) -}}
+		{{ continue -}}
+	{{ end -}}
+	{{ $n := ent_pascal .Name -}}
+	q.With{{ $n }}(func(q *{{ ent (print .Target.Name "Query") }}) {
+		q.Select({{ entity .Target | ident "FieldID" }})
+	})
+	{{ end -}}
+	{{ end -}}
+}
+
+func {{ $.Name }}Select(q *{{ ent (print $.Name "Query") }}, m *{{ pb (print $.Name "Select") }}) {
 	if !m.GetAll() {
-		fields := {{ .Name }}SelectedFields(m)
+		fields := {{ $.Name }}SelectedFields(m)
 		q.Select(fields...)
 	}
-	{{ range (slice .FieldsSortByNumber 1) -}}
+	{{ range (slice $.FieldsSortByNumber 1) -}}
 	{{ if .IsVirtual -}}
 		{{ continue -}}
 	{{ end -}}
