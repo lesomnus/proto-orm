@@ -65,12 +65,7 @@ func (s MemberServiceServer) Get(ctx context.Context, req *library.MemberGetRequ
 	if req.HasSelect() {
 		MemberSelect(q, req.GetSelect())
 	} else {
-		q.WithLocker(func(q *ent.LockerQuery) {
-			q.Select(locker.FieldID)
-		})
-		q.WithParent(func(q *ent.MemberQuery) {
-			q.Select(member.FieldID)
-		})
+		MemberSelectEdges(q)
 	}
 
 	if p, err := MemberPick(req); err != nil {
@@ -206,6 +201,15 @@ func MemberSelectedFields(m *library.MemberSelect) []string {
 	}
 
 	return vs
+}
+
+func MemberSelectEdges(q *ent.MemberQuery) {
+	q.WithLocker(func(q *ent.LockerQuery) {
+		q.Select(locker.FieldID)
+	})
+	q.WithParent(func(q *ent.MemberQuery) {
+		q.Select(member.FieldID)
+	})
 }
 
 func MemberSelect(q *ent.MemberQuery, m *library.MemberSelect) {

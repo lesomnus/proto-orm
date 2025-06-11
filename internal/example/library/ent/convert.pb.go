@@ -226,6 +226,7 @@ func (e *Locker) Proto() *library.Locker {
 	}
 	m.SetName(e.Name)
 	m.SetNumber(e.Number)
+	m.SetAlias(e.Alias)
 
 	return m
 }

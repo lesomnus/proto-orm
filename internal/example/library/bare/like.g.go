@@ -65,12 +65,7 @@ func (s LikeServiceServer) Get(ctx context.Context, req *library.LikeGetRequest)
 	if req.HasSelect() {
 		LikeSelect(q, req.GetSelect())
 	} else {
-		q.WithSubject(func(q *ent.BookQuery) {
-			q.Select(book.FieldID)
-		})
-		q.WithActor(func(q *ent.MemberQuery) {
-			q.Select(member.FieldID)
-		})
+		LikeSelectEdges(q)
 	}
 
 	if p, err := LikePick(req); err != nil {
@@ -180,6 +175,15 @@ func LikeSelectedFields(m *library.LikeSelect) []string {
 	}
 
 	return vs
+}
+
+func LikeSelectEdges(q *ent.LikeQuery) {
+	q.WithSubject(func(q *ent.BookQuery) {
+		q.Select(book.FieldID)
+	})
+	q.WithActor(func(q *ent.MemberQuery) {
+		q.Select(member.FieldID)
+	})
 }
 
 func LikeSelect(q *ent.LikeQuery, m *library.LikeSelect) {

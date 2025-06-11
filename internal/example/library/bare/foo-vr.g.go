@@ -57,6 +57,7 @@ func (s FooVrServiceServer) Get(ctx context.Context, req *library.FooVrGetReques
 	if req.HasSelect() {
 		FooVrSelect(q, req.GetSelect())
 	} else {
+		FooVrSelectEdges(q)
 	}
 
 	if p, err := FooVrPick(req); err != nil {
@@ -174,6 +175,9 @@ func FooVrSelectedFields(m *library.FooVrSelect) []string {
 	}
 
 	return vs
+}
+
+func FooVrSelectEdges(q *ent.FooVrQuery) {
 }
 
 func FooVrSelect(q *ent.FooVrQuery, m *library.FooVrSelect) {

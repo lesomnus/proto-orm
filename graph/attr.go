@@ -24,6 +24,7 @@ type Attr struct {
 	Unique    bool
 	Nullable  bool
 	Immutable bool
+	Supplied  bool
 }
 
 func (e *Entity) parseAttr(f *protogen.Field, o *orm.FieldOptions) (*Attr, error) {
@@ -40,6 +41,7 @@ func (e *Entity) parseAttr(f *protogen.Field, o *orm.FieldOptions) (*Attr, error
 		Unique:    o.Unique,
 		Nullable:  o.Nullable,
 		Immutable: o.Immutable,
+		Supplied:  o.Supplied,
 		Default:   o.Default,
 	}
 	if v.typ == orm.Type_TYPE_MESSAGE {
@@ -293,6 +295,10 @@ func (a *Attr) HasOptionalKeyword() bool {
 	return a.source.Desc.HasOptionalKeyword()
 }
 
+func (a *Attr) IsSupplied() bool {
+	return a.Supplied
+}
+
 func (a *Attr) IsJson() bool {
 	return a.typ == orm.Type_TYPE_JSON
 }
@@ -303,7 +309,7 @@ func (a *Attr) IsIgnored() bool {
 
 func (a *Attr) IsOptional() bool {
 	d := a.source.Desc
-	return d.HasOptionalKeyword() || d.IsList() || d.IsMap()
+	return d.HasOptionalKeyword() || d.IsList() || d.IsMap() || a.HasDefault()
 }
 
 // The type of proto field implies optional.

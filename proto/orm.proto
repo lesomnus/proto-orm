@@ -43,6 +43,13 @@ message FieldOptions {
 	bool nullable  = 7;
 	bool immutable = 8;
 
+	// Mark a field as optional for AddRequest message.
+	// This is useful when a field is unique and
+	// therefore cannot have a default value, but the
+	// server supplies (or generates) the value, so you 
+	// want to make the field optional for the user.
+	bool supplied  = 10; 
+
 	optional string default = 9;
 }
 

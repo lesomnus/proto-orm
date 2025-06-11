@@ -56,6 +56,7 @@ func (s FooEfServiceServer) Get(ctx context.Context, req *library.FooEfGetReques
 	if req.HasSelect() {
 		FooEfSelect(q, req.GetSelect())
 	} else {
+		FooEfSelectEdges(q)
 	}
 
 	if p, err := FooEfPick(req); err != nil {
@@ -179,6 +180,9 @@ func FooEfSelectedFields(m *library.FooEfSelect) []string {
 	}
 
 	return vs
+}
+
+func FooEfSelectEdges(q *ent.FooEfQuery) {
 }
 
 func FooEfSelect(q *ent.FooEfQuery, m *library.FooEfSelect) {

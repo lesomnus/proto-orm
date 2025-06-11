@@ -239,7 +239,7 @@ func (w *printWork) msgAddReq(r *graph.Rpc) *generatedMessage {
 				// Map cannot have label.
 			} else if u.IsList() {
 				v.Label = pbgen.LabelRepeated
-			} else if u.HasOptionalKeyword() || u.HasDefault() {
+			} else if u.IsOptional() || u.IsSupplied() {
 				v.Label = pbgen.LabelOptional
 			}
 

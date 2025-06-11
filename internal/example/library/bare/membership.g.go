@@ -55,9 +55,7 @@ func (s MembershipServiceServer) Get(ctx context.Context, req *library.Membershi
 	if req.HasSelect() {
 		MembershipSelect(q, req.GetSelect())
 	} else {
-		q.WithMember(func(q *ent.MemberQuery) {
-			q.Select(member.FieldID)
-		})
+		MembershipSelectEdges(q)
 	}
 
 	if p, err := MembershipPick(req); err != nil {
@@ -160,6 +158,12 @@ func MembershipSelectedFields(m *library.MembershipSelect) []string {
 	}
 
 	return vs
+}
+
+func MembershipSelectEdges(q *ent.MembershipQuery) {
+	q.WithMember(func(q *ent.MemberQuery) {
+		q.Select(member.FieldID)
+	})
 }
 
 func MembershipSelect(q *ent.MembershipQuery, m *library.MembershipSelect) {

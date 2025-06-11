@@ -57,6 +57,7 @@ func (s AuthorServiceServer) Get(ctx context.Context, req *library.AuthorGetRequ
 	if req.HasSelect() {
 		AuthorSelect(q, req.GetSelect())
 	} else {
+		AuthorSelectEdges(q)
 	}
 
 	if p, err := AuthorPick(req); err != nil {
@@ -175,6 +176,9 @@ func AuthorSelectedFields(m *library.AuthorSelect) []string {
 	}
 
 	return vs
+}
+
+func AuthorSelectEdges(q *ent.AuthorQuery) {
 }
 
 func AuthorSelect(q *ent.AuthorQuery, m *library.AuthorSelect) {

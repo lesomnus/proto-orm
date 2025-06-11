@@ -42,6 +42,7 @@ func (s LockerServiceServer) Add(ctx context.Context, req *library.LockerAddRequ
 	}
 	q.SetName(req.GetName())
 	q.SetNumber(req.GetNumber())
+	q.SetAlias(req.GetAlias())
 
 	v, err := q.Save(ctx)
 	if err != nil {
@@ -56,9 +57,7 @@ func (s LockerServiceServer) Get(ctx context.Context, req *library.LockerGetRequ
 	if req.HasSelect() {
 		LockerSelect(q, req.GetSelect())
 	} else {
-		q.WithOwner(func(q *ent.MemberQuery) {
-			q.Select(member.FieldID)
-		})
+		LockerSelectEdges(q)
 	}
 
 	if p, err := LockerPick(req); err != nil {
@@ -97,6 +96,9 @@ func (s LockerServiceServer) Patch(ctx context.Context, req *library.LockerPatch
 	if req.HasNumber() {
 		q.SetNumber(req.GetNumber())
 	}
+	if req.HasAlias() {
+		q.SetAlias(req.GetAlias())
+	}
 
 	if _, err := q.Save(ctx); err != nil {
 		return nil, StatusFromEntError(err)
@@ -125,6 +127,8 @@ func LockerPick(req *library.LockerGetRequest) (predicate.Locker, error) {
 		} else {
 			return locker.IDEQ(v), nil
 		}
+	case library.LockerGetRequest_Alias_case:
+		return locker.AliasEQ(req.GetAlias()), nil
 	case library.LockerGetRequest_Key_not_set_case:
 		return nil, status.Errorf(codes.InvalidArgument, "key not provided")
 	default:
@@ -167,8 +171,17 @@ func LockerSelectedFields(m *library.LockerSelect) []string {
 	if m.GetNumber() {
 		vs = append(vs, locker.FieldNumber)
 	}
+	if m.GetAlias() {
+		vs = append(vs, locker.FieldAlias)
+	}
 
 	return vs
+}
+
+func LockerSelectEdges(q *ent.LockerQuery) {
+	q.WithOwner(func(q *ent.MemberQuery) {
+		q.Select(member.FieldID)
+	})
 }
 
 func LockerSelect(q *ent.LockerQuery, m *library.LockerSelect) {

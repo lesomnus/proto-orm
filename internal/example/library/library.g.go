@@ -28,6 +28,10 @@ func (x *AuthorGetRequest) Select(v *AuthorSelect) *AuthorGetRequest {
 }
 
 func AuthorById(v []byte) *AuthorGetRequest {
+	if v == nil {
+		return nil
+	}
+
 	return AuthorGetRequest_builder{Id: v}.Build()
 }
 
@@ -53,6 +57,10 @@ func (x *BookGetRequest) Select(v *BookSelect) *BookGetRequest {
 }
 
 func BookById(v []byte) *BookGetRequest {
+	if v == nil {
+		return nil
+	}
+
 	return BookGetRequest_builder{Id: v}.Build()
 }
 func (x *FooEf) Pick() *FooEfGetRequest {
@@ -288,6 +296,10 @@ func (x *LikeGetRequest) Select(v *LikeSelect) *LikeGetRequest {
 }
 
 func LikeById(v []byte) *LikeGetRequest {
+	if v == nil {
+		return nil
+	}
+
 	return LikeGetRequest_builder{Id: v}.Build()
 }
 
@@ -316,6 +328,10 @@ func (x *LoanGetRequest) Select(v *LoanSelect) *LoanGetRequest {
 }
 
 func LoanById(v []byte) *LoanGetRequest {
+	if v == nil {
+		return nil
+	}
+
 	return LoanGetRequest_builder{Id: v}.Build()
 }
 func (x *Locker) Pick() *LockerGetRequest {
@@ -327,6 +343,9 @@ func (x *LockerGetRequest) Picks(v *Locker) bool {
 	case LockerGetRequest_Id_case:
 		return bytes.Equal(x.GetId(), v.GetId())
 
+	case LockerGetRequest_Alias_case:
+		return x.GetAlias() == v.GetAlias()
+
 	default:
 		return false
 	}
@@ -337,7 +356,15 @@ func (x *LockerGetRequest) Select(v *LockerSelect) *LockerGetRequest {
 }
 
 func LockerById(v []byte) *LockerGetRequest {
+	if v == nil {
+		return nil
+	}
+
 	return LockerGetRequest_builder{Id: v}.Build()
+}
+
+func LockerByAlias(v string) *LockerGetRequest {
+	return LockerGetRequest_builder{Alias: &v}.Build()
 }
 func (x *Member) Pick() *MemberGetRequest {
 	return MemberById(x.GetId())
@@ -362,6 +389,10 @@ func (x *MemberGetRequest) Select(v *MemberSelect) *MemberGetRequest {
 }
 
 func MemberById(v []byte) *MemberGetRequest {
+	if v == nil {
+		return nil
+	}
+
 	return MemberGetRequest_builder{Id: v}.Build()
 }
 
@@ -390,6 +421,10 @@ func (x *MembershipGetRequest) Select(v *MembershipSelect) *MembershipGetRequest
 }
 
 func MembershipById(v []byte) *MembershipGetRequest {
+	if v == nil {
+		return nil
+	}
+
 	return MembershipGetRequest_builder{Id: v}.Build()
 }
 func (x *Press) Pick() *PressGetRequest {
@@ -415,6 +450,10 @@ func (x *PressGetRequest) Select(v *PressSelect) *PressGetRequest {
 }
 
 func PressById(v []byte) *PressGetRequest {
+	if v == nil {
+		return nil
+	}
+
 	return PressGetRequest_builder{Id: v}.Build()
 }
 

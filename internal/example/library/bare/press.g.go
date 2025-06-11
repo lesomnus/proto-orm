@@ -58,9 +58,7 @@ func (s PressServiceServer) Get(ctx context.Context, req *library.PressGetReques
 	if req.HasSelect() {
 		PressSelect(q, req.GetSelect())
 	} else {
-		q.WithBook(func(q *ent.BookQuery) {
-			q.Select(book.FieldID)
-		})
+		PressSelectEdges(q)
 	}
 
 	if p, err := PressPick(req); err != nil {
@@ -166,6 +164,12 @@ func PressSelectedFields(m *library.PressSelect) []string {
 	}
 
 	return vs
+}
+
+func PressSelectEdges(q *ent.PressQuery) {
+	q.WithBook(func(q *ent.BookQuery) {
+		q.Select(book.FieldID)
+	})
 }
 
 func PressSelect(q *ent.PressQuery, m *library.PressSelect) {

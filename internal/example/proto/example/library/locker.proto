@@ -38,4 +38,11 @@ message Locker {
 
 	string name   = 3;
 	uint32 number = 4;
+
+	string alias = 5 [
+		(orm.field) = {
+			unique: true
+			supplied: true
+		}
+	];
 }

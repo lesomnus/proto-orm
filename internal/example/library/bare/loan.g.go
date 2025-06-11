@@ -69,12 +69,7 @@ func (s LoanServiceServer) Get(ctx context.Context, req *library.LoanGetRequest)
 	if req.HasSelect() {
 		LoanSelect(q, req.GetSelect())
 	} else {
-		q.WithSubject(func(q *ent.BookQuery) {
-			q.Select(book.FieldID)
-		})
-		q.WithBorrower(func(q *ent.MemberQuery) {
-			q.Select(member.FieldID)
-		})
+		LoanSelectEdges(q)
 	}
 
 	if p, err := LoanPick(req); err != nil {
@@ -155,6 +150,15 @@ func LoanSelectedFields(m *library.LoanSelect) []string {
 	}
 
 	return vs
+}
+
+func LoanSelectEdges(q *ent.LoanQuery) {
+	q.WithSubject(func(q *ent.BookQuery) {
+		q.Select(book.FieldID)
+	})
+	q.WithBorrower(func(q *ent.MemberQuery) {
+		q.Select(member.FieldID)
+	})
 }
 
 func LoanSelect(q *ent.LoanQuery, m *library.LoanSelect) {

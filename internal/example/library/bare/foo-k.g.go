@@ -56,6 +56,7 @@ func (s FooKServiceServer) Get(ctx context.Context, req *library.FooKGetRequest)
 	if req.HasSelect() {
 		FooKSelect(q, req.GetSelect())
 	} else {
+		FooKSelectEdges(q)
 	}
 
 	if p, err := FooKPick(req); err != nil {
@@ -179,6 +180,9 @@ func FooKSelectedFields(m *library.FooKSelect) []string {
 	}
 
 	return vs
+}
+
+func FooKSelectEdges(q *ent.FooKQuery) {
 }
 
 func FooKSelect(q *ent.FooKQuery, m *library.FooKSelect) {

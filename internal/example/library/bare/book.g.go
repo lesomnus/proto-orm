@@ -56,6 +56,7 @@ func (s BookServiceServer) Get(ctx context.Context, req *library.BookGetRequest)
 	if req.HasSelect() {
 		BookSelect(q, req.GetSelect())
 	} else {
+		BookSelectEdges(q)
 	}
 
 	if p, err := BookPick(req); err != nil {
@@ -166,6 +167,9 @@ func BookSelectedFields(m *library.BookSelect) []string {
 	}
 
 	return vs
+}
+
+func BookSelectEdges(q *ent.BookQuery) {
 }
 
 func BookSelect(q *ent.BookQuery, m *library.BookSelect) {

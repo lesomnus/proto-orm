@@ -57,6 +57,7 @@ func (s FooMsdServiceServer) Get(ctx context.Context, req *library.FooMsdGetRequ
 	if req.HasSelect() {
 		FooMsdSelect(q, req.GetSelect())
 	} else {
+		FooMsdSelectEdges(q)
 	}
 
 	if p, err := FooMsdPick(req); err != nil {
@@ -174,6 +175,9 @@ func FooMsdSelectedFields(m *library.FooMsdSelect) []string {
 	}
 
 	return vs
+}
+
+func FooMsdSelectEdges(q *ent.FooMsdQuery) {
 }
 
 func FooMsdSelect(q *ent.FooMsdQuery, m *library.FooMsdSelect) {

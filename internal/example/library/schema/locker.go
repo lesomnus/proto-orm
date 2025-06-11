@@ -21,6 +21,8 @@ func (Locker) Fields() []ent.Field {
 			Immutable(),
 		field.String("name"),
 		field.Uint32("number"),
+		field.String("alias").
+			Unique(),
 	}
 }
 
