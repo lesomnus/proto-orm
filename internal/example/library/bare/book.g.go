@@ -5,8 +5,10 @@ package bare
 import (
 	context "context"
 	uuid "github.com/google/uuid"
+	proto_orm "github.com/lesomnus/proto-orm"
 	library "github.com/lesomnus/proto-orm/internal/example/library"
 	ent "github.com/lesomnus/proto-orm/internal/example/library/ent"
+	author "github.com/lesomnus/proto-orm/internal/example/library/ent/author"
 	book "github.com/lesomnus/proto-orm/internal/example/library/ent/book"
 	predicate "github.com/lesomnus/proto-orm/internal/example/library/ent/predicate"
 	codes "google.golang.org/grpc/codes"
@@ -82,6 +84,36 @@ func (s BookServiceServer) Patch(ctx context.Context, req *library.BookPatchRequ
 	q := s.Db.Book.UpdateOneID(id)
 	if req.HasTitle() {
 		q.SetTitle(req.GetTitle())
+	}
+	for _, p := range req.GetAuthors() {
+		switch p.GetOp() {
+		case proto_orm.PatchOp_ADD:
+		case proto_orm.PatchOp_ERASE:
+		case proto_orm.PatchOp_CLEAR:
+
+		case proto_orm.PatchOp_UNSPECIFIED:
+			continue
+		default:
+			return nil, status.Errorf(codes.Unimplemented, "unknown op")
+		}
+
+		ids := []uuid.UUID{}
+		for _, item := range p.GetItems() {
+			id, err := AuthorGetId(ctx, s.Db, item)
+			if err != nil {
+				return nil, err
+			}
+			ids = append(ids, id)
+		}
+
+		switch p.GetOp() {
+		case proto_orm.PatchOp_ADD:
+			q.AddAuthorIDs(ids...)
+		case proto_orm.PatchOp_ERASE:
+			q.RemoveAuthorIDs(ids...)
+		case proto_orm.PatchOp_CLEAR:
+			q.ClearAuthors()
+		}
 	}
 	if v := req.GetIndex(); v != nil {
 		q.SetIndex(v)
@@ -170,6 +202,9 @@ func BookSelectedFields(m *library.BookSelect) []string {
 }
 
 func BookSelectEdges(q *ent.BookQuery) {
+	q.WithAuthors(func(q *ent.AuthorQuery) {
+		q.Select(author.FieldID)
+	})
 }
 
 func BookSelect(q *ent.BookQuery, m *library.BookSelect) {

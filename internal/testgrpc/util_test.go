@@ -107,8 +107,9 @@ func NewClient(s *Server) *Client {
 	require.NoError(s.t, err)
 
 	v_locker, err := db.Locker.Create().
+		SetAlias("davy_jones").
 		SetOwner(v_member).
-		SetName("Davy Jones's").
+		SetName("Davy Jones").
 		SetNumber(42).
 		Save(ctx)
 	require.NoError(s.t, err)

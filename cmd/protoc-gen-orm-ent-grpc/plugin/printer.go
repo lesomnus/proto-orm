@@ -16,6 +16,8 @@ import (
 )
 
 const (
+	import_orm_pb protogen.GoImportPath = "github.com/lesomnus/proto-orm"
+
 	import_ent       protogen.GoImportPath = "entgo.io/ent"
 	import_ent_field protogen.GoImportPath = "entgo.io/ent/schema/field"
 	import_ent_edge  protogen.GoImportPath = "entgo.io/ent/schema/edge"
@@ -87,11 +89,14 @@ func (p *Printer) newTemplate(f *protogen.GeneratedFile) *template.Template {
 		"ent_pascal": func(v string) string {
 			return rules.EntPascal(v)
 		},
+		"ent_singular": func(v string) string {
+			return rules.EntSingularize(v)
+		},
+		"ent_plural": func(v string) string {
+			return rules.EntPluralize(v)
+		},
 		"pascal": func(v string) string {
 			return inflect.Camelize(v)
-		},
-		"plural": func(v string) string {
-			return inflect.Pluralize(v)
 		},
 
 		"pkg": func(name string) protogen.GoImportPath {
@@ -102,6 +107,9 @@ func (p *Printer) newTemplate(f *protogen.GeneratedFile) *template.Template {
 		},
 		"ent": func(name string) string {
 			return f.QualifiedGoIdent(p.EntPkg.Ident(name))
+		},
+		"ormpb": func(name string) string {
+			return f.QualifiedGoIdent(import_orm_pb.Ident(name))
 		},
 		"entity": func(e *graph.Entity) protogen.GoImportPath {
 			// I think it should converted to package name according to convention.

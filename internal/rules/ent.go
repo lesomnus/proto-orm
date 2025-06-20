@@ -41,6 +41,14 @@ func EntPascal(s string) string {
 	return pascalWords(words)
 }
 
+func EntSingularize(s string) string {
+	return ent_rules.Singularize(s)
+}
+
+func EntPluralize(s string) string {
+	return ent_rules.Pluralize(s)
+}
+
 func init() {
 	for _, w := range []string{
 		"ACL", "API", "ASCII", "AWS", "CPU", "CSS", "DNS", "EOF", "GB", "GUID",
@@ -51,5 +59,6 @@ func init() {
 	} {
 		ent_acronyms[w] = struct{}{}
 		ent_rules.AddAcronym(w)
+		ent_rules.AddIrregular("Child", "Children")
 	}
 }

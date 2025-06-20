@@ -53,5 +53,5 @@ message BookPatchRequest {
 
 message BookPatchAuthors {
 	orm.PatchOp op = 1;
-	repeated BookGetRequest items = 2;
+	repeated AuthorGetRequest items = 2;
 }

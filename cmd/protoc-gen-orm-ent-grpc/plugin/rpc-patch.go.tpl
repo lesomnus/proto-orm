@@ -17,7 +17,7 @@ func (s {{ $.Name }}ServiceServer) Patch(ctx {{ pkg "context" | ident "Context" 
 
 	{{/* printing attributes */ -}}
 
-	{{ if is_attr . }}{{ with as_attr . -}}
+	{{ with as_attr . -}}
 	{{ if .IsBound -}}
 		{{/* skip: field is bounded one */ -}}
 		{{ continue -}}
@@ -51,22 +51,19 @@ func (s {{ $.Name }}ServiceServer) Patch(ctx {{ pkg "context" | ident "Context" 
 	{{ end -}}
 	
 	{{ continue -}}
-	{{ end }}{{ end }}{{/* attribute is printed */ -}}
+	{{ end }}{{/* attribute is printed */ -}}
 
 
 	{{/* printing edges */ -}}
 
 	{{ with as_edge . -}}
-	{{ if not (or .IsUnidirectional .IsExclusive) -}}
-		{{ continue -}}
-	{{ end -}}
 
 	{{ $target := .Target -}}
 	{{ $k := $target.Key -}}
 	{{ $t := $k.Type -}}
 	{{ $n := pascal .Name -}}
-	{{ $v := print "req." $n -}}
 
+	{{ if not .IsList -}}
 	{{ if .IsNullable -}}
 	if req.Get{{ $n }}Null() {
 		q.Clear{{ $n }}()
@@ -79,6 +76,38 @@ func (s {{ $.Name }}ServiceServer) Patch(ctx {{ pkg "context" | ident "Context" 
 		}
 	}
 	{{ continue -}}
+	{{ else -}}
+	for _, p := range req.Get{{ $n }}() {
+		switch p.GetOp() {
+		case {{ ormpb "PatchOp_ADD" }}:
+		case {{ ormpb "PatchOp_ERASE" }}:
+		case {{ ormpb "PatchOp_CLEAR" }}:
+
+		case {{ ormpb "PatchOp_UNSPECIFIED" }}:
+			continue
+		default:
+			return nil, {{ grpc_errf "Unimplemented" (quote "unknown op") }}
+		}
+
+		ids := []{{ ent_type $t }}{}
+		for _, item := range p.GetItems() {
+			id, err := {{ $target.Name }}GetId(ctx, s.Db, item)
+			if err != nil {
+				return nil, err
+			}
+			ids = append(ids, id)
+		}
+
+		switch p.GetOp() {
+		case {{ ormpb "PatchOp_ADD" }}:
+			q.Add{{ ent_singular $n }}IDs(ids...)
+		case {{ ormpb "PatchOp_ERASE" }}:
+			q.Remove{{ ent_singular $n }}IDs(ids...)
+		case {{ ormpb "PatchOp_CLEAR" }}:
+			q.Clear{{ ent_plural $n }}()
+		}
+	}
+	{{ end -}}
 	{{ end }}{{/* edge field is printed */ -}}
 
 	{{ end }}

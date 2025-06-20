@@ -130,9 +130,6 @@ func {{ $.Name }}SelectedFields(m *{{ pb (print $.Name "Select") }}) []string {
 func {{ $.Name }}SelectEdges(q *{{ ent (print $.Name "Query") }}) {
 	{{ range .FieldsSortByNumber -}}
 	{{ with as_edge . -}}
-	{{ if not (.IsUnidirectional | or .IsExclusive) -}}
-		{{ continue -}}
-	{{ end -}}
 	{{ $n := ent_pascal .Name -}}
 	q.With{{ $n }}(func(q *{{ ent (print .Target.Name "Query") }}) {
 		q.Select({{ entity .Target | ident "FieldID" }})

@@ -8,6 +8,7 @@ import (
 	library "github.com/lesomnus/proto-orm/internal/example/library"
 	ent "github.com/lesomnus/proto-orm/internal/example/library/ent"
 	author "github.com/lesomnus/proto-orm/internal/example/library/ent/author"
+	book "github.com/lesomnus/proto-orm/internal/example/library/ent/book"
 	predicate "github.com/lesomnus/proto-orm/internal/example/library/ent/predicate"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -179,6 +180,9 @@ func AuthorSelectedFields(m *library.AuthorSelect) []string {
 }
 
 func AuthorSelectEdges(q *ent.AuthorQuery) {
+	q.WithBooks(func(q *ent.BookQuery) {
+		q.Select(book.FieldID)
+	})
 }
 
 func AuthorSelect(q *ent.AuthorQuery, m *library.AuthorSelect) {

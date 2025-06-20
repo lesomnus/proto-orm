@@ -555,7 +555,7 @@ func (w *printWork) msgPatchEdge(e *graph.Edge) *generatedMessage {
 	}
 	w.messages[full] = m
 
-	rpc_get, ok := e.Entity().Rpcs[graph.RpcOpGet]
+	rpc_get, ok := e.Target.Rpcs[graph.RpcOpGet]
 	if !ok {
 		panic("RPC patch requires RPC get")
 	}
@@ -563,7 +563,7 @@ func (w *printWork) msgPatchEdge(e *graph.Edge) *generatedMessage {
 	getter := w.msgGetReq(rpc_get)
 	m.Body = []pbgen.MessageBody{
 		pbgen.MessageField{
-			Type:   w.typeMessage(graph.StaticTyped("orm.PatchOp", "orm/patch.proto")),
+			Type:   w.typeMessage(graph.ProtoType("orm.PatchOp", "orm/patch.proto")),
 			Name:   "op",
 			Number: 1,
 		},

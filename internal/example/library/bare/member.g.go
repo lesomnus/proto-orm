@@ -5,6 +5,7 @@ package bare
 import (
 	context "context"
 	uuid "github.com/google/uuid"
+	proto_orm "github.com/lesomnus/proto-orm"
 	library "github.com/lesomnus/proto-orm/internal/example/library"
 	ent "github.com/lesomnus/proto-orm/internal/example/library/ent"
 	locker "github.com/lesomnus/proto-orm/internal/example/library/ent/locker"
@@ -110,6 +111,36 @@ func (s MemberServiceServer) Patch(ctx context.Context, req *library.MemberPatch
 			q.SetParentID(id)
 		}
 	}
+	for _, p := range req.GetChildren() {
+		switch p.GetOp() {
+		case proto_orm.PatchOp_ADD:
+		case proto_orm.PatchOp_ERASE:
+		case proto_orm.PatchOp_CLEAR:
+
+		case proto_orm.PatchOp_UNSPECIFIED:
+			continue
+		default:
+			return nil, status.Errorf(codes.Unimplemented, "unknown op")
+		}
+
+		ids := []uuid.UUID{}
+		for _, item := range p.GetItems() {
+			id, err := MemberGetId(ctx, s.Db, item)
+			if err != nil {
+				return nil, err
+			}
+			ids = append(ids, id)
+		}
+
+		switch p.GetOp() {
+		case proto_orm.PatchOp_ADD:
+			q.AddChildIDs(ids...)
+		case proto_orm.PatchOp_ERASE:
+			q.RemoveChildIDs(ids...)
+		case proto_orm.PatchOp_CLEAR:
+			q.ClearChildren()
+		}
+	}
 
 	if _, err := q.Save(ctx); err != nil {
 		return nil, StatusFromEntError(err)
@@ -208,6 +239,9 @@ func MemberSelectEdges(q *ent.MemberQuery) {
 		q.Select(locker.FieldID)
 	})
 	q.WithParent(func(q *ent.MemberQuery) {
+		q.Select(member.FieldID)
+	})
+	q.WithChildren(func(q *ent.MemberQuery) {
 		q.Select(member.FieldID)
 	})
 }
