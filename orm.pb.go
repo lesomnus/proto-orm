@@ -291,9 +291,10 @@ type FieldOptions struct {
 	Nullable  bool                   `protobuf:"varint,7,opt,name=nullable,proto3" json:"nullable,omitempty"`
 	Immutable bool                   `protobuf:"varint,8,opt,name=immutable,proto3" json:"immutable,omitempty"`
 	// Mark a field as optional for AddRequest message.
-	// This is useful when a field is unique and therefore
-	// cannot have a default value, but the server generates
-	// the value, so you want to make the field optional for the user.
+	// This is useful when a field is unique and
+	// therefore cannot have a default value, but the
+	// server supplies (or generates) the value, so you
+	// want to make the field optional for the user.
 	Supplied      bool    `protobuf:"varint,10,opt,name=supplied,proto3" json:"supplied,omitempty"`
 	Default       *string `protobuf:"bytes,9,opt,name=default,proto3,oneof" json:"default,omitempty"`
 	unknownFields protoimpl.UnknownFields

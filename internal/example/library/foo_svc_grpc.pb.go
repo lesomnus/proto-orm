@@ -22,215 +22,215 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	FooEfService_Add_FullMethodName   = "/example.library.FooEfService/Add"
-	FooEfService_Get_FullMethodName   = "/example.library.FooEfService/Get"
-	FooEfService_Patch_FullMethodName = "/example.library.FooEfService/Patch"
-	FooEfService_Erase_FullMethodName = "/example.library.FooEfService/Erase"
+	FooVService_Add_FullMethodName   = "/example.library.FooVService/Add"
+	FooVService_Get_FullMethodName   = "/example.library.FooVService/Get"
+	FooVService_Patch_FullMethodName = "/example.library.FooVService/Patch"
+	FooVService_Erase_FullMethodName = "/example.library.FooVService/Erase"
 )
 
-// FooEfServiceClient is the client API for FooEfService service.
+// FooVServiceClient is the client API for FooVService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type FooEfServiceClient interface {
-	Add(ctx context.Context, in *FooEfAddRequest, opts ...grpc.CallOption) (*FooEf, error)
-	Get(ctx context.Context, in *FooEfGetRequest, opts ...grpc.CallOption) (*FooEf, error)
-	Patch(ctx context.Context, in *FooEfPatchRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	Erase(ctx context.Context, in *FooEfGetRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+type FooVServiceClient interface {
+	Add(ctx context.Context, in *FooVAddRequest, opts ...grpc.CallOption) (*FooV, error)
+	Get(ctx context.Context, in *FooVGetRequest, opts ...grpc.CallOption) (*FooV, error)
+	Patch(ctx context.Context, in *FooVPatchRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	Erase(ctx context.Context, in *FooVGetRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
-type fooEfServiceClient struct {
+type fooVServiceClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewFooEfServiceClient(cc grpc.ClientConnInterface) FooEfServiceClient {
-	return &fooEfServiceClient{cc}
+func NewFooVServiceClient(cc grpc.ClientConnInterface) FooVServiceClient {
+	return &fooVServiceClient{cc}
 }
 
-func (c *fooEfServiceClient) Add(ctx context.Context, in *FooEfAddRequest, opts ...grpc.CallOption) (*FooEf, error) {
+func (c *fooVServiceClient) Add(ctx context.Context, in *FooVAddRequest, opts ...grpc.CallOption) (*FooV, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(FooEf)
-	err := c.cc.Invoke(ctx, FooEfService_Add_FullMethodName, in, out, cOpts...)
+	out := new(FooV)
+	err := c.cc.Invoke(ctx, FooVService_Add_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *fooEfServiceClient) Get(ctx context.Context, in *FooEfGetRequest, opts ...grpc.CallOption) (*FooEf, error) {
+func (c *fooVServiceClient) Get(ctx context.Context, in *FooVGetRequest, opts ...grpc.CallOption) (*FooV, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(FooEf)
-	err := c.cc.Invoke(ctx, FooEfService_Get_FullMethodName, in, out, cOpts...)
+	out := new(FooV)
+	err := c.cc.Invoke(ctx, FooVService_Get_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *fooEfServiceClient) Patch(ctx context.Context, in *FooEfPatchRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(emptypb.Empty)
-	err := c.cc.Invoke(ctx, FooEfService_Patch_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *fooEfServiceClient) Erase(ctx context.Context, in *FooEfGetRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+func (c *fooVServiceClient) Patch(ctx context.Context, in *FooVPatchRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(emptypb.Empty)
-	err := c.cc.Invoke(ctx, FooEfService_Erase_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, FooVService_Patch_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// FooEfServiceServer is the server API for FooEfService service.
-// All implementations must embed UnimplementedFooEfServiceServer
+func (c *fooVServiceClient) Erase(ctx context.Context, in *FooVGetRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, FooVService_Erase_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// FooVServiceServer is the server API for FooVService service.
+// All implementations must embed UnimplementedFooVServiceServer
 // for forward compatibility.
-type FooEfServiceServer interface {
-	Add(context.Context, *FooEfAddRequest) (*FooEf, error)
-	Get(context.Context, *FooEfGetRequest) (*FooEf, error)
-	Patch(context.Context, *FooEfPatchRequest) (*emptypb.Empty, error)
-	Erase(context.Context, *FooEfGetRequest) (*emptypb.Empty, error)
-	mustEmbedUnimplementedFooEfServiceServer()
+type FooVServiceServer interface {
+	Add(context.Context, *FooVAddRequest) (*FooV, error)
+	Get(context.Context, *FooVGetRequest) (*FooV, error)
+	Patch(context.Context, *FooVPatchRequest) (*emptypb.Empty, error)
+	Erase(context.Context, *FooVGetRequest) (*emptypb.Empty, error)
+	mustEmbedUnimplementedFooVServiceServer()
 }
 
-// UnimplementedFooEfServiceServer must be embedded to have
+// UnimplementedFooVServiceServer must be embedded to have
 // forward compatible implementations.
 //
 // NOTE: this should be embedded by value instead of pointer to avoid a nil
 // pointer dereference when methods are called.
-type UnimplementedFooEfServiceServer struct{}
+type UnimplementedFooVServiceServer struct{}
 
-func (UnimplementedFooEfServiceServer) Add(context.Context, *FooEfAddRequest) (*FooEf, error) {
+func (UnimplementedFooVServiceServer) Add(context.Context, *FooVAddRequest) (*FooV, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Add not implemented")
 }
-func (UnimplementedFooEfServiceServer) Get(context.Context, *FooEfGetRequest) (*FooEf, error) {
+func (UnimplementedFooVServiceServer) Get(context.Context, *FooVGetRequest) (*FooV, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
 }
-func (UnimplementedFooEfServiceServer) Patch(context.Context, *FooEfPatchRequest) (*emptypb.Empty, error) {
+func (UnimplementedFooVServiceServer) Patch(context.Context, *FooVPatchRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Patch not implemented")
 }
-func (UnimplementedFooEfServiceServer) Erase(context.Context, *FooEfGetRequest) (*emptypb.Empty, error) {
+func (UnimplementedFooVServiceServer) Erase(context.Context, *FooVGetRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Erase not implemented")
 }
-func (UnimplementedFooEfServiceServer) mustEmbedUnimplementedFooEfServiceServer() {}
-func (UnimplementedFooEfServiceServer) testEmbeddedByValue()                      {}
+func (UnimplementedFooVServiceServer) mustEmbedUnimplementedFooVServiceServer() {}
+func (UnimplementedFooVServiceServer) testEmbeddedByValue()                     {}
 
-// UnsafeFooEfServiceServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to FooEfServiceServer will
+// UnsafeFooVServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to FooVServiceServer will
 // result in compilation errors.
-type UnsafeFooEfServiceServer interface {
-	mustEmbedUnimplementedFooEfServiceServer()
+type UnsafeFooVServiceServer interface {
+	mustEmbedUnimplementedFooVServiceServer()
 }
 
-func RegisterFooEfServiceServer(s grpc.ServiceRegistrar, srv FooEfServiceServer) {
-	// If the following call pancis, it indicates UnimplementedFooEfServiceServer was
+func RegisterFooVServiceServer(s grpc.ServiceRegistrar, srv FooVServiceServer) {
+	// If the following call pancis, it indicates UnimplementedFooVServiceServer was
 	// embedded by pointer and is nil.  This will cause panics if an
 	// unimplemented method is ever invoked, so we test this at initialization
 	// time to prevent it from happening at runtime later due to I/O.
 	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
 		t.testEmbeddedByValue()
 	}
-	s.RegisterService(&FooEfService_ServiceDesc, srv)
+	s.RegisterService(&FooVService_ServiceDesc, srv)
 }
 
-func _FooEfService_Add_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(FooEfAddRequest)
+func _FooVService_Add_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FooVAddRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(FooEfServiceServer).Add(ctx, in)
+		return srv.(FooVServiceServer).Add(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: FooEfService_Add_FullMethodName,
+		FullMethod: FooVService_Add_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FooEfServiceServer).Add(ctx, req.(*FooEfAddRequest))
+		return srv.(FooVServiceServer).Add(ctx, req.(*FooVAddRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _FooEfService_Get_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(FooEfGetRequest)
+func _FooVService_Get_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FooVGetRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(FooEfServiceServer).Get(ctx, in)
+		return srv.(FooVServiceServer).Get(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: FooEfService_Get_FullMethodName,
+		FullMethod: FooVService_Get_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FooEfServiceServer).Get(ctx, req.(*FooEfGetRequest))
+		return srv.(FooVServiceServer).Get(ctx, req.(*FooVGetRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _FooEfService_Patch_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(FooEfPatchRequest)
+func _FooVService_Patch_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FooVPatchRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(FooEfServiceServer).Patch(ctx, in)
+		return srv.(FooVServiceServer).Patch(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: FooEfService_Patch_FullMethodName,
+		FullMethod: FooVService_Patch_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FooEfServiceServer).Patch(ctx, req.(*FooEfPatchRequest))
+		return srv.(FooVServiceServer).Patch(ctx, req.(*FooVPatchRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _FooEfService_Erase_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(FooEfGetRequest)
+func _FooVService_Erase_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FooVGetRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(FooEfServiceServer).Erase(ctx, in)
+		return srv.(FooVServiceServer).Erase(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: FooEfService_Erase_FullMethodName,
+		FullMethod: FooVService_Erase_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FooEfServiceServer).Erase(ctx, req.(*FooEfGetRequest))
+		return srv.(FooVServiceServer).Erase(ctx, req.(*FooVGetRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// FooEfService_ServiceDesc is the grpc.ServiceDesc for FooEfService service.
+// FooVService_ServiceDesc is the grpc.ServiceDesc for FooVService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var FooEfService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "example.library.FooEfService",
-	HandlerType: (*FooEfServiceServer)(nil),
+var FooVService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "example.library.FooVService",
+	HandlerType: (*FooVServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
 			MethodName: "Add",
-			Handler:    _FooEfService_Add_Handler,
+			Handler:    _FooVService_Add_Handler,
 		},
 		{
 			MethodName: "Get",
-			Handler:    _FooEfService_Get_Handler,
+			Handler:    _FooVService_Get_Handler,
 		},
 		{
 			MethodName: "Patch",
-			Handler:    _FooEfService_Patch_Handler,
+			Handler:    _FooVService_Patch_Handler,
 		},
 		{
 			MethodName: "Erase",
-			Handler:    _FooEfService_Erase_Handler,
+			Handler:    _FooVService_Erase_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -238,215 +238,863 @@ var FooEfService_ServiceDesc = grpc.ServiceDesc{
 }
 
 const (
-	FooKService_Add_FullMethodName   = "/example.library.FooKService/Add"
-	FooKService_Get_FullMethodName   = "/example.library.FooKService/Get"
-	FooKService_Patch_FullMethodName = "/example.library.FooKService/Patch"
-	FooKService_Erase_FullMethodName = "/example.library.FooKService/Erase"
+	FooVdService_Add_FullMethodName   = "/example.library.FooVdService/Add"
+	FooVdService_Get_FullMethodName   = "/example.library.FooVdService/Get"
+	FooVdService_Patch_FullMethodName = "/example.library.FooVdService/Patch"
+	FooVdService_Erase_FullMethodName = "/example.library.FooVdService/Erase"
 )
 
-// FooKServiceClient is the client API for FooKService service.
+// FooVdServiceClient is the client API for FooVdService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type FooKServiceClient interface {
-	Add(ctx context.Context, in *FooKAddRequest, opts ...grpc.CallOption) (*FooK, error)
-	Get(ctx context.Context, in *FooKGetRequest, opts ...grpc.CallOption) (*FooK, error)
-	Patch(ctx context.Context, in *FooKPatchRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	Erase(ctx context.Context, in *FooKGetRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+type FooVdServiceClient interface {
+	Add(ctx context.Context, in *FooVdAddRequest, opts ...grpc.CallOption) (*FooVd, error)
+	Get(ctx context.Context, in *FooVdGetRequest, opts ...grpc.CallOption) (*FooVd, error)
+	Patch(ctx context.Context, in *FooVdPatchRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	Erase(ctx context.Context, in *FooVdGetRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
-type fooKServiceClient struct {
+type fooVdServiceClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewFooKServiceClient(cc grpc.ClientConnInterface) FooKServiceClient {
-	return &fooKServiceClient{cc}
+func NewFooVdServiceClient(cc grpc.ClientConnInterface) FooVdServiceClient {
+	return &fooVdServiceClient{cc}
 }
 
-func (c *fooKServiceClient) Add(ctx context.Context, in *FooKAddRequest, opts ...grpc.CallOption) (*FooK, error) {
+func (c *fooVdServiceClient) Add(ctx context.Context, in *FooVdAddRequest, opts ...grpc.CallOption) (*FooVd, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(FooK)
-	err := c.cc.Invoke(ctx, FooKService_Add_FullMethodName, in, out, cOpts...)
+	out := new(FooVd)
+	err := c.cc.Invoke(ctx, FooVdService_Add_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *fooKServiceClient) Get(ctx context.Context, in *FooKGetRequest, opts ...grpc.CallOption) (*FooK, error) {
+func (c *fooVdServiceClient) Get(ctx context.Context, in *FooVdGetRequest, opts ...grpc.CallOption) (*FooVd, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(FooK)
-	err := c.cc.Invoke(ctx, FooKService_Get_FullMethodName, in, out, cOpts...)
+	out := new(FooVd)
+	err := c.cc.Invoke(ctx, FooVdService_Get_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *fooKServiceClient) Patch(ctx context.Context, in *FooKPatchRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(emptypb.Empty)
-	err := c.cc.Invoke(ctx, FooKService_Patch_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *fooKServiceClient) Erase(ctx context.Context, in *FooKGetRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+func (c *fooVdServiceClient) Patch(ctx context.Context, in *FooVdPatchRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(emptypb.Empty)
-	err := c.cc.Invoke(ctx, FooKService_Erase_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, FooVdService_Patch_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// FooKServiceServer is the server API for FooKService service.
-// All implementations must embed UnimplementedFooKServiceServer
+func (c *fooVdServiceClient) Erase(ctx context.Context, in *FooVdGetRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, FooVdService_Erase_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// FooVdServiceServer is the server API for FooVdService service.
+// All implementations must embed UnimplementedFooVdServiceServer
 // for forward compatibility.
-type FooKServiceServer interface {
-	Add(context.Context, *FooKAddRequest) (*FooK, error)
-	Get(context.Context, *FooKGetRequest) (*FooK, error)
-	Patch(context.Context, *FooKPatchRequest) (*emptypb.Empty, error)
-	Erase(context.Context, *FooKGetRequest) (*emptypb.Empty, error)
-	mustEmbedUnimplementedFooKServiceServer()
+type FooVdServiceServer interface {
+	Add(context.Context, *FooVdAddRequest) (*FooVd, error)
+	Get(context.Context, *FooVdGetRequest) (*FooVd, error)
+	Patch(context.Context, *FooVdPatchRequest) (*emptypb.Empty, error)
+	Erase(context.Context, *FooVdGetRequest) (*emptypb.Empty, error)
+	mustEmbedUnimplementedFooVdServiceServer()
 }
 
-// UnimplementedFooKServiceServer must be embedded to have
+// UnimplementedFooVdServiceServer must be embedded to have
 // forward compatible implementations.
 //
 // NOTE: this should be embedded by value instead of pointer to avoid a nil
 // pointer dereference when methods are called.
-type UnimplementedFooKServiceServer struct{}
+type UnimplementedFooVdServiceServer struct{}
 
-func (UnimplementedFooKServiceServer) Add(context.Context, *FooKAddRequest) (*FooK, error) {
+func (UnimplementedFooVdServiceServer) Add(context.Context, *FooVdAddRequest) (*FooVd, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Add not implemented")
 }
-func (UnimplementedFooKServiceServer) Get(context.Context, *FooKGetRequest) (*FooK, error) {
+func (UnimplementedFooVdServiceServer) Get(context.Context, *FooVdGetRequest) (*FooVd, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
 }
-func (UnimplementedFooKServiceServer) Patch(context.Context, *FooKPatchRequest) (*emptypb.Empty, error) {
+func (UnimplementedFooVdServiceServer) Patch(context.Context, *FooVdPatchRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Patch not implemented")
 }
-func (UnimplementedFooKServiceServer) Erase(context.Context, *FooKGetRequest) (*emptypb.Empty, error) {
+func (UnimplementedFooVdServiceServer) Erase(context.Context, *FooVdGetRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Erase not implemented")
 }
-func (UnimplementedFooKServiceServer) mustEmbedUnimplementedFooKServiceServer() {}
-func (UnimplementedFooKServiceServer) testEmbeddedByValue()                     {}
+func (UnimplementedFooVdServiceServer) mustEmbedUnimplementedFooVdServiceServer() {}
+func (UnimplementedFooVdServiceServer) testEmbeddedByValue()                      {}
 
-// UnsafeFooKServiceServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to FooKServiceServer will
+// UnsafeFooVdServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to FooVdServiceServer will
 // result in compilation errors.
-type UnsafeFooKServiceServer interface {
-	mustEmbedUnimplementedFooKServiceServer()
+type UnsafeFooVdServiceServer interface {
+	mustEmbedUnimplementedFooVdServiceServer()
 }
 
-func RegisterFooKServiceServer(s grpc.ServiceRegistrar, srv FooKServiceServer) {
-	// If the following call pancis, it indicates UnimplementedFooKServiceServer was
+func RegisterFooVdServiceServer(s grpc.ServiceRegistrar, srv FooVdServiceServer) {
+	// If the following call pancis, it indicates UnimplementedFooVdServiceServer was
 	// embedded by pointer and is nil.  This will cause panics if an
 	// unimplemented method is ever invoked, so we test this at initialization
 	// time to prevent it from happening at runtime later due to I/O.
 	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
 		t.testEmbeddedByValue()
 	}
-	s.RegisterService(&FooKService_ServiceDesc, srv)
+	s.RegisterService(&FooVdService_ServiceDesc, srv)
 }
 
-func _FooKService_Add_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(FooKAddRequest)
+func _FooVdService_Add_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FooVdAddRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(FooKServiceServer).Add(ctx, in)
+		return srv.(FooVdServiceServer).Add(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: FooKService_Add_FullMethodName,
+		FullMethod: FooVdService_Add_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FooKServiceServer).Add(ctx, req.(*FooKAddRequest))
+		return srv.(FooVdServiceServer).Add(ctx, req.(*FooVdAddRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _FooKService_Get_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(FooKGetRequest)
+func _FooVdService_Get_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FooVdGetRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(FooKServiceServer).Get(ctx, in)
+		return srv.(FooVdServiceServer).Get(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: FooKService_Get_FullMethodName,
+		FullMethod: FooVdService_Get_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FooKServiceServer).Get(ctx, req.(*FooKGetRequest))
+		return srv.(FooVdServiceServer).Get(ctx, req.(*FooVdGetRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _FooKService_Patch_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(FooKPatchRequest)
+func _FooVdService_Patch_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FooVdPatchRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(FooKServiceServer).Patch(ctx, in)
+		return srv.(FooVdServiceServer).Patch(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: FooKService_Patch_FullMethodName,
+		FullMethod: FooVdService_Patch_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FooKServiceServer).Patch(ctx, req.(*FooKPatchRequest))
+		return srv.(FooVdServiceServer).Patch(ctx, req.(*FooVdPatchRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _FooKService_Erase_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(FooKGetRequest)
+func _FooVdService_Erase_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FooVdGetRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(FooKServiceServer).Erase(ctx, in)
+		return srv.(FooVdServiceServer).Erase(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: FooKService_Erase_FullMethodName,
+		FullMethod: FooVdService_Erase_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FooKServiceServer).Erase(ctx, req.(*FooKGetRequest))
+		return srv.(FooVdServiceServer).Erase(ctx, req.(*FooVdGetRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// FooKService_ServiceDesc is the grpc.ServiceDesc for FooKService service.
+// FooVdService_ServiceDesc is the grpc.ServiceDesc for FooVdService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var FooKService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "example.library.FooKService",
-	HandlerType: (*FooKServiceServer)(nil),
+var FooVdService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "example.library.FooVdService",
+	HandlerType: (*FooVdServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
 			MethodName: "Add",
-			Handler:    _FooKService_Add_Handler,
+			Handler:    _FooVdService_Add_Handler,
 		},
 		{
 			MethodName: "Get",
-			Handler:    _FooKService_Get_Handler,
+			Handler:    _FooVdService_Get_Handler,
 		},
 		{
 			MethodName: "Patch",
-			Handler:    _FooKService_Patch_Handler,
+			Handler:    _FooVdService_Patch_Handler,
 		},
 		{
 			MethodName: "Erase",
-			Handler:    _FooKService_Erase_Handler,
+			Handler:    _FooVdService_Erase_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "example/library/foo_svc.proto",
+}
+
+const (
+	FooVrService_Add_FullMethodName   = "/example.library.FooVrService/Add"
+	FooVrService_Get_FullMethodName   = "/example.library.FooVrService/Get"
+	FooVrService_Patch_FullMethodName = "/example.library.FooVrService/Patch"
+	FooVrService_Erase_FullMethodName = "/example.library.FooVrService/Erase"
+)
+
+// FooVrServiceClient is the client API for FooVrService service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type FooVrServiceClient interface {
+	Add(ctx context.Context, in *FooVrAddRequest, opts ...grpc.CallOption) (*FooVr, error)
+	Get(ctx context.Context, in *FooVrGetRequest, opts ...grpc.CallOption) (*FooVr, error)
+	Patch(ctx context.Context, in *FooVrPatchRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	Erase(ctx context.Context, in *FooVrGetRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+}
+
+type fooVrServiceClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewFooVrServiceClient(cc grpc.ClientConnInterface) FooVrServiceClient {
+	return &fooVrServiceClient{cc}
+}
+
+func (c *fooVrServiceClient) Add(ctx context.Context, in *FooVrAddRequest, opts ...grpc.CallOption) (*FooVr, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(FooVr)
+	err := c.cc.Invoke(ctx, FooVrService_Add_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *fooVrServiceClient) Get(ctx context.Context, in *FooVrGetRequest, opts ...grpc.CallOption) (*FooVr, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(FooVr)
+	err := c.cc.Invoke(ctx, FooVrService_Get_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *fooVrServiceClient) Patch(ctx context.Context, in *FooVrPatchRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, FooVrService_Patch_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *fooVrServiceClient) Erase(ctx context.Context, in *FooVrGetRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, FooVrService_Erase_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// FooVrServiceServer is the server API for FooVrService service.
+// All implementations must embed UnimplementedFooVrServiceServer
+// for forward compatibility.
+type FooVrServiceServer interface {
+	Add(context.Context, *FooVrAddRequest) (*FooVr, error)
+	Get(context.Context, *FooVrGetRequest) (*FooVr, error)
+	Patch(context.Context, *FooVrPatchRequest) (*emptypb.Empty, error)
+	Erase(context.Context, *FooVrGetRequest) (*emptypb.Empty, error)
+	mustEmbedUnimplementedFooVrServiceServer()
+}
+
+// UnimplementedFooVrServiceServer must be embedded to have
+// forward compatible implementations.
+//
+// NOTE: this should be embedded by value instead of pointer to avoid a nil
+// pointer dereference when methods are called.
+type UnimplementedFooVrServiceServer struct{}
+
+func (UnimplementedFooVrServiceServer) Add(context.Context, *FooVrAddRequest) (*FooVr, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Add not implemented")
+}
+func (UnimplementedFooVrServiceServer) Get(context.Context, *FooVrGetRequest) (*FooVr, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
+}
+func (UnimplementedFooVrServiceServer) Patch(context.Context, *FooVrPatchRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Patch not implemented")
+}
+func (UnimplementedFooVrServiceServer) Erase(context.Context, *FooVrGetRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Erase not implemented")
+}
+func (UnimplementedFooVrServiceServer) mustEmbedUnimplementedFooVrServiceServer() {}
+func (UnimplementedFooVrServiceServer) testEmbeddedByValue()                      {}
+
+// UnsafeFooVrServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to FooVrServiceServer will
+// result in compilation errors.
+type UnsafeFooVrServiceServer interface {
+	mustEmbedUnimplementedFooVrServiceServer()
+}
+
+func RegisterFooVrServiceServer(s grpc.ServiceRegistrar, srv FooVrServiceServer) {
+	// If the following call pancis, it indicates UnimplementedFooVrServiceServer was
+	// embedded by pointer and is nil.  This will cause panics if an
+	// unimplemented method is ever invoked, so we test this at initialization
+	// time to prevent it from happening at runtime later due to I/O.
+	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
+		t.testEmbeddedByValue()
+	}
+	s.RegisterService(&FooVrService_ServiceDesc, srv)
+}
+
+func _FooVrService_Add_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FooVrAddRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FooVrServiceServer).Add(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: FooVrService_Add_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FooVrServiceServer).Add(ctx, req.(*FooVrAddRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _FooVrService_Get_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FooVrGetRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FooVrServiceServer).Get(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: FooVrService_Get_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FooVrServiceServer).Get(ctx, req.(*FooVrGetRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _FooVrService_Patch_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FooVrPatchRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FooVrServiceServer).Patch(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: FooVrService_Patch_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FooVrServiceServer).Patch(ctx, req.(*FooVrPatchRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _FooVrService_Erase_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FooVrGetRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FooVrServiceServer).Erase(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: FooVrService_Erase_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FooVrServiceServer).Erase(ctx, req.(*FooVrGetRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// FooVrService_ServiceDesc is the grpc.ServiceDesc for FooVrService service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var FooVrService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "example.library.FooVrService",
+	HandlerType: (*FooVrServiceServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "Add",
+			Handler:    _FooVrService_Add_Handler,
+		},
+		{
+			MethodName: "Get",
+			Handler:    _FooVrService_Get_Handler,
+		},
+		{
+			MethodName: "Patch",
+			Handler:    _FooVrService_Patch_Handler,
+		},
+		{
+			MethodName: "Erase",
+			Handler:    _FooVrService_Erase_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "example/library/foo_svc.proto",
+}
+
+const (
+	FooVoService_Add_FullMethodName   = "/example.library.FooVoService/Add"
+	FooVoService_Get_FullMethodName   = "/example.library.FooVoService/Get"
+	FooVoService_Patch_FullMethodName = "/example.library.FooVoService/Patch"
+	FooVoService_Erase_FullMethodName = "/example.library.FooVoService/Erase"
+)
+
+// FooVoServiceClient is the client API for FooVoService service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type FooVoServiceClient interface {
+	Add(ctx context.Context, in *FooVoAddRequest, opts ...grpc.CallOption) (*FooVo, error)
+	Get(ctx context.Context, in *FooVoGetRequest, opts ...grpc.CallOption) (*FooVo, error)
+	Patch(ctx context.Context, in *FooVoPatchRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	Erase(ctx context.Context, in *FooVoGetRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+}
+
+type fooVoServiceClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewFooVoServiceClient(cc grpc.ClientConnInterface) FooVoServiceClient {
+	return &fooVoServiceClient{cc}
+}
+
+func (c *fooVoServiceClient) Add(ctx context.Context, in *FooVoAddRequest, opts ...grpc.CallOption) (*FooVo, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(FooVo)
+	err := c.cc.Invoke(ctx, FooVoService_Add_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *fooVoServiceClient) Get(ctx context.Context, in *FooVoGetRequest, opts ...grpc.CallOption) (*FooVo, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(FooVo)
+	err := c.cc.Invoke(ctx, FooVoService_Get_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *fooVoServiceClient) Patch(ctx context.Context, in *FooVoPatchRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, FooVoService_Patch_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *fooVoServiceClient) Erase(ctx context.Context, in *FooVoGetRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, FooVoService_Erase_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// FooVoServiceServer is the server API for FooVoService service.
+// All implementations must embed UnimplementedFooVoServiceServer
+// for forward compatibility.
+type FooVoServiceServer interface {
+	Add(context.Context, *FooVoAddRequest) (*FooVo, error)
+	Get(context.Context, *FooVoGetRequest) (*FooVo, error)
+	Patch(context.Context, *FooVoPatchRequest) (*emptypb.Empty, error)
+	Erase(context.Context, *FooVoGetRequest) (*emptypb.Empty, error)
+	mustEmbedUnimplementedFooVoServiceServer()
+}
+
+// UnimplementedFooVoServiceServer must be embedded to have
+// forward compatible implementations.
+//
+// NOTE: this should be embedded by value instead of pointer to avoid a nil
+// pointer dereference when methods are called.
+type UnimplementedFooVoServiceServer struct{}
+
+func (UnimplementedFooVoServiceServer) Add(context.Context, *FooVoAddRequest) (*FooVo, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Add not implemented")
+}
+func (UnimplementedFooVoServiceServer) Get(context.Context, *FooVoGetRequest) (*FooVo, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
+}
+func (UnimplementedFooVoServiceServer) Patch(context.Context, *FooVoPatchRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Patch not implemented")
+}
+func (UnimplementedFooVoServiceServer) Erase(context.Context, *FooVoGetRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Erase not implemented")
+}
+func (UnimplementedFooVoServiceServer) mustEmbedUnimplementedFooVoServiceServer() {}
+func (UnimplementedFooVoServiceServer) testEmbeddedByValue()                      {}
+
+// UnsafeFooVoServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to FooVoServiceServer will
+// result in compilation errors.
+type UnsafeFooVoServiceServer interface {
+	mustEmbedUnimplementedFooVoServiceServer()
+}
+
+func RegisterFooVoServiceServer(s grpc.ServiceRegistrar, srv FooVoServiceServer) {
+	// If the following call pancis, it indicates UnimplementedFooVoServiceServer was
+	// embedded by pointer and is nil.  This will cause panics if an
+	// unimplemented method is ever invoked, so we test this at initialization
+	// time to prevent it from happening at runtime later due to I/O.
+	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
+		t.testEmbeddedByValue()
+	}
+	s.RegisterService(&FooVoService_ServiceDesc, srv)
+}
+
+func _FooVoService_Add_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FooVoAddRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FooVoServiceServer).Add(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: FooVoService_Add_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FooVoServiceServer).Add(ctx, req.(*FooVoAddRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _FooVoService_Get_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FooVoGetRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FooVoServiceServer).Get(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: FooVoService_Get_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FooVoServiceServer).Get(ctx, req.(*FooVoGetRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _FooVoService_Patch_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FooVoPatchRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FooVoServiceServer).Patch(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: FooVoService_Patch_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FooVoServiceServer).Patch(ctx, req.(*FooVoPatchRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _FooVoService_Erase_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FooVoGetRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FooVoServiceServer).Erase(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: FooVoService_Erase_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FooVoServiceServer).Erase(ctx, req.(*FooVoGetRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// FooVoService_ServiceDesc is the grpc.ServiceDesc for FooVoService service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var FooVoService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "example.library.FooVoService",
+	HandlerType: (*FooVoServiceServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "Add",
+			Handler:    _FooVoService_Add_Handler,
+		},
+		{
+			MethodName: "Get",
+			Handler:    _FooVoService_Get_Handler,
+		},
+		{
+			MethodName: "Patch",
+			Handler:    _FooVoService_Patch_Handler,
+		},
+		{
+			MethodName: "Erase",
+			Handler:    _FooVoService_Erase_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "example/library/foo_svc.proto",
+}
+
+const (
+	FooVonService_Add_FullMethodName   = "/example.library.FooVonService/Add"
+	FooVonService_Get_FullMethodName   = "/example.library.FooVonService/Get"
+	FooVonService_Patch_FullMethodName = "/example.library.FooVonService/Patch"
+	FooVonService_Erase_FullMethodName = "/example.library.FooVonService/Erase"
+)
+
+// FooVonServiceClient is the client API for FooVonService service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type FooVonServiceClient interface {
+	Add(ctx context.Context, in *FooVonAddRequest, opts ...grpc.CallOption) (*FooVon, error)
+	Get(ctx context.Context, in *FooVonGetRequest, opts ...grpc.CallOption) (*FooVon, error)
+	Patch(ctx context.Context, in *FooVonPatchRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	Erase(ctx context.Context, in *FooVonGetRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+}
+
+type fooVonServiceClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewFooVonServiceClient(cc grpc.ClientConnInterface) FooVonServiceClient {
+	return &fooVonServiceClient{cc}
+}
+
+func (c *fooVonServiceClient) Add(ctx context.Context, in *FooVonAddRequest, opts ...grpc.CallOption) (*FooVon, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(FooVon)
+	err := c.cc.Invoke(ctx, FooVonService_Add_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *fooVonServiceClient) Get(ctx context.Context, in *FooVonGetRequest, opts ...grpc.CallOption) (*FooVon, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(FooVon)
+	err := c.cc.Invoke(ctx, FooVonService_Get_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *fooVonServiceClient) Patch(ctx context.Context, in *FooVonPatchRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, FooVonService_Patch_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *fooVonServiceClient) Erase(ctx context.Context, in *FooVonGetRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, FooVonService_Erase_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// FooVonServiceServer is the server API for FooVonService service.
+// All implementations must embed UnimplementedFooVonServiceServer
+// for forward compatibility.
+type FooVonServiceServer interface {
+	Add(context.Context, *FooVonAddRequest) (*FooVon, error)
+	Get(context.Context, *FooVonGetRequest) (*FooVon, error)
+	Patch(context.Context, *FooVonPatchRequest) (*emptypb.Empty, error)
+	Erase(context.Context, *FooVonGetRequest) (*emptypb.Empty, error)
+	mustEmbedUnimplementedFooVonServiceServer()
+}
+
+// UnimplementedFooVonServiceServer must be embedded to have
+// forward compatible implementations.
+//
+// NOTE: this should be embedded by value instead of pointer to avoid a nil
+// pointer dereference when methods are called.
+type UnimplementedFooVonServiceServer struct{}
+
+func (UnimplementedFooVonServiceServer) Add(context.Context, *FooVonAddRequest) (*FooVon, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Add not implemented")
+}
+func (UnimplementedFooVonServiceServer) Get(context.Context, *FooVonGetRequest) (*FooVon, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
+}
+func (UnimplementedFooVonServiceServer) Patch(context.Context, *FooVonPatchRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Patch not implemented")
+}
+func (UnimplementedFooVonServiceServer) Erase(context.Context, *FooVonGetRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Erase not implemented")
+}
+func (UnimplementedFooVonServiceServer) mustEmbedUnimplementedFooVonServiceServer() {}
+func (UnimplementedFooVonServiceServer) testEmbeddedByValue()                       {}
+
+// UnsafeFooVonServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to FooVonServiceServer will
+// result in compilation errors.
+type UnsafeFooVonServiceServer interface {
+	mustEmbedUnimplementedFooVonServiceServer()
+}
+
+func RegisterFooVonServiceServer(s grpc.ServiceRegistrar, srv FooVonServiceServer) {
+	// If the following call pancis, it indicates UnimplementedFooVonServiceServer was
+	// embedded by pointer and is nil.  This will cause panics if an
+	// unimplemented method is ever invoked, so we test this at initialization
+	// time to prevent it from happening at runtime later due to I/O.
+	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
+		t.testEmbeddedByValue()
+	}
+	s.RegisterService(&FooVonService_ServiceDesc, srv)
+}
+
+func _FooVonService_Add_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FooVonAddRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FooVonServiceServer).Add(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: FooVonService_Add_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FooVonServiceServer).Add(ctx, req.(*FooVonAddRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _FooVonService_Get_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FooVonGetRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FooVonServiceServer).Get(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: FooVonService_Get_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FooVonServiceServer).Get(ctx, req.(*FooVonGetRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _FooVonService_Patch_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FooVonPatchRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FooVonServiceServer).Patch(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: FooVonService_Patch_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FooVonServiceServer).Patch(ctx, req.(*FooVonPatchRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _FooVonService_Erase_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FooVonGetRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FooVonServiceServer).Erase(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: FooVonService_Erase_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FooVonServiceServer).Erase(ctx, req.(*FooVonGetRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// FooVonService_ServiceDesc is the grpc.ServiceDesc for FooVonService service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var FooVonService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "example.library.FooVonService",
+	HandlerType: (*FooVonServiceServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "Add",
+			Handler:    _FooVonService_Add_Handler,
+		},
+		{
+			MethodName: "Get",
+			Handler:    _FooVonService_Get_Handler,
+		},
+		{
+			MethodName: "Patch",
+			Handler:    _FooVonService_Patch_Handler,
+		},
+		{
+			MethodName: "Erase",
+			Handler:    _FooVonService_Erase_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -1102,215 +1750,215 @@ var FooMsdService_ServiceDesc = grpc.ServiceDesc{
 }
 
 const (
-	FooVService_Add_FullMethodName   = "/example.library.FooVService/Add"
-	FooVService_Get_FullMethodName   = "/example.library.FooVService/Get"
-	FooVService_Patch_FullMethodName = "/example.library.FooVService/Patch"
-	FooVService_Erase_FullMethodName = "/example.library.FooVService/Erase"
+	FooKService_Add_FullMethodName   = "/example.library.FooKService/Add"
+	FooKService_Get_FullMethodName   = "/example.library.FooKService/Get"
+	FooKService_Patch_FullMethodName = "/example.library.FooKService/Patch"
+	FooKService_Erase_FullMethodName = "/example.library.FooKService/Erase"
 )
 
-// FooVServiceClient is the client API for FooVService service.
+// FooKServiceClient is the client API for FooKService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type FooVServiceClient interface {
-	Add(ctx context.Context, in *FooVAddRequest, opts ...grpc.CallOption) (*FooV, error)
-	Get(ctx context.Context, in *FooVGetRequest, opts ...grpc.CallOption) (*FooV, error)
-	Patch(ctx context.Context, in *FooVPatchRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	Erase(ctx context.Context, in *FooVGetRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+type FooKServiceClient interface {
+	Add(ctx context.Context, in *FooKAddRequest, opts ...grpc.CallOption) (*FooK, error)
+	Get(ctx context.Context, in *FooKGetRequest, opts ...grpc.CallOption) (*FooK, error)
+	Patch(ctx context.Context, in *FooKPatchRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	Erase(ctx context.Context, in *FooKGetRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
-type fooVServiceClient struct {
+type fooKServiceClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewFooVServiceClient(cc grpc.ClientConnInterface) FooVServiceClient {
-	return &fooVServiceClient{cc}
+func NewFooKServiceClient(cc grpc.ClientConnInterface) FooKServiceClient {
+	return &fooKServiceClient{cc}
 }
 
-func (c *fooVServiceClient) Add(ctx context.Context, in *FooVAddRequest, opts ...grpc.CallOption) (*FooV, error) {
+func (c *fooKServiceClient) Add(ctx context.Context, in *FooKAddRequest, opts ...grpc.CallOption) (*FooK, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(FooV)
-	err := c.cc.Invoke(ctx, FooVService_Add_FullMethodName, in, out, cOpts...)
+	out := new(FooK)
+	err := c.cc.Invoke(ctx, FooKService_Add_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *fooVServiceClient) Get(ctx context.Context, in *FooVGetRequest, opts ...grpc.CallOption) (*FooV, error) {
+func (c *fooKServiceClient) Get(ctx context.Context, in *FooKGetRequest, opts ...grpc.CallOption) (*FooK, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(FooV)
-	err := c.cc.Invoke(ctx, FooVService_Get_FullMethodName, in, out, cOpts...)
+	out := new(FooK)
+	err := c.cc.Invoke(ctx, FooKService_Get_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *fooVServiceClient) Patch(ctx context.Context, in *FooVPatchRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(emptypb.Empty)
-	err := c.cc.Invoke(ctx, FooVService_Patch_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *fooVServiceClient) Erase(ctx context.Context, in *FooVGetRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+func (c *fooKServiceClient) Patch(ctx context.Context, in *FooKPatchRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(emptypb.Empty)
-	err := c.cc.Invoke(ctx, FooVService_Erase_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, FooKService_Patch_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// FooVServiceServer is the server API for FooVService service.
-// All implementations must embed UnimplementedFooVServiceServer
+func (c *fooKServiceClient) Erase(ctx context.Context, in *FooKGetRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, FooKService_Erase_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// FooKServiceServer is the server API for FooKService service.
+// All implementations must embed UnimplementedFooKServiceServer
 // for forward compatibility.
-type FooVServiceServer interface {
-	Add(context.Context, *FooVAddRequest) (*FooV, error)
-	Get(context.Context, *FooVGetRequest) (*FooV, error)
-	Patch(context.Context, *FooVPatchRequest) (*emptypb.Empty, error)
-	Erase(context.Context, *FooVGetRequest) (*emptypb.Empty, error)
-	mustEmbedUnimplementedFooVServiceServer()
+type FooKServiceServer interface {
+	Add(context.Context, *FooKAddRequest) (*FooK, error)
+	Get(context.Context, *FooKGetRequest) (*FooK, error)
+	Patch(context.Context, *FooKPatchRequest) (*emptypb.Empty, error)
+	Erase(context.Context, *FooKGetRequest) (*emptypb.Empty, error)
+	mustEmbedUnimplementedFooKServiceServer()
 }
 
-// UnimplementedFooVServiceServer must be embedded to have
+// UnimplementedFooKServiceServer must be embedded to have
 // forward compatible implementations.
 //
 // NOTE: this should be embedded by value instead of pointer to avoid a nil
 // pointer dereference when methods are called.
-type UnimplementedFooVServiceServer struct{}
+type UnimplementedFooKServiceServer struct{}
 
-func (UnimplementedFooVServiceServer) Add(context.Context, *FooVAddRequest) (*FooV, error) {
+func (UnimplementedFooKServiceServer) Add(context.Context, *FooKAddRequest) (*FooK, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Add not implemented")
 }
-func (UnimplementedFooVServiceServer) Get(context.Context, *FooVGetRequest) (*FooV, error) {
+func (UnimplementedFooKServiceServer) Get(context.Context, *FooKGetRequest) (*FooK, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
 }
-func (UnimplementedFooVServiceServer) Patch(context.Context, *FooVPatchRequest) (*emptypb.Empty, error) {
+func (UnimplementedFooKServiceServer) Patch(context.Context, *FooKPatchRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Patch not implemented")
 }
-func (UnimplementedFooVServiceServer) Erase(context.Context, *FooVGetRequest) (*emptypb.Empty, error) {
+func (UnimplementedFooKServiceServer) Erase(context.Context, *FooKGetRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Erase not implemented")
 }
-func (UnimplementedFooVServiceServer) mustEmbedUnimplementedFooVServiceServer() {}
-func (UnimplementedFooVServiceServer) testEmbeddedByValue()                     {}
+func (UnimplementedFooKServiceServer) mustEmbedUnimplementedFooKServiceServer() {}
+func (UnimplementedFooKServiceServer) testEmbeddedByValue()                     {}
 
-// UnsafeFooVServiceServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to FooVServiceServer will
+// UnsafeFooKServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to FooKServiceServer will
 // result in compilation errors.
-type UnsafeFooVServiceServer interface {
-	mustEmbedUnimplementedFooVServiceServer()
+type UnsafeFooKServiceServer interface {
+	mustEmbedUnimplementedFooKServiceServer()
 }
 
-func RegisterFooVServiceServer(s grpc.ServiceRegistrar, srv FooVServiceServer) {
-	// If the following call pancis, it indicates UnimplementedFooVServiceServer was
+func RegisterFooKServiceServer(s grpc.ServiceRegistrar, srv FooKServiceServer) {
+	// If the following call pancis, it indicates UnimplementedFooKServiceServer was
 	// embedded by pointer and is nil.  This will cause panics if an
 	// unimplemented method is ever invoked, so we test this at initialization
 	// time to prevent it from happening at runtime later due to I/O.
 	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
 		t.testEmbeddedByValue()
 	}
-	s.RegisterService(&FooVService_ServiceDesc, srv)
+	s.RegisterService(&FooKService_ServiceDesc, srv)
 }
 
-func _FooVService_Add_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(FooVAddRequest)
+func _FooKService_Add_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FooKAddRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(FooVServiceServer).Add(ctx, in)
+		return srv.(FooKServiceServer).Add(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: FooVService_Add_FullMethodName,
+		FullMethod: FooKService_Add_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FooVServiceServer).Add(ctx, req.(*FooVAddRequest))
+		return srv.(FooKServiceServer).Add(ctx, req.(*FooKAddRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _FooVService_Get_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(FooVGetRequest)
+func _FooKService_Get_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FooKGetRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(FooVServiceServer).Get(ctx, in)
+		return srv.(FooKServiceServer).Get(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: FooVService_Get_FullMethodName,
+		FullMethod: FooKService_Get_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FooVServiceServer).Get(ctx, req.(*FooVGetRequest))
+		return srv.(FooKServiceServer).Get(ctx, req.(*FooKGetRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _FooVService_Patch_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(FooVPatchRequest)
+func _FooKService_Patch_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FooKPatchRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(FooVServiceServer).Patch(ctx, in)
+		return srv.(FooKServiceServer).Patch(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: FooVService_Patch_FullMethodName,
+		FullMethod: FooKService_Patch_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FooVServiceServer).Patch(ctx, req.(*FooVPatchRequest))
+		return srv.(FooKServiceServer).Patch(ctx, req.(*FooKPatchRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _FooVService_Erase_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(FooVGetRequest)
+func _FooKService_Erase_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FooKGetRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(FooVServiceServer).Erase(ctx, in)
+		return srv.(FooKServiceServer).Erase(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: FooVService_Erase_FullMethodName,
+		FullMethod: FooKService_Erase_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FooVServiceServer).Erase(ctx, req.(*FooVGetRequest))
+		return srv.(FooKServiceServer).Erase(ctx, req.(*FooKGetRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// FooVService_ServiceDesc is the grpc.ServiceDesc for FooVService service.
+// FooKService_ServiceDesc is the grpc.ServiceDesc for FooKService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var FooVService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "example.library.FooVService",
-	HandlerType: (*FooVServiceServer)(nil),
+var FooKService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "example.library.FooKService",
+	HandlerType: (*FooKServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
 			MethodName: "Add",
-			Handler:    _FooVService_Add_Handler,
+			Handler:    _FooKService_Add_Handler,
 		},
 		{
 			MethodName: "Get",
-			Handler:    _FooVService_Get_Handler,
+			Handler:    _FooKService_Get_Handler,
 		},
 		{
 			MethodName: "Patch",
-			Handler:    _FooVService_Patch_Handler,
+			Handler:    _FooKService_Patch_Handler,
 		},
 		{
 			MethodName: "Erase",
-			Handler:    _FooVService_Erase_Handler,
+			Handler:    _FooKService_Erase_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -1318,863 +1966,215 @@ var FooVService_ServiceDesc = grpc.ServiceDesc{
 }
 
 const (
-	FooVdService_Add_FullMethodName   = "/example.library.FooVdService/Add"
-	FooVdService_Get_FullMethodName   = "/example.library.FooVdService/Get"
-	FooVdService_Patch_FullMethodName = "/example.library.FooVdService/Patch"
-	FooVdService_Erase_FullMethodName = "/example.library.FooVdService/Erase"
+	FooEfService_Add_FullMethodName   = "/example.library.FooEfService/Add"
+	FooEfService_Get_FullMethodName   = "/example.library.FooEfService/Get"
+	FooEfService_Patch_FullMethodName = "/example.library.FooEfService/Patch"
+	FooEfService_Erase_FullMethodName = "/example.library.FooEfService/Erase"
 )
 
-// FooVdServiceClient is the client API for FooVdService service.
+// FooEfServiceClient is the client API for FooEfService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type FooVdServiceClient interface {
-	Add(ctx context.Context, in *FooVdAddRequest, opts ...grpc.CallOption) (*FooVd, error)
-	Get(ctx context.Context, in *FooVdGetRequest, opts ...grpc.CallOption) (*FooVd, error)
-	Patch(ctx context.Context, in *FooVdPatchRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	Erase(ctx context.Context, in *FooVdGetRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+type FooEfServiceClient interface {
+	Add(ctx context.Context, in *FooEfAddRequest, opts ...grpc.CallOption) (*FooEf, error)
+	Get(ctx context.Context, in *FooEfGetRequest, opts ...grpc.CallOption) (*FooEf, error)
+	Patch(ctx context.Context, in *FooEfPatchRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	Erase(ctx context.Context, in *FooEfGetRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
-type fooVdServiceClient struct {
+type fooEfServiceClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewFooVdServiceClient(cc grpc.ClientConnInterface) FooVdServiceClient {
-	return &fooVdServiceClient{cc}
+func NewFooEfServiceClient(cc grpc.ClientConnInterface) FooEfServiceClient {
+	return &fooEfServiceClient{cc}
 }
 
-func (c *fooVdServiceClient) Add(ctx context.Context, in *FooVdAddRequest, opts ...grpc.CallOption) (*FooVd, error) {
+func (c *fooEfServiceClient) Add(ctx context.Context, in *FooEfAddRequest, opts ...grpc.CallOption) (*FooEf, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(FooVd)
-	err := c.cc.Invoke(ctx, FooVdService_Add_FullMethodName, in, out, cOpts...)
+	out := new(FooEf)
+	err := c.cc.Invoke(ctx, FooEfService_Add_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *fooVdServiceClient) Get(ctx context.Context, in *FooVdGetRequest, opts ...grpc.CallOption) (*FooVd, error) {
+func (c *fooEfServiceClient) Get(ctx context.Context, in *FooEfGetRequest, opts ...grpc.CallOption) (*FooEf, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(FooVd)
-	err := c.cc.Invoke(ctx, FooVdService_Get_FullMethodName, in, out, cOpts...)
+	out := new(FooEf)
+	err := c.cc.Invoke(ctx, FooEfService_Get_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *fooVdServiceClient) Patch(ctx context.Context, in *FooVdPatchRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(emptypb.Empty)
-	err := c.cc.Invoke(ctx, FooVdService_Patch_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *fooVdServiceClient) Erase(ctx context.Context, in *FooVdGetRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+func (c *fooEfServiceClient) Patch(ctx context.Context, in *FooEfPatchRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(emptypb.Empty)
-	err := c.cc.Invoke(ctx, FooVdService_Erase_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, FooEfService_Patch_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// FooVdServiceServer is the server API for FooVdService service.
-// All implementations must embed UnimplementedFooVdServiceServer
+func (c *fooEfServiceClient) Erase(ctx context.Context, in *FooEfGetRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, FooEfService_Erase_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// FooEfServiceServer is the server API for FooEfService service.
+// All implementations must embed UnimplementedFooEfServiceServer
 // for forward compatibility.
-type FooVdServiceServer interface {
-	Add(context.Context, *FooVdAddRequest) (*FooVd, error)
-	Get(context.Context, *FooVdGetRequest) (*FooVd, error)
-	Patch(context.Context, *FooVdPatchRequest) (*emptypb.Empty, error)
-	Erase(context.Context, *FooVdGetRequest) (*emptypb.Empty, error)
-	mustEmbedUnimplementedFooVdServiceServer()
+type FooEfServiceServer interface {
+	Add(context.Context, *FooEfAddRequest) (*FooEf, error)
+	Get(context.Context, *FooEfGetRequest) (*FooEf, error)
+	Patch(context.Context, *FooEfPatchRequest) (*emptypb.Empty, error)
+	Erase(context.Context, *FooEfGetRequest) (*emptypb.Empty, error)
+	mustEmbedUnimplementedFooEfServiceServer()
 }
 
-// UnimplementedFooVdServiceServer must be embedded to have
+// UnimplementedFooEfServiceServer must be embedded to have
 // forward compatible implementations.
 //
 // NOTE: this should be embedded by value instead of pointer to avoid a nil
 // pointer dereference when methods are called.
-type UnimplementedFooVdServiceServer struct{}
+type UnimplementedFooEfServiceServer struct{}
 
-func (UnimplementedFooVdServiceServer) Add(context.Context, *FooVdAddRequest) (*FooVd, error) {
+func (UnimplementedFooEfServiceServer) Add(context.Context, *FooEfAddRequest) (*FooEf, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Add not implemented")
 }
-func (UnimplementedFooVdServiceServer) Get(context.Context, *FooVdGetRequest) (*FooVd, error) {
+func (UnimplementedFooEfServiceServer) Get(context.Context, *FooEfGetRequest) (*FooEf, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
 }
-func (UnimplementedFooVdServiceServer) Patch(context.Context, *FooVdPatchRequest) (*emptypb.Empty, error) {
+func (UnimplementedFooEfServiceServer) Patch(context.Context, *FooEfPatchRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Patch not implemented")
 }
-func (UnimplementedFooVdServiceServer) Erase(context.Context, *FooVdGetRequest) (*emptypb.Empty, error) {
+func (UnimplementedFooEfServiceServer) Erase(context.Context, *FooEfGetRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Erase not implemented")
 }
-func (UnimplementedFooVdServiceServer) mustEmbedUnimplementedFooVdServiceServer() {}
-func (UnimplementedFooVdServiceServer) testEmbeddedByValue()                      {}
+func (UnimplementedFooEfServiceServer) mustEmbedUnimplementedFooEfServiceServer() {}
+func (UnimplementedFooEfServiceServer) testEmbeddedByValue()                      {}
 
-// UnsafeFooVdServiceServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to FooVdServiceServer will
+// UnsafeFooEfServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to FooEfServiceServer will
 // result in compilation errors.
-type UnsafeFooVdServiceServer interface {
-	mustEmbedUnimplementedFooVdServiceServer()
+type UnsafeFooEfServiceServer interface {
+	mustEmbedUnimplementedFooEfServiceServer()
 }
 
-func RegisterFooVdServiceServer(s grpc.ServiceRegistrar, srv FooVdServiceServer) {
-	// If the following call pancis, it indicates UnimplementedFooVdServiceServer was
+func RegisterFooEfServiceServer(s grpc.ServiceRegistrar, srv FooEfServiceServer) {
+	// If the following call pancis, it indicates UnimplementedFooEfServiceServer was
 	// embedded by pointer and is nil.  This will cause panics if an
 	// unimplemented method is ever invoked, so we test this at initialization
 	// time to prevent it from happening at runtime later due to I/O.
 	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
 		t.testEmbeddedByValue()
 	}
-	s.RegisterService(&FooVdService_ServiceDesc, srv)
+	s.RegisterService(&FooEfService_ServiceDesc, srv)
 }
 
-func _FooVdService_Add_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(FooVdAddRequest)
+func _FooEfService_Add_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FooEfAddRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(FooVdServiceServer).Add(ctx, in)
+		return srv.(FooEfServiceServer).Add(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: FooVdService_Add_FullMethodName,
+		FullMethod: FooEfService_Add_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FooVdServiceServer).Add(ctx, req.(*FooVdAddRequest))
+		return srv.(FooEfServiceServer).Add(ctx, req.(*FooEfAddRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _FooVdService_Get_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(FooVdGetRequest)
+func _FooEfService_Get_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FooEfGetRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(FooVdServiceServer).Get(ctx, in)
+		return srv.(FooEfServiceServer).Get(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: FooVdService_Get_FullMethodName,
+		FullMethod: FooEfService_Get_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FooVdServiceServer).Get(ctx, req.(*FooVdGetRequest))
+		return srv.(FooEfServiceServer).Get(ctx, req.(*FooEfGetRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _FooVdService_Patch_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(FooVdPatchRequest)
+func _FooEfService_Patch_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FooEfPatchRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(FooVdServiceServer).Patch(ctx, in)
+		return srv.(FooEfServiceServer).Patch(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: FooVdService_Patch_FullMethodName,
+		FullMethod: FooEfService_Patch_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FooVdServiceServer).Patch(ctx, req.(*FooVdPatchRequest))
+		return srv.(FooEfServiceServer).Patch(ctx, req.(*FooEfPatchRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _FooVdService_Erase_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(FooVdGetRequest)
+func _FooEfService_Erase_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FooEfGetRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(FooVdServiceServer).Erase(ctx, in)
+		return srv.(FooEfServiceServer).Erase(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: FooVdService_Erase_FullMethodName,
+		FullMethod: FooEfService_Erase_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FooVdServiceServer).Erase(ctx, req.(*FooVdGetRequest))
+		return srv.(FooEfServiceServer).Erase(ctx, req.(*FooEfGetRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// FooVdService_ServiceDesc is the grpc.ServiceDesc for FooVdService service.
+// FooEfService_ServiceDesc is the grpc.ServiceDesc for FooEfService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var FooVdService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "example.library.FooVdService",
-	HandlerType: (*FooVdServiceServer)(nil),
+var FooEfService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "example.library.FooEfService",
+	HandlerType: (*FooEfServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
 			MethodName: "Add",
-			Handler:    _FooVdService_Add_Handler,
+			Handler:    _FooEfService_Add_Handler,
 		},
 		{
 			MethodName: "Get",
-			Handler:    _FooVdService_Get_Handler,
+			Handler:    _FooEfService_Get_Handler,
 		},
 		{
 			MethodName: "Patch",
-			Handler:    _FooVdService_Patch_Handler,
+			Handler:    _FooEfService_Patch_Handler,
 		},
 		{
 			MethodName: "Erase",
-			Handler:    _FooVdService_Erase_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "example/library/foo_svc.proto",
-}
-
-const (
-	FooVoService_Add_FullMethodName   = "/example.library.FooVoService/Add"
-	FooVoService_Get_FullMethodName   = "/example.library.FooVoService/Get"
-	FooVoService_Patch_FullMethodName = "/example.library.FooVoService/Patch"
-	FooVoService_Erase_FullMethodName = "/example.library.FooVoService/Erase"
-)
-
-// FooVoServiceClient is the client API for FooVoService service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type FooVoServiceClient interface {
-	Add(ctx context.Context, in *FooVoAddRequest, opts ...grpc.CallOption) (*FooVo, error)
-	Get(ctx context.Context, in *FooVoGetRequest, opts ...grpc.CallOption) (*FooVo, error)
-	Patch(ctx context.Context, in *FooVoPatchRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	Erase(ctx context.Context, in *FooVoGetRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-}
-
-type fooVoServiceClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewFooVoServiceClient(cc grpc.ClientConnInterface) FooVoServiceClient {
-	return &fooVoServiceClient{cc}
-}
-
-func (c *fooVoServiceClient) Add(ctx context.Context, in *FooVoAddRequest, opts ...grpc.CallOption) (*FooVo, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(FooVo)
-	err := c.cc.Invoke(ctx, FooVoService_Add_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *fooVoServiceClient) Get(ctx context.Context, in *FooVoGetRequest, opts ...grpc.CallOption) (*FooVo, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(FooVo)
-	err := c.cc.Invoke(ctx, FooVoService_Get_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *fooVoServiceClient) Patch(ctx context.Context, in *FooVoPatchRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(emptypb.Empty)
-	err := c.cc.Invoke(ctx, FooVoService_Patch_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *fooVoServiceClient) Erase(ctx context.Context, in *FooVoGetRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(emptypb.Empty)
-	err := c.cc.Invoke(ctx, FooVoService_Erase_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// FooVoServiceServer is the server API for FooVoService service.
-// All implementations must embed UnimplementedFooVoServiceServer
-// for forward compatibility.
-type FooVoServiceServer interface {
-	Add(context.Context, *FooVoAddRequest) (*FooVo, error)
-	Get(context.Context, *FooVoGetRequest) (*FooVo, error)
-	Patch(context.Context, *FooVoPatchRequest) (*emptypb.Empty, error)
-	Erase(context.Context, *FooVoGetRequest) (*emptypb.Empty, error)
-	mustEmbedUnimplementedFooVoServiceServer()
-}
-
-// UnimplementedFooVoServiceServer must be embedded to have
-// forward compatible implementations.
-//
-// NOTE: this should be embedded by value instead of pointer to avoid a nil
-// pointer dereference when methods are called.
-type UnimplementedFooVoServiceServer struct{}
-
-func (UnimplementedFooVoServiceServer) Add(context.Context, *FooVoAddRequest) (*FooVo, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Add not implemented")
-}
-func (UnimplementedFooVoServiceServer) Get(context.Context, *FooVoGetRequest) (*FooVo, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
-}
-func (UnimplementedFooVoServiceServer) Patch(context.Context, *FooVoPatchRequest) (*emptypb.Empty, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Patch not implemented")
-}
-func (UnimplementedFooVoServiceServer) Erase(context.Context, *FooVoGetRequest) (*emptypb.Empty, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Erase not implemented")
-}
-func (UnimplementedFooVoServiceServer) mustEmbedUnimplementedFooVoServiceServer() {}
-func (UnimplementedFooVoServiceServer) testEmbeddedByValue()                      {}
-
-// UnsafeFooVoServiceServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to FooVoServiceServer will
-// result in compilation errors.
-type UnsafeFooVoServiceServer interface {
-	mustEmbedUnimplementedFooVoServiceServer()
-}
-
-func RegisterFooVoServiceServer(s grpc.ServiceRegistrar, srv FooVoServiceServer) {
-	// If the following call pancis, it indicates UnimplementedFooVoServiceServer was
-	// embedded by pointer and is nil.  This will cause panics if an
-	// unimplemented method is ever invoked, so we test this at initialization
-	// time to prevent it from happening at runtime later due to I/O.
-	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
-		t.testEmbeddedByValue()
-	}
-	s.RegisterService(&FooVoService_ServiceDesc, srv)
-}
-
-func _FooVoService_Add_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(FooVoAddRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(FooVoServiceServer).Add(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: FooVoService_Add_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FooVoServiceServer).Add(ctx, req.(*FooVoAddRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _FooVoService_Get_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(FooVoGetRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(FooVoServiceServer).Get(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: FooVoService_Get_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FooVoServiceServer).Get(ctx, req.(*FooVoGetRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _FooVoService_Patch_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(FooVoPatchRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(FooVoServiceServer).Patch(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: FooVoService_Patch_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FooVoServiceServer).Patch(ctx, req.(*FooVoPatchRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _FooVoService_Erase_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(FooVoGetRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(FooVoServiceServer).Erase(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: FooVoService_Erase_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FooVoServiceServer).Erase(ctx, req.(*FooVoGetRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-// FooVoService_ServiceDesc is the grpc.ServiceDesc for FooVoService service.
-// It's only intended for direct use with grpc.RegisterService,
-// and not to be introspected or modified (even as a copy)
-var FooVoService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "example.library.FooVoService",
-	HandlerType: (*FooVoServiceServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "Add",
-			Handler:    _FooVoService_Add_Handler,
-		},
-		{
-			MethodName: "Get",
-			Handler:    _FooVoService_Get_Handler,
-		},
-		{
-			MethodName: "Patch",
-			Handler:    _FooVoService_Patch_Handler,
-		},
-		{
-			MethodName: "Erase",
-			Handler:    _FooVoService_Erase_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "example/library/foo_svc.proto",
-}
-
-const (
-	FooVonService_Add_FullMethodName   = "/example.library.FooVonService/Add"
-	FooVonService_Get_FullMethodName   = "/example.library.FooVonService/Get"
-	FooVonService_Patch_FullMethodName = "/example.library.FooVonService/Patch"
-	FooVonService_Erase_FullMethodName = "/example.library.FooVonService/Erase"
-)
-
-// FooVonServiceClient is the client API for FooVonService service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type FooVonServiceClient interface {
-	Add(ctx context.Context, in *FooVonAddRequest, opts ...grpc.CallOption) (*FooVon, error)
-	Get(ctx context.Context, in *FooVonGetRequest, opts ...grpc.CallOption) (*FooVon, error)
-	Patch(ctx context.Context, in *FooVonPatchRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	Erase(ctx context.Context, in *FooVonGetRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-}
-
-type fooVonServiceClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewFooVonServiceClient(cc grpc.ClientConnInterface) FooVonServiceClient {
-	return &fooVonServiceClient{cc}
-}
-
-func (c *fooVonServiceClient) Add(ctx context.Context, in *FooVonAddRequest, opts ...grpc.CallOption) (*FooVon, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(FooVon)
-	err := c.cc.Invoke(ctx, FooVonService_Add_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *fooVonServiceClient) Get(ctx context.Context, in *FooVonGetRequest, opts ...grpc.CallOption) (*FooVon, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(FooVon)
-	err := c.cc.Invoke(ctx, FooVonService_Get_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *fooVonServiceClient) Patch(ctx context.Context, in *FooVonPatchRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(emptypb.Empty)
-	err := c.cc.Invoke(ctx, FooVonService_Patch_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *fooVonServiceClient) Erase(ctx context.Context, in *FooVonGetRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(emptypb.Empty)
-	err := c.cc.Invoke(ctx, FooVonService_Erase_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// FooVonServiceServer is the server API for FooVonService service.
-// All implementations must embed UnimplementedFooVonServiceServer
-// for forward compatibility.
-type FooVonServiceServer interface {
-	Add(context.Context, *FooVonAddRequest) (*FooVon, error)
-	Get(context.Context, *FooVonGetRequest) (*FooVon, error)
-	Patch(context.Context, *FooVonPatchRequest) (*emptypb.Empty, error)
-	Erase(context.Context, *FooVonGetRequest) (*emptypb.Empty, error)
-	mustEmbedUnimplementedFooVonServiceServer()
-}
-
-// UnimplementedFooVonServiceServer must be embedded to have
-// forward compatible implementations.
-//
-// NOTE: this should be embedded by value instead of pointer to avoid a nil
-// pointer dereference when methods are called.
-type UnimplementedFooVonServiceServer struct{}
-
-func (UnimplementedFooVonServiceServer) Add(context.Context, *FooVonAddRequest) (*FooVon, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Add not implemented")
-}
-func (UnimplementedFooVonServiceServer) Get(context.Context, *FooVonGetRequest) (*FooVon, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
-}
-func (UnimplementedFooVonServiceServer) Patch(context.Context, *FooVonPatchRequest) (*emptypb.Empty, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Patch not implemented")
-}
-func (UnimplementedFooVonServiceServer) Erase(context.Context, *FooVonGetRequest) (*emptypb.Empty, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Erase not implemented")
-}
-func (UnimplementedFooVonServiceServer) mustEmbedUnimplementedFooVonServiceServer() {}
-func (UnimplementedFooVonServiceServer) testEmbeddedByValue()                       {}
-
-// UnsafeFooVonServiceServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to FooVonServiceServer will
-// result in compilation errors.
-type UnsafeFooVonServiceServer interface {
-	mustEmbedUnimplementedFooVonServiceServer()
-}
-
-func RegisterFooVonServiceServer(s grpc.ServiceRegistrar, srv FooVonServiceServer) {
-	// If the following call pancis, it indicates UnimplementedFooVonServiceServer was
-	// embedded by pointer and is nil.  This will cause panics if an
-	// unimplemented method is ever invoked, so we test this at initialization
-	// time to prevent it from happening at runtime later due to I/O.
-	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
-		t.testEmbeddedByValue()
-	}
-	s.RegisterService(&FooVonService_ServiceDesc, srv)
-}
-
-func _FooVonService_Add_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(FooVonAddRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(FooVonServiceServer).Add(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: FooVonService_Add_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FooVonServiceServer).Add(ctx, req.(*FooVonAddRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _FooVonService_Get_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(FooVonGetRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(FooVonServiceServer).Get(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: FooVonService_Get_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FooVonServiceServer).Get(ctx, req.(*FooVonGetRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _FooVonService_Patch_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(FooVonPatchRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(FooVonServiceServer).Patch(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: FooVonService_Patch_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FooVonServiceServer).Patch(ctx, req.(*FooVonPatchRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _FooVonService_Erase_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(FooVonGetRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(FooVonServiceServer).Erase(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: FooVonService_Erase_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FooVonServiceServer).Erase(ctx, req.(*FooVonGetRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-// FooVonService_ServiceDesc is the grpc.ServiceDesc for FooVonService service.
-// It's only intended for direct use with grpc.RegisterService,
-// and not to be introspected or modified (even as a copy)
-var FooVonService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "example.library.FooVonService",
-	HandlerType: (*FooVonServiceServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "Add",
-			Handler:    _FooVonService_Add_Handler,
-		},
-		{
-			MethodName: "Get",
-			Handler:    _FooVonService_Get_Handler,
-		},
-		{
-			MethodName: "Patch",
-			Handler:    _FooVonService_Patch_Handler,
-		},
-		{
-			MethodName: "Erase",
-			Handler:    _FooVonService_Erase_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "example/library/foo_svc.proto",
-}
-
-const (
-	FooVrService_Add_FullMethodName   = "/example.library.FooVrService/Add"
-	FooVrService_Get_FullMethodName   = "/example.library.FooVrService/Get"
-	FooVrService_Patch_FullMethodName = "/example.library.FooVrService/Patch"
-	FooVrService_Erase_FullMethodName = "/example.library.FooVrService/Erase"
-)
-
-// FooVrServiceClient is the client API for FooVrService service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type FooVrServiceClient interface {
-	Add(ctx context.Context, in *FooVrAddRequest, opts ...grpc.CallOption) (*FooVr, error)
-	Get(ctx context.Context, in *FooVrGetRequest, opts ...grpc.CallOption) (*FooVr, error)
-	Patch(ctx context.Context, in *FooVrPatchRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	Erase(ctx context.Context, in *FooVrGetRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-}
-
-type fooVrServiceClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewFooVrServiceClient(cc grpc.ClientConnInterface) FooVrServiceClient {
-	return &fooVrServiceClient{cc}
-}
-
-func (c *fooVrServiceClient) Add(ctx context.Context, in *FooVrAddRequest, opts ...grpc.CallOption) (*FooVr, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(FooVr)
-	err := c.cc.Invoke(ctx, FooVrService_Add_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *fooVrServiceClient) Get(ctx context.Context, in *FooVrGetRequest, opts ...grpc.CallOption) (*FooVr, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(FooVr)
-	err := c.cc.Invoke(ctx, FooVrService_Get_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *fooVrServiceClient) Patch(ctx context.Context, in *FooVrPatchRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(emptypb.Empty)
-	err := c.cc.Invoke(ctx, FooVrService_Patch_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *fooVrServiceClient) Erase(ctx context.Context, in *FooVrGetRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(emptypb.Empty)
-	err := c.cc.Invoke(ctx, FooVrService_Erase_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// FooVrServiceServer is the server API for FooVrService service.
-// All implementations must embed UnimplementedFooVrServiceServer
-// for forward compatibility.
-type FooVrServiceServer interface {
-	Add(context.Context, *FooVrAddRequest) (*FooVr, error)
-	Get(context.Context, *FooVrGetRequest) (*FooVr, error)
-	Patch(context.Context, *FooVrPatchRequest) (*emptypb.Empty, error)
-	Erase(context.Context, *FooVrGetRequest) (*emptypb.Empty, error)
-	mustEmbedUnimplementedFooVrServiceServer()
-}
-
-// UnimplementedFooVrServiceServer must be embedded to have
-// forward compatible implementations.
-//
-// NOTE: this should be embedded by value instead of pointer to avoid a nil
-// pointer dereference when methods are called.
-type UnimplementedFooVrServiceServer struct{}
-
-func (UnimplementedFooVrServiceServer) Add(context.Context, *FooVrAddRequest) (*FooVr, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Add not implemented")
-}
-func (UnimplementedFooVrServiceServer) Get(context.Context, *FooVrGetRequest) (*FooVr, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
-}
-func (UnimplementedFooVrServiceServer) Patch(context.Context, *FooVrPatchRequest) (*emptypb.Empty, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Patch not implemented")
-}
-func (UnimplementedFooVrServiceServer) Erase(context.Context, *FooVrGetRequest) (*emptypb.Empty, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Erase not implemented")
-}
-func (UnimplementedFooVrServiceServer) mustEmbedUnimplementedFooVrServiceServer() {}
-func (UnimplementedFooVrServiceServer) testEmbeddedByValue()                      {}
-
-// UnsafeFooVrServiceServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to FooVrServiceServer will
-// result in compilation errors.
-type UnsafeFooVrServiceServer interface {
-	mustEmbedUnimplementedFooVrServiceServer()
-}
-
-func RegisterFooVrServiceServer(s grpc.ServiceRegistrar, srv FooVrServiceServer) {
-	// If the following call pancis, it indicates UnimplementedFooVrServiceServer was
-	// embedded by pointer and is nil.  This will cause panics if an
-	// unimplemented method is ever invoked, so we test this at initialization
-	// time to prevent it from happening at runtime later due to I/O.
-	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
-		t.testEmbeddedByValue()
-	}
-	s.RegisterService(&FooVrService_ServiceDesc, srv)
-}
-
-func _FooVrService_Add_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(FooVrAddRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(FooVrServiceServer).Add(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: FooVrService_Add_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FooVrServiceServer).Add(ctx, req.(*FooVrAddRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _FooVrService_Get_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(FooVrGetRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(FooVrServiceServer).Get(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: FooVrService_Get_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FooVrServiceServer).Get(ctx, req.(*FooVrGetRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _FooVrService_Patch_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(FooVrPatchRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(FooVrServiceServer).Patch(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: FooVrService_Patch_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FooVrServiceServer).Patch(ctx, req.(*FooVrPatchRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _FooVrService_Erase_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(FooVrGetRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(FooVrServiceServer).Erase(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: FooVrService_Erase_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FooVrServiceServer).Erase(ctx, req.(*FooVrGetRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-// FooVrService_ServiceDesc is the grpc.ServiceDesc for FooVrService service.
-// It's only intended for direct use with grpc.RegisterService,
-// and not to be introspected or modified (even as a copy)
-var FooVrService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "example.library.FooVrService",
-	HandlerType: (*FooVrServiceServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "Add",
-			Handler:    _FooVrService_Add_Handler,
-		},
-		{
-			MethodName: "Get",
-			Handler:    _FooVrService_Get_Handler,
-		},
-		{
-			MethodName: "Patch",
-			Handler:    _FooVrService_Patch_Handler,
-		},
-		{
-			MethodName: "Erase",
-			Handler:    _FooVrService_Erase_Handler,
+			Handler:    _FooEfService_Erase_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -8,6 +8,7 @@ import "example/library/author_svc.proto";
 import "example/library/book.proto";
 import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
+import "orm/patch.proto";
 
 option go_package = "github.com/lesomnus/proto-orm/internal/example/library";
 
@@ -45,6 +46,12 @@ message BookSelect {
 message BookPatchRequest {
 	BookGetRequest key = 1;
 	optional string title = 5;
+	repeated BookPatchAuthors authors = 7;
 	repeated Book.Index index = 9;
 	repeated string genres = 11;
+}
+
+message BookPatchAuthors {
+	orm.PatchOp op = 1;
+	repeated BookGetRequest items = 2;
 }

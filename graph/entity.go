@@ -26,6 +26,15 @@ type Entity struct {
 	Rpcs    map[RpcOp]*Rpc
 }
 
+func (e *Entity) Order() int {
+	for i, m := range e.File.Messages {
+		if m == e.Source {
+			return i
+		}
+	}
+	return 0
+}
+
 func newEntity(f *protogen.File, m *protogen.Message) *Entity {
 	return &Entity{
 		File:   f,
@@ -77,8 +86,7 @@ func (e *Entity) prase(g Graph, o *orm.MessageOptions) error {
 			}
 			if oe != nil && oe.From != nil && oe.From.Number > 0 {
 				n := protowire.Number(oe.From.Number)
-				f := target.FieldByNumber(n)
-				if f == nil {
+				if _, ok := target.FieldByNumber(n); !ok {
 					// Reference may not be parsed yet so parse it first.
 					i := slices.IndexFunc(target.Source.Fields, func(v *protogen.Field) bool {
 						return v.Desc.Number() == n
@@ -107,8 +115,8 @@ func (e *Entity) prase(g Graph, o *orm.MessageOptions) error {
 	for _, i := range o.Indexes {
 		refs := []Field{}
 		for _, r := range i.Refs {
-			f := e.FieldByNumber(protowire.Number(r))
-			if f == nil {
+			f, ok := e.FieldByNumber(protowire.Number(r))
+			if !ok {
 				err := fmt.Errorf("index reference not found: %d", r)
 				errs = append(errs, err)
 				continue
@@ -194,13 +202,13 @@ func (e *Entity) HasIndexes() bool {
 	return len(e.Indexes) > 0
 }
 
-func (e *Entity) FieldByNumber(n protowire.Number) Field {
+func (e *Entity) FieldByNumber(n protowire.Number) (Field, bool) {
 	for _, f := range e.Fields {
 		if f.Number() == n {
-			return f
+			return f, true
 		}
 	}
-	return nil
+	return nil, false
 }
 
 func (e *Entity) FieldsSortByNumber() []Field {

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"path/filepath"
+	"sort"
 	"strings"
 	"text/template"
 
@@ -73,6 +74,11 @@ func (p *Plugin) Run(plugin *protogen.Plugin) error {
 			GeneratedFile: plugin.NewGeneratedFile(n, e.File.GoImportPath),
 			Entities:      []*graph.Entity{e},
 		}
+	}
+	for _, f := range fs {
+		sort.Slice(f.Entities, func(i, j int) bool {
+			return f.Entities[i].Order() < f.Entities[j].Order()
+		})
 	}
 
 	for _, raw := range plugin.Files {

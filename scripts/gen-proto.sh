@@ -23,4 +23,5 @@ protoc \
 	--go_out="${OUTPUT_DIR}" \
 	--go_opt=module="${MODULE_NAME}" \
 	\
-	"${PROTO_ROOT}"/orm.proto
+	"${PROTO_ROOT}"/orm.proto \
+	"${PROTO_ROOT}"/orm/*.proto

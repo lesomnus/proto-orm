@@ -8,6 +8,7 @@ import "example/library/member.proto";
 import "example/library/profile.proto";
 import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
+import "orm/patch.proto";
 
 option go_package = "github.com/lesomnus/proto-orm/internal/example/library";
 
@@ -60,4 +61,10 @@ message MemberPatchRequest {
 	optional Member.Level level = 11;
 	MemberGetRequest parent = 15;
 	bool parent_null = 16;
+	repeated MemberPatchChildren children = 17;
+}
+
+message MemberPatchChildren {
+	orm.PatchOp op = 1;
+	repeated MemberGetRequest items = 2;
 }

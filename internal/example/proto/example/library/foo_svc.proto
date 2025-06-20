@@ -11,18 +11,39 @@ import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/lesomnus/proto-orm/internal/example/library";
 
-service FooEfService {
-	rpc Add(FooEfAddRequest) returns (FooEf);
-	rpc Get(FooEfGetRequest) returns (FooEf);
-	rpc Patch(FooEfPatchRequest) returns (google.protobuf.Empty);
-	rpc Erase(FooEfGetRequest) returns (google.protobuf.Empty);
+service FooVService {
+	rpc Add(FooVAddRequest) returns (FooV);
+	rpc Get(FooVGetRequest) returns (FooV);
+	rpc Patch(FooVPatchRequest) returns (google.protobuf.Empty);
+	rpc Erase(FooVGetRequest) returns (google.protobuf.Empty);
 }
 
-service FooKService {
-	rpc Add(FooKAddRequest) returns (FooK);
-	rpc Get(FooKGetRequest) returns (FooK);
-	rpc Patch(FooKPatchRequest) returns (google.protobuf.Empty);
-	rpc Erase(FooKGetRequest) returns (google.protobuf.Empty);
+service FooVdService {
+	rpc Add(FooVdAddRequest) returns (FooVd);
+	rpc Get(FooVdGetRequest) returns (FooVd);
+	rpc Patch(FooVdPatchRequest) returns (google.protobuf.Empty);
+	rpc Erase(FooVdGetRequest) returns (google.protobuf.Empty);
+}
+
+service FooVrService {
+	rpc Add(FooVrAddRequest) returns (FooVr);
+	rpc Get(FooVrGetRequest) returns (FooVr);
+	rpc Patch(FooVrPatchRequest) returns (google.protobuf.Empty);
+	rpc Erase(FooVrGetRequest) returns (google.protobuf.Empty);
+}
+
+service FooVoService {
+	rpc Add(FooVoAddRequest) returns (FooVo);
+	rpc Get(FooVoGetRequest) returns (FooVo);
+	rpc Patch(FooVoPatchRequest) returns (google.protobuf.Empty);
+	rpc Erase(FooVoGetRequest) returns (google.protobuf.Empty);
+}
+
+service FooVonService {
+	rpc Add(FooVonAddRequest) returns (FooVon);
+	rpc Get(FooVonGetRequest) returns (FooVon);
+	rpc Patch(FooVonPatchRequest) returns (google.protobuf.Empty);
+	rpc Erase(FooVonGetRequest) returns (google.protobuf.Empty);
 }
 
 service FooMiService {
@@ -46,119 +67,209 @@ service FooMsdService {
 	rpc Erase(FooMsdGetRequest) returns (google.protobuf.Empty);
 }
 
-service FooVService {
-	rpc Add(FooVAddRequest) returns (FooV);
-	rpc Get(FooVGetRequest) returns (FooV);
-	rpc Patch(FooVPatchRequest) returns (google.protobuf.Empty);
-	rpc Erase(FooVGetRequest) returns (google.protobuf.Empty);
+service FooKService {
+	rpc Add(FooKAddRequest) returns (FooK);
+	rpc Get(FooKGetRequest) returns (FooK);
+	rpc Patch(FooKPatchRequest) returns (google.protobuf.Empty);
+	rpc Erase(FooKGetRequest) returns (google.protobuf.Empty);
 }
 
-service FooVdService {
-	rpc Add(FooVdAddRequest) returns (FooVd);
-	rpc Get(FooVdGetRequest) returns (FooVd);
-	rpc Patch(FooVdPatchRequest) returns (google.protobuf.Empty);
-	rpc Erase(FooVdGetRequest) returns (google.protobuf.Empty);
+service FooEfService {
+	rpc Add(FooEfAddRequest) returns (FooEf);
+	rpc Get(FooEfGetRequest) returns (FooEf);
+	rpc Patch(FooEfPatchRequest) returns (google.protobuf.Empty);
+	rpc Erase(FooEfGetRequest) returns (google.protobuf.Empty);
 }
 
-service FooVoService {
-	rpc Add(FooVoAddRequest) returns (FooVo);
-	rpc Get(FooVoGetRequest) returns (FooVo);
-	rpc Patch(FooVoPatchRequest) returns (google.protobuf.Empty);
-	rpc Erase(FooVoGetRequest) returns (google.protobuf.Empty);
-}
-
-service FooVonService {
-	rpc Add(FooVonAddRequest) returns (FooVon);
-	rpc Get(FooVonGetRequest) returns (FooVon);
-	rpc Patch(FooVonPatchRequest) returns (google.protobuf.Empty);
-	rpc Erase(FooVonGetRequest) returns (google.protobuf.Empty);
-}
-
-service FooVrService {
-	rpc Add(FooVrAddRequest) returns (FooVr);
-	rpc Get(FooVrGetRequest) returns (FooVr);
-	rpc Patch(FooVrPatchRequest) returns (google.protobuf.Empty);
-	rpc Erase(FooVrGetRequest) returns (google.protobuf.Empty);
-}
-
-message FooEfAddRequest {
+message FooVAddRequest {
 	int64 id = 1;
-	Author ef_v_author = 11;
-	optional Author ef_vd_author = 12;
-	repeated Author ef_vr_author = 13;
-	optional Author ef_vo_author = 14;
-	map<int64,example.library.Author> ef_mi_author = 15;
-	map<string,example.library.Author> ef_ms_author = 16;
-	map<string,example.library.Author> ef_msd_author = 17;
+	double v_double = 11;
+	int64 v_int64 = 12;
+	uint64 v_uint64 = 13;
+	bool v_bool = 14;
+	string v_string = 15;
+	bytes v_bytes = 16;
 }
 
-message FooEfGetRequest {
-	FooEfSelect select = 1;
+message FooVGetRequest {
+	FooVSelect select = 1;
 	oneof key {
 		int64 id = 2;
 	}
 }
 
-message FooEfSelect {
+message FooVSelect {
 	optional bool all = 1;
-	optional bool ef_v_author = 11;
-	optional bool ef_vd_author = 12;
-	optional bool ef_vr_author = 13;
-	optional bool ef_vo_author = 14;
-	optional bool ef_mi_author = 15;
-	optional bool ef_ms_author = 16;
-	optional bool ef_msd_author = 17;
+	optional bool v_double = 11;
+	optional bool v_int64 = 12;
+	optional bool v_uint64 = 13;
+	optional bool v_bool = 14;
+	optional bool v_string = 15;
+	optional bool v_bytes = 16;
 }
 
-message FooEfPatchRequest {
-	FooEfGetRequest key = 1;
-	optional Author ef_v_author = 21;
-	optional Author ef_vd_author = 23;
-	repeated Author ef_vr_author = 25;
-	optional Author ef_vo_author = 27;
-	map<int64,example.library.Author> ef_mi_author = 29;
-	map<string,example.library.Author> ef_ms_author = 31;
-	map<string,example.library.Author> ef_msd_author = 33;
+message FooVPatchRequest {
+	FooVGetRequest key = 1;
+	optional double v_double = 21;
+	optional int64 v_int64 = 23;
+	optional uint64 v_uint64 = 25;
+	optional bool v_bool = 27;
+	optional string v_string = 29;
+	optional bytes v_bytes = 31;
 }
 
-message FooKAddRequest {
+message FooVdAddRequest {
 	int64 id = 1;
-	google.protobuf.Timestamp k_v_time = 11;
-	optional google.protobuf.Timestamp k_vd_time = 12;
-	repeated google.protobuf.Timestamp k_vr_time = 13;
-	optional google.protobuf.Timestamp k_vo_time = 14;
-	map<int64,google.protobuf.Timestamp> k_mi_time = 15;
-	map<string,google.protobuf.Timestamp> k_ms_time = 16;
-	map<string,google.protobuf.Timestamp> k_msd_time = 17;
+	optional double vd_double = 11;
+	optional int64 vd_int64 = 12;
+	optional uint64 vd_uint64 = 13;
+	optional bool vd_bool = 14;
+	optional string vd_string = 15;
+	optional bytes vd_bytes = 16;
 }
 
-message FooKGetRequest {
-	FooKSelect select = 1;
+message FooVdGetRequest {
+	FooVdSelect select = 1;
 	oneof key {
 		int64 id = 2;
 	}
 }
 
-message FooKSelect {
+message FooVdSelect {
 	optional bool all = 1;
-	optional bool k_v_time = 11;
-	optional bool k_vd_time = 12;
-	optional bool k_vr_time = 13;
-	optional bool k_vo_time = 14;
-	optional bool k_mi_time = 15;
-	optional bool k_ms_time = 16;
-	optional bool k_msd_time = 17;
+	optional bool vd_double = 11;
+	optional bool vd_int64 = 12;
+	optional bool vd_uint64 = 13;
+	optional bool vd_bool = 14;
+	optional bool vd_string = 15;
+	optional bool vd_bytes = 16;
 }
 
-message FooKPatchRequest {
-	FooKGetRequest key = 1;
-	optional google.protobuf.Timestamp k_v_time = 21;
-	optional google.protobuf.Timestamp k_vd_time = 23;
-	repeated google.protobuf.Timestamp k_vr_time = 25;
-	optional google.protobuf.Timestamp k_vo_time = 27;
-	map<int64,google.protobuf.Timestamp> k_mi_time = 29;
-	map<string,google.protobuf.Timestamp> k_ms_time = 31;
-	map<string,google.protobuf.Timestamp> k_msd_time = 33;
+message FooVdPatchRequest {
+	FooVdGetRequest key = 1;
+	optional double vd_double = 21;
+	optional int64 vd_int64 = 23;
+	optional uint64 vd_uint64 = 25;
+	optional bool vd_bool = 27;
+	optional string vd_string = 29;
+	optional bytes vd_bytes = 31;
+}
+
+message FooVrAddRequest {
+	int64 id = 1;
+	repeated double vr_double = 11;
+	repeated int64 vr_int64 = 12;
+	repeated uint64 vr_uint64 = 13;
+	repeated bool vr_bool = 14;
+	repeated string vr_string = 15;
+	repeated bytes vr_bytes = 16;
+}
+
+message FooVrGetRequest {
+	FooVrSelect select = 1;
+	oneof key {
+		int64 id = 2;
+	}
+}
+
+message FooVrSelect {
+	optional bool all = 1;
+	optional bool vr_double = 11;
+	optional bool vr_int64 = 12;
+	optional bool vr_uint64 = 13;
+	optional bool vr_bool = 14;
+	optional bool vr_string = 15;
+	optional bool vr_bytes = 16;
+}
+
+message FooVrPatchRequest {
+	FooVrGetRequest key = 1;
+	repeated double vr_double = 21;
+	repeated int64 vr_int64 = 23;
+	repeated uint64 vr_uint64 = 25;
+	repeated bool vr_bool = 27;
+	repeated string vr_string = 29;
+	repeated bytes vr_bytes = 31;
+}
+
+message FooVoAddRequest {
+	int64 id = 1;
+	optional double vo_double = 11;
+	optional int64 vo_int64 = 12;
+	optional uint64 vo_uint64 = 13;
+	optional bool vo_bool = 14;
+	optional string vo_string = 15;
+	optional bytes vo_bytes = 16;
+}
+
+message FooVoGetRequest {
+	FooVoSelect select = 1;
+	oneof key {
+		int64 id = 2;
+	}
+}
+
+message FooVoSelect {
+	optional bool all = 1;
+	optional bool vo_double = 11;
+	optional bool vo_int64 = 12;
+	optional bool vo_uint64 = 13;
+	optional bool vo_bool = 14;
+	optional bool vo_string = 15;
+	optional bool vo_bytes = 16;
+}
+
+message FooVoPatchRequest {
+	FooVoGetRequest key = 1;
+	optional double vo_double = 21;
+	optional int64 vo_int64 = 23;
+	optional uint64 vo_uint64 = 25;
+	optional bool vo_bool = 27;
+	optional string vo_string = 29;
+	optional bytes vo_bytes = 31;
+}
+
+message FooVonAddRequest {
+	int64 id = 1;
+	optional double von_double = 11;
+	optional int64 von_int64 = 12;
+	optional uint64 von_uint64 = 13;
+	optional bool von_bool = 14;
+	optional string von_string = 15;
+	optional bytes von_bytes = 16;
+}
+
+message FooVonGetRequest {
+	FooVonSelect select = 1;
+	oneof key {
+		int64 id = 2;
+	}
+}
+
+message FooVonSelect {
+	optional bool all = 1;
+	optional bool von_double = 11;
+	optional bool von_int64 = 12;
+	optional bool von_uint64 = 13;
+	optional bool von_bool = 14;
+	optional bool von_string = 15;
+	optional bool von_bytes = 16;
+}
+
+message FooVonPatchRequest {
+	FooVonGetRequest key = 1;
+	optional double von_double = 21;
+	bool von_double_null = 22;
+	optional int64 von_int64 = 23;
+	bool von_int64_null = 24;
+	optional uint64 von_uint64 = 25;
+	bool von_uint64_null = 26;
+	optional bool von_bool = 27;
+	bool von_bool_null = 28;
+	optional string von_string = 29;
+	bool von_string_null = 30;
+	optional bytes von_bytes = 31;
+	bool von_bytes_null = 32;
 }
 
 message FooMiAddRequest {
@@ -272,193 +383,82 @@ message FooMsdPatchRequest {
 	map<string,bytes> msd_bytes = 31;
 }
 
-message FooVAddRequest {
+message FooKAddRequest {
 	int64 id = 1;
-	double v_double = 11;
-	int64 v_int64 = 12;
-	uint64 v_uint64 = 13;
-	bool v_bool = 14;
-	string v_string = 15;
-	bytes v_bytes = 16;
+	google.protobuf.Timestamp k_v_time = 11;
+	optional google.protobuf.Timestamp k_vd_time = 12;
+	repeated google.protobuf.Timestamp k_vr_time = 13;
+	optional google.protobuf.Timestamp k_vo_time = 14;
+	map<int64,google.protobuf.Timestamp> k_mi_time = 15;
+	map<string,google.protobuf.Timestamp> k_ms_time = 16;
+	map<string,google.protobuf.Timestamp> k_msd_time = 17;
 }
 
-message FooVGetRequest {
-	FooVSelect select = 1;
+message FooKGetRequest {
+	FooKSelect select = 1;
 	oneof key {
 		int64 id = 2;
 	}
 }
 
-message FooVSelect {
+message FooKSelect {
 	optional bool all = 1;
-	optional bool v_double = 11;
-	optional bool v_int64 = 12;
-	optional bool v_uint64 = 13;
-	optional bool v_bool = 14;
-	optional bool v_string = 15;
-	optional bool v_bytes = 16;
+	optional bool k_v_time = 11;
+	optional bool k_vd_time = 12;
+	optional bool k_vr_time = 13;
+	optional bool k_vo_time = 14;
+	optional bool k_mi_time = 15;
+	optional bool k_ms_time = 16;
+	optional bool k_msd_time = 17;
 }
 
-message FooVPatchRequest {
-	FooVGetRequest key = 1;
-	optional double v_double = 21;
-	optional int64 v_int64 = 23;
-	optional uint64 v_uint64 = 25;
-	optional bool v_bool = 27;
-	optional string v_string = 29;
-	optional bytes v_bytes = 31;
+message FooKPatchRequest {
+	FooKGetRequest key = 1;
+	optional google.protobuf.Timestamp k_v_time = 21;
+	optional google.protobuf.Timestamp k_vd_time = 23;
+	repeated google.protobuf.Timestamp k_vr_time = 25;
+	optional google.protobuf.Timestamp k_vo_time = 27;
+	map<int64,google.protobuf.Timestamp> k_mi_time = 29;
+	map<string,google.protobuf.Timestamp> k_ms_time = 31;
+	map<string,google.protobuf.Timestamp> k_msd_time = 33;
 }
 
-message FooVdAddRequest {
+message FooEfAddRequest {
 	int64 id = 1;
-	optional double vd_double = 11;
-	optional int64 vd_int64 = 12;
-	optional uint64 vd_uint64 = 13;
-	optional bool vd_bool = 14;
-	optional string vd_string = 15;
-	optional bytes vd_bytes = 16;
+	Author ef_v_author = 11;
+	optional Author ef_vd_author = 12;
+	repeated Author ef_vr_author = 13;
+	optional Author ef_vo_author = 14;
+	map<int64,example.library.Author> ef_mi_author = 15;
+	map<string,example.library.Author> ef_ms_author = 16;
+	map<string,example.library.Author> ef_msd_author = 17;
 }
 
-message FooVdGetRequest {
-	FooVdSelect select = 1;
+message FooEfGetRequest {
+	FooEfSelect select = 1;
 	oneof key {
 		int64 id = 2;
 	}
 }
 
-message FooVdSelect {
+message FooEfSelect {
 	optional bool all = 1;
-	optional bool vd_double = 11;
-	optional bool vd_int64 = 12;
-	optional bool vd_uint64 = 13;
-	optional bool vd_bool = 14;
-	optional bool vd_string = 15;
-	optional bool vd_bytes = 16;
+	optional bool ef_v_author = 11;
+	optional bool ef_vd_author = 12;
+	optional bool ef_vr_author = 13;
+	optional bool ef_vo_author = 14;
+	optional bool ef_mi_author = 15;
+	optional bool ef_ms_author = 16;
+	optional bool ef_msd_author = 17;
 }
 
-message FooVdPatchRequest {
-	FooVdGetRequest key = 1;
-	optional double vd_double = 21;
-	optional int64 vd_int64 = 23;
-	optional uint64 vd_uint64 = 25;
-	optional bool vd_bool = 27;
-	optional string vd_string = 29;
-	optional bytes vd_bytes = 31;
-}
-
-message FooVoAddRequest {
-	int64 id = 1;
-	optional double vo_double = 11;
-	optional int64 vo_int64 = 12;
-	optional uint64 vo_uint64 = 13;
-	optional bool vo_bool = 14;
-	optional string vo_string = 15;
-	optional bytes vo_bytes = 16;
-}
-
-message FooVoGetRequest {
-	FooVoSelect select = 1;
-	oneof key {
-		int64 id = 2;
-	}
-}
-
-message FooVoSelect {
-	optional bool all = 1;
-	optional bool vo_double = 11;
-	optional bool vo_int64 = 12;
-	optional bool vo_uint64 = 13;
-	optional bool vo_bool = 14;
-	optional bool vo_string = 15;
-	optional bool vo_bytes = 16;
-}
-
-message FooVoPatchRequest {
-	FooVoGetRequest key = 1;
-	optional double vo_double = 21;
-	optional int64 vo_int64 = 23;
-	optional uint64 vo_uint64 = 25;
-	optional bool vo_bool = 27;
-	optional string vo_string = 29;
-	optional bytes vo_bytes = 31;
-}
-
-message FooVonAddRequest {
-	int64 id = 1;
-	optional double von_double = 11;
-	optional int64 von_int64 = 12;
-	optional uint64 von_uint64 = 13;
-	optional bool von_bool = 14;
-	optional string von_string = 15;
-	optional bytes von_bytes = 16;
-}
-
-message FooVonGetRequest {
-	FooVonSelect select = 1;
-	oneof key {
-		int64 id = 2;
-	}
-}
-
-message FooVonSelect {
-	optional bool all = 1;
-	optional bool von_double = 11;
-	optional bool von_int64 = 12;
-	optional bool von_uint64 = 13;
-	optional bool von_bool = 14;
-	optional bool von_string = 15;
-	optional bool von_bytes = 16;
-}
-
-message FooVonPatchRequest {
-	FooVonGetRequest key = 1;
-	optional double von_double = 21;
-	bool von_double_null = 22;
-	optional int64 von_int64 = 23;
-	bool von_int64_null = 24;
-	optional uint64 von_uint64 = 25;
-	bool von_uint64_null = 26;
-	optional bool von_bool = 27;
-	bool von_bool_null = 28;
-	optional string von_string = 29;
-	bool von_string_null = 30;
-	optional bytes von_bytes = 31;
-	bool von_bytes_null = 32;
-}
-
-message FooVrAddRequest {
-	int64 id = 1;
-	repeated double vr_double = 11;
-	repeated int64 vr_int64 = 12;
-	repeated uint64 vr_uint64 = 13;
-	repeated bool vr_bool = 14;
-	repeated string vr_string = 15;
-	repeated bytes vr_bytes = 16;
-}
-
-message FooVrGetRequest {
-	FooVrSelect select = 1;
-	oneof key {
-		int64 id = 2;
-	}
-}
-
-message FooVrSelect {
-	optional bool all = 1;
-	optional bool vr_double = 11;
-	optional bool vr_int64 = 12;
-	optional bool vr_uint64 = 13;
-	optional bool vr_bool = 14;
-	optional bool vr_string = 15;
-	optional bool vr_bytes = 16;
-}
-
-message FooVrPatchRequest {
-	FooVrGetRequest key = 1;
-	repeated double vr_double = 21;
-	repeated int64 vr_int64 = 23;
-	repeated uint64 vr_uint64 = 25;
-	repeated bool vr_bool = 27;
-	repeated string vr_string = 29;
-	repeated bytes vr_bytes = 31;
+message FooEfPatchRequest {
+	FooEfGetRequest key = 1;
+	optional Author ef_v_author = 21;
+	optional Author ef_vd_author = 23;
+	repeated Author ef_vr_author = 25;
+	optional Author ef_vo_author = 27;
+	map<int64,example.library.Author> ef_mi_author = 29;
+	map<string,example.library.Author> ef_ms_author = 31;
+	map<string,example.library.Author> ef_msd_author = 33;
 }

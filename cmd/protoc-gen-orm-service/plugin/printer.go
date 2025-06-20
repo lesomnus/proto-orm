@@ -2,7 +2,6 @@ package plugin
 
 import (
 	"fmt"
-	"maps"
 	"os"
 	"slices"
 	"strings"
@@ -11,6 +10,7 @@ import (
 	orm "github.com/lesomnus/proto-orm"
 	"github.com/lesomnus/proto-orm/graph"
 	"github.com/lesomnus/proto-orm/pbgen"
+	"google.golang.org/protobuf/encoding/protowire"
 	"google.golang.org/protobuf/reflect/protoreflect"
 )
 
@@ -26,7 +26,7 @@ const msgGetEntityFieldOffset = 1
 
 type Printer struct {
 	// `p` should be `/path/to/file.proto` and
-	// it will returns something like `/path/to/file_svc.prot`.
+	// it will returns something like `/path/to/file_svc.proto`.
 	namer func(p string) string
 
 	messages map[protoreflect.FullName]*generatedMessage
@@ -71,20 +71,21 @@ func (p *Printer) Print(f *File) error {
 
 		w.Do(e, o)
 	}
-
-	ss := slices.Collect(maps.Values(w.services))
-	slices.SortFunc(ss, func(a *pbgen.Service, b *pbgen.Service) int {
-		return strings.Compare(string(a.Name), string(b.Name))
-	})
-	for _, v := range ss {
-		pf.TopLevelDefinitions = append(pf.TopLevelDefinitions, v)
+	for _, e := range f.Entities {
+		s, ok := w.services[e.FullName()]
+		if !ok {
+			panic(fmt.Sprint("service not defined for", e.FullName()))
+		}
+		pf.TopLevelDefinitions = append(pf.TopLevelDefinitions, s)
 	}
 
-	// Processed messages.
 	ms := map[pbgen.Type]bool{}
+	for _, entity := range f.Entities {
+		s, ok := w.services[entity.FullName()]
+		if !ok {
+			panic(fmt.Sprint("service not defined for", entity.FullName()))
+		}
 
-	// Print RPC messages for each services.
-	for _, s := range ss {
 		for _, e := range s.Body {
 			r, ok := e.(pbgen.Rpc)
 			if !ok {
@@ -136,6 +137,37 @@ func (p *Printer) Print(f *File) error {
 					} else {
 						pf.TopLevelDefinitions = append(pf.TopLevelDefinitions, m)
 					}
+				}
+			}
+			// XxxPatchRequest
+			// - may contains XxxPatchYyy.
+			if strings.HasSuffix(string(m.FullName), "PatchRequest") {
+				for _, entry := range m.Body[1:] {
+					field, ok := entry.(pbgen.MessageField)
+					if !ok {
+						continue
+					}
+
+					n := (protowire.Number(field.Number) + 1) / 2
+					f, ok := entity.FieldByNumber(n)
+					if !ok {
+						panic("invalid reference of the field")
+					}
+
+					edge, ok := f.(*graph.Edge)
+					if !ok {
+						continue
+					}
+					if edge.IsUnique() {
+						continue
+					}
+
+					name := protoreflect.FullName(field.Type)
+					m, ok := w.messages[name]
+					if !ok {
+						panic("XxxPatchYyy not generated")
+					}
+					pf.TopLevelDefinitions = append(pf.TopLevelDefinitions, m)
 				}
 			}
 
@@ -472,9 +504,6 @@ func (w *printWork) msgPatchReq(r *graph.Rpc) *generatedMessage {
 			if u.IsVirtual() {
 				continue
 			}
-			if !(u.IsUnidirectional() || u.IsExclusive()) {
-				continue
-			}
 
 			target := u.Target
 			r := target.Rpcs[graph.RpcOpGet]
@@ -484,10 +513,12 @@ func (w *printWork) msgPatchReq(r *graph.Rpc) *generatedMessage {
 				// or make one on demand.
 			}
 			m := w.msgGetReq(r)
-			v.Type = w.typeMessage(m)
-
 			if u.IsList() {
+				m_ := w.msgPatchEdge(u)
+				v.Type = w.typeMessage(m_)
 				v.Label = pbgen.LabelRepeated
+			} else {
+				v.Type = w.typeMessage(m)
 			}
 		}
 
@@ -502,6 +533,48 @@ func (w *printWork) msgPatchReq(r *graph.Rpc) *generatedMessage {
 	}
 
 	m.Body = body
+	return m
+}
+
+func (w *printWork) nameMsgPatchEdge(e *graph.Edge) protoreflect.FullName {
+	et := e.Entity()
+	n := fmt.Sprintf("%sPatch%s", inflect.Camelize(et.Name()), inflect.Camelize(e.Name()))
+	return et.FullName().Parent().Append(protoreflect.Name(n))
+}
+
+func (w *printWork) msgPatchEdge(e *graph.Edge) *generatedMessage {
+	full := w.nameMsgPatchEdge(e)
+	if m, ok := w.messages[full]; ok {
+		w.importType(m)
+		return m
+	}
+
+	m := &generatedMessage{
+		Message: &pbgen.Message{FullName: full},
+		p:       w.namer(e.Entity().File.Desc.Path()),
+	}
+	w.messages[full] = m
+
+	rpc_get, ok := e.Entity().Rpcs[graph.RpcOpGet]
+	if !ok {
+		panic("RPC patch requires RPC get")
+	}
+
+	getter := w.msgGetReq(rpc_get)
+	m.Body = []pbgen.MessageBody{
+		pbgen.MessageField{
+			Type:   w.typeMessage(graph.StaticTyped("orm.PatchOp", "orm/patch.proto")),
+			Name:   "op",
+			Number: 1,
+		},
+		pbgen.MessageField{
+			Type:   w.typeMessage(getter),
+			Name:   "items",
+			Number: 2,
+			Label:  pbgen.LabelRepeated,
+		},
+	}
+
 	return m
 }
 

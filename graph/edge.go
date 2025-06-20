@@ -63,15 +63,15 @@ func (e *Entity) parseEdge(f *protogen.Field, o *orm.EdgeOptions, target *Entity
 
 	errs := []error{}
 	if opt := o.From; opt != nil && opt.Number > 0 {
-		f := target.FieldByNumber(protowire.Number(opt.Number))
-		if f == nil {
+		f, ok := target.FieldByNumber(protowire.Number(opt.Number))
+		if !ok {
 			if opt.Virtual == nil {
 				err := fmt.Errorf("back-reference field not found: %d", opt.Number)
 				errs = append(errs, err)
 			} else if rvs, err := v.createVirtualEdge(target, protowire.Number(opt.Number), opt.Virtual); err != nil {
 				errs = append(errs, fmt.Errorf("create virtual edge: %w", err))
 			} else {
-				v.Reverse = rvs
+				v.Inverse = rvs
 				target.Fields[n] = rvs
 				target.Edges[n] = rvs
 			}
@@ -87,8 +87,8 @@ func (e *Entity) parseEdge(f *protogen.Field, o *orm.EdgeOptions, target *Entity
 		}
 	}
 	if o.Bind > 0 {
-		f := e.FieldByNumber(protowire.Number(o.Bind))
-		if f == nil {
+		f, ok := e.FieldByNumber(protowire.Number(o.Bind))
+		if !ok {
 			err := fmt.Errorf("bound field not found")
 			errs = append(errs, err)
 		} else if t, ok := f.(*Attr); !ok {

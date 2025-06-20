@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package orm;
+
+option go_package = "github.com/lesomnus/proto-orm;orm";
+
+enum PatchOp {
+	UNSPECIFIED = 0;
+
+	ADD   = 1;
+	ERASE = 2;
+	CLEAR = 3;
+}
